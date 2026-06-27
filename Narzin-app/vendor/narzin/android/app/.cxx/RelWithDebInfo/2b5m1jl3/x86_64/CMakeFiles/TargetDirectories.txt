@@ -1,0 +1,2 @@
+C:/Users/moham/StudioProjects/narzin_vendor/android/app/.cxx/RelWithDebInfo/2b5m1jl3/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/moham/StudioProjects/narzin_vendor/android/app/.cxx/RelWithDebInfo/2b5m1jl3/x86_64/CMakeFiles/rebuild_cache.dir

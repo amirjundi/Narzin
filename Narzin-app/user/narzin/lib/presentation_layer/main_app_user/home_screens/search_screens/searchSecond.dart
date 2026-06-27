@@ -1,0 +1,461 @@
+import 'package:auto_height_grid_view/auto_height_grid_view.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:narzin/bussiness_logic/cart_cubits/cart_cubit.dart';
+import 'package:narzin/bussiness_logic/localization_cubit/localization_cubit.dart';
+import 'package:narzin/bussiness_logic/login_cubits/login_cubit.dart';
+import 'package:narzin/bussiness_logic/product_cubits/search_cubit.dart';
+import 'package:narzin/core/constants.dart';
+import 'package:narzin/core/screen_sizing_constants.dart';
+import 'package:narzin/generated/assets.dart';
+import 'package:narzin/model_layer/search_products_model.dart';
+import 'package:narzin/presentation_layer/main_app_user/cart_screens/cart_screen.dart';
+import 'package:narzin/presentation_layer/main_app_user/home_screens/search_screens/search_filters.dart';
+import 'package:narzin/presentation_layer/main_app_user/products_screens/product_details_screen.dart';
+import 'package:narzin/widgets/app_infrastructure_widgets/page_selector_widget.dart';
+import 'package:narzin/widgets/app_infrastructure_widgets/product_item_widget.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
+
+import '../../../../bussiness_logic/product_cubits/product_cubit.dart';
+import '../../../../core/helpers.dart';
+import '../../../../generated/l10n.dart';
+
+class SearchSecond extends StatelessWidget {
+  const SearchSecond({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        BlocProvider.of<SearchCubit>(context).resetFilters();
+        return true;
+      },
+      child: BlocBuilder<SearchCubit, SearchState>(
+        builder: (context, state) {
+          SearchProductsModel? products = context.read<SearchCubit>().products;
+          Map<int, bool> wishlistItems = Helpers.wishlistItems;
+          int selectedProductId = context.read<SearchCubit>().selectedId;
+          bool isLoading = context.read<SearchCubit>().isLoading;
+          String locale = BlocProvider.of<LocalizationCubit>(context).locale;
+          return Scaffold(
+            appBar: AppBar(
+              toolbarHeight: kToolbarHeight * 1.1,
+              bottom: PreferredSize(preferredSize: Size(ScreenSizing.width, 0.1), child: const Divider()),
+              backgroundColor: Colors.white,
+              leading: IconButton(
+                onPressed: () {
+                  context.read<SearchCubit>().resetFilters();
+                  Navigator.canPop(context) ? Navigator.pop(context) : null;
+                },
+                icon: const Icon(Icons.arrow_back_ios_rounded),
+              ),
+              title: Text(
+                S.of(context).search,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              automaticallyImplyLeading: false,
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const CartScreen(),));
+                    // Navigator.canPop(context) ? Navigator.pop(context) : null;
+                  },
+                  icon: Stack(
+                    children: [
+                      const SizedBox(height: 60,width: 40,),
+                      Positioned(top: 0,left: 0,child: Icon(Icons.shopping_cart,color: Constants.mainColor,size: 25,)),
+                      Positioned(top: 0,right: 0,child: BlocBuilder<CartCubit, CartState>(
+                        builder: (context, state) {
+                          return CircleAvatar(radius: 9,backgroundColor: Colors.red,child: Text((context.read<CartCubit>().myCart?.data?.length ?? 0).toString(),style: const TextStyle(color: Colors.white,fontSize: 13,fontWeight: FontWeight.bold),),);
+                        },
+                      ))
+                    ],
+                  ),
+                ),
+              ],
+              centerTitle: true,
+            ),
+            body: SizedBox(
+                  height: ScreenSizing.height,
+                  width: ScreenSizing.width,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        child: Hero(
+                          tag: 'search',
+                          transitionOnUserGestures: true,
+                          child: SearchBar(
+                            controller: context.read<SearchCubit>().controller,
+                            onSubmitted: (value) {
+                              context.read<SearchCubit>().createSearchSuggestions(value);
+                              context.read<SearchCubit>().getSearchedProducts();
+                            },
+                            backgroundColor: const WidgetStatePropertyAll<Color>(Colors.white),
+                            leading: const Icon(Icons.search),
+                            hintText: S.of(context).search_placeholder,
+                            hintStyle: WidgetStateProperty.all(
+                              TextStyle(color: Colors.grey[500], fontSize: 14),
+                            ),
+                            // padding: MaterialStateProperty.all(const EdgeInsets.symmetric(horizontal: 10, vertical: 10)),
+                            shape: WidgetStatePropertyAll<OutlinedBorder?>(RoundedRectangleBorder(side: BorderSide(color: Colors.grey[300]!), borderRadius: BorderRadius.circular(40))),
+                          ),
+                        ),
+                      ),
+                      (isLoading)
+                          ? const Expanded(child: LoadingWidget())
+                          : Expanded(
+                              child: products == null || (products.data?.products?.data?.isEmpty ?? true)
+                                  ? const NotFoundWidget()
+                                  : SingleChildScrollView(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                                            height: 40,
+                                            width: ScreenSizing.width,
+                                            child: Row(
+                                              children: [
+                                                InkWell(
+                                                  child: Chip(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                                                    backgroundColor: Colors.white,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(5),
+                                                      side: BorderSide(
+                                                        color: Colors.grey[300]!,
+                                                      ),
+                                                    ),
+                                                    label: Row(
+                                                      children: [
+                                                        SvgPicture.asset(Assets.appIconsAppIconsTools),
+                                                        const SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                        GradientText(
+                                                          S.of(context).filter,
+                                                          style: const TextStyle(fontSize: 15),
+                                                          colors: const [
+                                                            Color(0xff5BB5EF),
+                                                            Color(0xff3084C2),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => const SearchFilters(),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                                const SizedBox(
+                                                  width: 10,
+                                                ),
+                                                InkWell(
+                                                  child: Chip(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                                                    backgroundColor: Colors.white,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(5),
+                                                      side: BorderSide(
+                                                        color: Colors.grey[300]!,
+                                                      ),
+                                                    ),
+                                                    label: Row(
+                                                      children: [
+                                                        SvgPicture.asset(Assets.appIconsArrange),
+                                                        const SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                        GradientText(
+                                                          context.read<SearchCubit>().selectedSortBy ?? S.of(context).sort,
+                                                          style: const TextStyle(fontSize: 15),
+                                                          colors: const [
+                                                            Color(0xff5BB5EF),
+                                                            Color(0xff3084C2),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  onTap: () {
+                                                    showMenu(
+                                                      context: context,
+                                                      position: const RelativeRect.fromLTRB(200, 200, 100, 100), // Position of the dropdown
+                                                      items: [
+                                                        for (int i = 0; i < (products.data?.filters?.sortOptions?.length ?? 0); i++)
+                                                          PopupMenuItem(
+                                                            value: products.data?.filters?.sortOptions?[i].key,
+                                                            child: Text(locale == 'ar' ? (products.data?.filters?.sortOptions?[i].nameArabic ?? '') : (products.data?.filters?.sortOptions?[i].nameGerman ?? '')),
+                                                            onTap: () {
+                                                              context.read<SearchCubit>().addSortBy((products.data?.filters?.sortOptions?[i])!, locale);
+                                                              context.read<SearchCubit>().getSearchedProducts();
+                                                            },
+                                                          ),
+                                                      ],
+                                                    );
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          AutoHeightGridView(
+                                            itemCount: products.data?.products?.data?.length ?? 0,
+                                            physics: const NeverScrollableScrollPhysics(),
+                                            shrinkWrap: true,
+                                            // itemCount: 20,
+                                            builder: (context, index) {
+                                              ProductsData? product = products.data?.products?.data?[index];
+                                              String productName = locale == 'ar' ? (product?.nameArabic ?? '') : (product?.nameGerman ?? '');
+                                              String productPrice = (product?.minPrice ?? '');
+                                              String? productImage = product?.images?.firstOrNull?.image;
+                                              String productCategory = locale == 'ar' ? (product?.category?.nameArabic ?? '') : (product?.category?.nameGerman ?? '');
+                                              int productId = (int.tryParse(product?.id??'') ?? 0);
+                                              bool isFavorite = wishlistItems[productId] ?? false;
+                                              int? itemId = Helpers.wishlistProducts[productId];
+                                              String rating = (product?.averageRating ?? 0).toString();
+                                              return InkWell(
+                                                onTap: () {
+                                                  BlocProvider.of<ProductsCubit>(context).getSingleProduct(id: productId);
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => const ProductDetailsScreen(
+                                                          isSearch: true,
+                                                        ),
+                                                      ));
+                                                },
+                                                child: ProductItem(
+                                                  rating: rating.length > 3 ? rating.substring(0, 3) : rating,
+                                                  productImage: productImage,
+                                                  productName: productName,
+                                                  icon: isFavorite ? Icons.favorite : Icons.favorite_border,
+                                                  IconWidget: selectedProductId == productId
+                                                      ? const Center(
+                                                          child: Padding(
+                                                            padding: EdgeInsets.all(8.0),
+                                                            child: CircularProgressIndicator(
+                                                              color: Colors.red,
+                                                              strokeWidth: 2,
+                                                            ),
+                                                          ),
+                                                        )
+                                                      : null,
+                                                  onIconPressed: () async {
+                                                    String token = BlocProvider.of<LoginCubit>(context).loginModel?.data?.token ?? '';
+                                                    if (!isFavorite) {
+                                                      await context.read<SearchCubit>().add2Wishlist(token: token, product_id: productId);
+                                                    }else{
+                                                      await context.read<SearchCubit>().deleteFromWishlist(token: token, product_id: productId ?? 0, itemId: itemId??0);
+                                                      await context.read<SearchCubit>().getWishlist(token: token);
+                                                    }
+                                                  },
+                                                  category: productCategory,
+                                                  priceFrom: productPrice,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                          context.read<SearchCubit>().isNotPaging()?Container():const SizedBox(
+                                            height: 60,
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                            ),
+                    ],
+                  ),
+                ),
+            bottomNavigationBar: context.read<SearchCubit>().isNotPaging()
+                ? null
+                : SearchPagingNavigationBar(
+              currentPage: context.read<SearchCubit>().currentPage - 1,
+              totalPages: context.read<SearchCubit>().lastPage,
+              onTap: context.read<SearchCubit>().setCurrentPage,
+              onNextPressed: () {
+                context.read<SearchCubit>().nextPage();
+              },
+              onPreviousPressed: () {
+                context.read<SearchCubit>().previousPage();
+              },
+            ),
+            extendBody: true,
+          );
+        },
+      ),
+    );
+  }
+}
+
+class SearchPagingNavigationBar extends StatelessWidget {
+  const SearchPagingNavigationBar({
+    super.key,
+    required this.currentPage,
+    required this.totalPages,
+    required this.onTap,
+    this.onNextPressed,
+    this.onPreviousPressed,
+  });
+
+  final int currentPage;
+  final int totalPages;
+  final void Function()? onNextPressed;
+  final void Function()? onPreviousPressed;
+  final void Function(int) onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    int currentPage = context.read<SearchCubit>().currentPage - 1;
+    int totalPages = context.read<SearchCubit>().lastPage;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      height: 55,
+      width: ScreenSizing.width,
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(color: Colors.white70, borderRadius: BorderRadius.circular(50)),
+      child: PageSelector(
+        currentPage: currentPage,
+        totalPages: totalPages,
+        onNextPressed: onNextPressed,
+        onTap: onTap,
+        onPreviousPressed: onPreviousPressed,
+      ),
+    );
+  }
+}
+
+class LoadingIndecator extends StatelessWidget {
+  const LoadingIndecator({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const Expanded(
+        child: Center(
+      child: CircularProgressIndicator(),
+    ));
+  }
+}
+
+class LoadingWidget extends StatelessWidget {
+  const LoadingWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      highlightColor: Colors.white,
+      baseColor: Colors.grey[300]!,
+      child: AutoHeightGridView(
+        itemCount: 8,
+        builder: (context, index) => ProductItem(
+          productImage: '',
+          IconWidget: IconButton(
+              style: IconButton.styleFrom(
+                backgroundColor: const Color(0xffffffff),
+                padding: EdgeInsets.zero,
+                maximumSize: const Size(35, 35),
+                minimumSize: const Size(35, 35),
+              ),
+              padding: EdgeInsets.zero,
+              onPressed: () {},
+              icon: const Icon(
+                Icons.more_horiz,
+                color: Colors.black,
+              )),
+          productName: 'Product',
+        ),
+      ),
+    );
+  }
+}
+
+class NotFoundWidget extends StatelessWidget {
+  const NotFoundWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 10,
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            height: 40,
+            width: ScreenSizing.width,
+            child: Row(
+              children: [
+                InkWell(
+                  child: Chip(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                      side: BorderSide(
+                        color: Colors.grey[300]!,
+                      ),
+                    ),
+                    label: Row(
+                      children: [
+                        SvgPicture.asset(Assets.appIconsAppIconsTools),
+                        GradientText(
+                          S.of(context).filter,
+                          style: const TextStyle(fontSize: 15),
+                          colors: const [
+                            Color(0xff5BB5EF),
+                            Color(0xff3084C2),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SearchFilters(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            height: 80,
+          ),
+          SvgPicture.asset(Assets.imagesSearchNotFound),
+          const SizedBox(
+            height: 10,
+          ),
+          Text(S.of(context).no_results_found, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500), textAlign: TextAlign.center),
+          const SizedBox(
+            height: 10,
+          ),
+          Text(
+            S.of(context).no_results_message,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Colors.grey),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}

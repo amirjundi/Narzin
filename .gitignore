@@ -4,7 +4,10 @@
 !**/.env.example
 
 # ── PHP / Laravel ─────────────────────────────────────
-**/vendor/
+# NOTE: anchored to Composer's vendor dir only. A bare "**/vendor/" also
+# matches Modules/Vendor and Narzin-app/vendor on case-insensitive systems
+# (Windows), which silently drops real source from the repo.
+/narzinapp-main/vendor/
 narzinapp-main/storage/*.key
 narzinapp-main/public/storage
 narzinapp-main/public/build/

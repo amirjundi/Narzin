@@ -1,0 +1,717 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:insta_image_viewer/insta_image_viewer.dart';
+import 'package:intl/intl.dart';
+import 'package:narzin/bussiness_logic/localization_cubit/localization_cubit.dart';
+import 'package:narzin/bussiness_logic/login_cubits/login_cubit.dart';
+import 'package:narzin/bussiness_logic/vendor_stats_cubits/vendor_stats_cubit.dart';
+import 'package:narzin/core/constants.dart';
+import 'package:narzin/generated/assets.dart';
+import 'package:narzin/model_layer/single_produt_model.dart';
+
+import '../../../core/screen_sizing_constants.dart';
+import '../../../generated/l10n.dart';
+import '../../../model_layer/order_model.dart';
+
+class SingleOrderScreen extends StatelessWidget {
+  const SingleOrderScreen({super.key});
+
+  static final DateFormat dateFormatter = DateFormat("dd/MM - HH:mm");
+
+  final String sampleImage = 'https://img.freepik.com/free-photo/top-mountain-view_23-2150528665.jpg?t=st=1737398542~exp=1737402142~hmac=fb831577588fa60c4be3b06ce8f4adbaced23c73c713eb4ba3748b6988c6af82&w=360';
+
+  @override
+  Widget build(BuildContext context) {
+    String locale = BlocProvider.of<LocalizationCubit>(context).locale;
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: kToolbarHeight * 1.1,
+        bottom: PreferredSize(preferredSize: Size(ScreenSizing.width, 1), child: const Divider()),
+        backgroundColor: Colors.white,
+        title: BlocBuilder<VendorStatsCubit, VendorStatsState>(
+          builder: (context, state) {
+            var order = context.read<VendorStatsCubit>().selectedOrder;
+            return Text(
+              "${S.of(context).order} ${order?.orderNumber ?? ''}",
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+            );
+          },
+        ),
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.canPop(context) ? Navigator.pop(context) : null;
+          },
+          icon: const Icon(Icons.arrow_back_ios_rounded),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              // Navigator.canPop(context) ? Navigator.pop(context) : null;
+            },
+            icon: const Icon(Icons.more_vert_sharp),
+          ),
+        ],
+        centerTitle: true,
+      ),
+      body: Container(
+        height: ScreenSizing.height,
+        width: ScreenSizing.width,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                constraints: const BoxConstraints(minHeight: 150),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey[200]!),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(S.of(context).products),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    BlocBuilder<VendorStatsCubit, VendorStatsState>(
+                      builder: (context, state) {
+                        var order = context.read<VendorStatsCubit>().selectedOrder;
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: Container(
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
+                            height: 40,
+                            child: ListView.separated(
+                              itemBuilder: (context, index) {
+                                int selectedProductIndex = context.read<VendorStatsCubit>().selectedProductIndex;
+                                return selectedProductIndex == index
+                                    ? SelectedTile(
+                                        onTap: null,
+                                        title: '${index + 1}',
+                                      )
+                                    : UnSelectedTile(
+                                        onTap: () {
+                                          context.read<VendorStatsCubit>().setSelectedProductIndex(index);
+                                        },
+                                        title: '${index + 1}',
+                                      );
+                              },
+                              separatorBuilder: (context, index) => const SizedBox(
+                                width: 10,
+                              ),
+                              itemCount: order?.items?.length ?? 0,
+                              scrollDirection: Axis.horizontal,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    BlocBuilder<VendorStatsCubit, VendorStatsState>(
+                      builder: (context, state) {
+                        var order = context.read<VendorStatsCubit>().selectedOrder;
+                        int selectedProductIndex = context.read<VendorStatsCubit>().selectedProductIndex;
+                        var selectedItem = order?.items?[selectedProductIndex];
+                        var itemColor = selectedItem?.productVariant?.variantValues?.firstWhere((element) => element.variantAttribute?.type == 'color',orElse: () => VariantValues(id: '-1'),);
+                        var itemSize = selectedItem?.productVariant?.variantValues?.firstWhere((element) => element.variantAttribute?.type == 'select' ,orElse: () => VariantValues(id: '-1'),);
+                        itemColor = itemColor?.id != '-1' ? itemColor : null;
+                        itemSize = itemSize?.id != '-1' ? itemSize : null;
+                        return Column(
+                          children: [
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            SizedBox(
+                              height: 350,
+                              width: ScreenSizing.width,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: CarouselView(itemSnapping: true, padding: const EdgeInsets.symmetric(horizontal: 10), itemExtent: ScreenSizing.width, children: [
+                                  for (int i = 0; i < (selectedItem?.product?.images?.length ?? 0); i++)
+                                    InstaImageViewer(
+                                      child: SizedBox(
+                                        height: 140,
+                                        child: CachedNetworkImage(
+                                          imageUrl: selectedItem?.product?.images?[i].url??'',
+                                          fit: BoxFit.cover,
+                                          placeholder: (context, url) => const Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                          errorWidget: (context, url, error) => Image.asset(
+                                            Assets.imagesProductPlaceholder2,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                ]),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            ItemDetailsWidget(
+                              productName: locale == 'ar' ? (selectedItem?.product?.nameArabic ?? '') : (selectedItem?.product?.nameGerman ?? ''),
+                              quantity: selectedItem?.quantity.toString(),
+                              productPrice: selectedItem?.unitPrice,
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            ItemDetailsWidget(
+                              productName: S.of(context).cost,
+                              quantity: selectedItem?.quantity.toString(),
+                              productPrice: ((double.tryParse(selectedItem?.productVariant?.cost??'0')??0) * (int.tryParse(selectedItem?.quantity ?? '0')??0)).toString(),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              children: [
+                                Text(S.of(context).color),
+                                const Spacer(),
+                                CircleAvatar(
+                                  radius: 15,
+                                  backgroundColor:  Color(int.tryParse(((itemColor?.value?.contains('#')??false)?itemColor?.value?.replaceFirst('#', '0xff'):itemColor?.value)??'0xff000000')??0xff000000),
+                                )
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              children: [
+                                Text(S.of(context).size),
+                                const Spacer(),
+                                Container(
+                                  height: 40,
+                                  width: 90,
+                                  padding: const EdgeInsets.all(1),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    gradient: const LinearGradient(colors: [
+                                      Color(0xff5BB5EF),
+                                      Color(0xff3084C2),
+                                    ]),
+                                  ),
+                                  child: Container(
+                                    height: 40,
+                                    width: 90,
+                                    padding: const EdgeInsets.all(1),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(9),
+                                      color: Colors.white,
+                                    ),
+                                    child:  Center(
+                                      child: Text(itemSize.value??'Size'),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                BlocBuilder<VendorStatsCubit, VendorStatsState>(
+                                  builder: (context, state) {
+                                    return Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          S.of(context).status,
+                                          style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
+                                        ),
+                                        const Spacer(),
+                                        ////////////////////////////////////////////////////////////////////////////////////////////////////
+                                        StatusButton(selectedItem: selectedItem,),
+                                      ],
+                                    );
+                                  },
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                              ],
+                            )
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                constraints: const BoxConstraints(minHeight: 60),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey[200]!),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    BlocBuilder<VendorStatsCubit, VendorStatsState>(
+                      builder: (context, state) {
+                        int selectedProductIndex = context.read<VendorStatsCubit>().selectedProductIndex;
+                        var order = context.read<VendorStatsCubit>().selectedOrder;
+                        var selectedItem = order?.items?[selectedProductIndex];
+                        return TotalsWidget(
+                          total: order?.finalPrice,
+                        );
+                      },
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    BlocBuilder<VendorStatsCubit, VendorStatsState>(
+                      builder: (context, state) {
+                        int selectedProductIndex = context.read<VendorStatsCubit>().selectedProductIndex;
+                        var order = context.read<VendorStatsCubit>().selectedOrder;
+                        var selectedItem = order?.items?[selectedProductIndex];
+                        String formattedDate = dateFormatter.format(DateTime.tryParse(order?.createdAt ?? '') ?? DateTime.now());
+                        return Row(
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.access_time_outlined,
+                                  size: 20,
+                                  color: Colors.grey,
+                                ),
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  (formattedDate),
+                                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                            const Spacer(),
+                            Row(
+                              children: [
+                                Image.asset(
+                                  Assets.imagesSuccessPayment1,
+                                  width: 20,
+                                ),
+                                Text(
+                                  'الدفع عند الاستلام',
+                                  style: TextStyle(fontWeight: FontWeight.w600, color: Constants.mainColor),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Divider(
+                      color: Colors.grey[400],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    BlocBuilder<VendorStatsCubit, VendorStatsState>(
+                      builder: (context, state) {
+                        int selectedProductIndex = context.read<VendorStatsCubit>().selectedProductIndex;
+                        var order = context.read<VendorStatsCubit>().selectedOrder;
+                        var selectedItem = order?.items?[selectedProductIndex];
+                        return Row(
+                          children: [
+                            Text(
+                              S.of(context).customer_name,
+                              style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
+                            ),
+                            const Spacer(),
+                            Row(
+                              children: [
+                                Text(
+                                  order?.user?.name ?? 'xxxxxxxxxx',
+                                  style: const TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    BlocBuilder<VendorStatsCubit, VendorStatsState>(
+                      builder: (context, state) {
+                        int selectedProductIndex = context.read<VendorStatsCubit>().selectedProductIndex;
+                        var order = context.read<VendorStatsCubit>().selectedOrder;
+                        var selectedItem = order?.items?[selectedProductIndex];
+                        return Row(
+                          children: [
+                            Text(
+                              S.of(context).address,
+                              style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
+                            ),
+                            const Spacer(),
+                            Row(
+                              children: [
+                                Text(
+                                  order?.address?.address ?? 'xxxxxxxxxx',
+                                  style: const TextStyle(fontWeight: FontWeight.w600),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    BlocBuilder<VendorStatsCubit, VendorStatsState>(
+                      builder: (context, state) {
+                        int selectedProductIndex = context.read<VendorStatsCubit>().selectedProductIndex;
+                        var order = context.read<VendorStatsCubit>().selectedOrder;
+                        var selectedItem = order?.items?[selectedProductIndex];
+                        return Row(
+                          children: [
+                            Text(
+                              S.of(context).email,
+                              style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
+                            ),
+                            Expanded(
+                              child: Text(
+                                order?.user?.email ?? 'xxxxxxxxxx',
+                                style: const TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              // Container(
+              //   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              //   constraints: const BoxConstraints(minHeight: 60),
+              //   decoration: BoxDecoration(
+              //     borderRadius: BorderRadius.circular(10),
+              //     border: Border.all(color: Colors.grey[200]!),
+              //   ),
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.stretch,
+              //     children: [
+              //       BlocBuilder<VendorStatsCubit, VendorStatsState>(
+              //         builder: (context, state) {
+              //           int selectedProductIndex = context.read<VendorStatsCubit>().selectedProductIndex;
+              //           var order = context.read<VendorStatsCubit>().selectedOrder;
+              //           var selectedItem = order?.items?[selectedProductIndex];
+              //           return Row(
+              //             crossAxisAlignment: CrossAxisAlignment.center,
+              //             children: [
+              //               Text(
+              //                 S.of(context).status,
+              //                 style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
+              //               ),
+              //               const Spacer(),
+              //               InkWell(
+              //                 onTap: () {
+              //                   String token = context.read<LoginCubit>().vendorData?.data?.token ?? '';
+              //                   context.read<VendorStatsCubit>().changeOrderStatus(
+              //                         token: token,
+              //                         id: order?.id.toString() ?? '',
+              //                         status: order?.orderStatus ?? '',
+              //                       );
+              //                 },
+              //                 child: Container(
+              //                   constraints: const BoxConstraints(minHeight: 40, minWidth: 90),
+              //                   decoration: BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.circular(10)),
+              //                   child: Center(
+              //                     child: Text(
+              //                       order?.orderStatus ?? '',
+              //                       style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              //                     ),
+              //                   ),
+              //                 ),
+              //               )
+              //             ],
+              //           );
+              //         },
+              //       ),
+              //       const SizedBox(
+              //         height: 5,
+              //       ),
+              //       BlocBuilder<VendorStatsCubit, VendorStatsState>(
+              //         builder: (context, state) {
+              //           var order = context.read<VendorStatsCubit>().selectedOrder;
+              //           return Row(
+              //             children: [
+              //               Text(
+              //                 S.of(context).delivery_time,
+              //                 style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
+              //               ),
+              //               const Spacer(),
+              //               Container(
+              //                 constraints: const BoxConstraints(minHeight: 40, minWidth: 90),
+              //                 child: const Center(
+              //                   child: Text(
+              //                     '20 دقيقة',
+              //                     style: TextStyle(
+              //                       fontWeight: FontWeight.w500,
+              //                       fontSize: 16,
+              //                     ),
+              //                   ),
+              //                 ),
+              //               ),
+              //             ],
+              //           );
+              //         },
+              //       ),
+              //     ],
+              //   ),
+              // ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TotalsWidget extends StatelessWidget {
+  const TotalsWidget({
+    super.key,
+    this.total,
+  });
+
+  final String? total;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Icon(
+          Icons.currency_exchange,
+          size: 18,
+        ),
+        const SizedBox(
+          width: 5,
+        ),
+        Text(
+          S.of(context).total,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        Expanded(
+          child: Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: Text(
+              'EUR ${total ?? "xxx"}',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
+class StatusButton extends StatelessWidget {
+  StatusButton({super.key, this.selectedItem});
+  final GlobalKey _buttonKey = GlobalKey();
+  final selectedItem;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      key: _buttonKey, // Assign the GlobalKey to the InkWell
+      onTap: () {
+        // Get the render box of the button
+        final RenderBox renderBox = _buttonKey.currentContext?.findRenderObject() as RenderBox;
+        // Get the position of the button
+        final Offset buttonPosition = renderBox.localToGlobal(Offset.zero);
+
+        // Calculate the position for the menu
+        final RelativeRect position = RelativeRect.fromLTRB(
+          buttonPosition.dx, // Left
+          buttonPosition.dy + renderBox.size.height, // Top
+          buttonPosition.dx + renderBox.size.width, // Right
+          buttonPosition.dy, // Bottom
+        );
+
+        showMenu(
+          context: context,
+          position: position, // Use the calculated position
+          items: [
+            ...Constants.orderItemStatus.map(
+                  (e) => PopupMenuItem(
+                child: Text(e),
+                onTap: () async {
+                  String token = BlocProvider.of<LoginCubit>(context).vendorData?.data?.token ?? '';
+                  var res = await context.read<VendorStatsCubit>().changeOrderStatus(
+                    token: token,
+                    id: selectedItem?.id.toString() ?? '',
+                    status: e,
+                  );
+                  if (res == null) {
+                    context.read<VendorStatsCubit>().getOrders(token: token);
+                    Navigator.canPop(context)?Navigator.pop(context):null;
+                  }
+                },
+              ),
+            ),
+          ],
+        );
+      },
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 40, minWidth: 90),
+        decoration: BoxDecoration(
+          color: Color(Constants.orderItemStatusColors[selectedItem?.status ?? ''] ?? 0xffF0A440),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: Text(
+            selectedItem?.status ?? '',
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ItemDetailsWidget extends StatelessWidget {
+  const ItemDetailsWidget({
+    super.key,
+    this.productName,
+    this.productPrice,
+    this.quantity,
+  });
+
+  final String? productName;
+  final String? productPrice;
+  final String? quantity;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(productName ?? 'إسم المنتج'),
+          ),
+          SizedBox(
+              width: 50,
+              child: Center(
+                  child: Text(
+                '${quantity ?? 1}x',
+                overflow: TextOverflow.ellipsis,
+              ))),
+          SizedBox(
+              width: 120,
+              child: Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: Text(
+                    'EUR ${(productPrice ?? 'xxx') + ''}',
+                    overflow: TextOverflow.ellipsis,
+                  ))),
+        ],
+      ),
+    );
+  }
+}
+
+class SelectedTile extends StatelessWidget {
+  const SelectedTile({
+    super.key,
+    required this.onTap,
+    required this.title,
+  });
+
+  final String title;
+  final void Function()? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      radius: 15,
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        height: 50,
+        constraints: const BoxConstraints(minWidth: 80),
+        decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xff3084C2),
+                Color(0xff5BB5EF),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(15)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.w600),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class UnSelectedTile extends StatelessWidget {
+  const UnSelectedTile({
+    super.key,
+    required this.onTap,
+    required this.title,
+  });
+
+  final String title;
+  final void Function()? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      radius: 15,
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        height: 50,
+        constraints: const BoxConstraints(minWidth: 80),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(
+            color: Colors.grey[300]!,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontSize: 17, color: Color(0xff5BB5EF)),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}

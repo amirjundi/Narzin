@@ -1,0 +1,131 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:narzin/bussiness_logic/login_cubits/login_cubit.dart';
+import 'package:narzin/bussiness_logic/product_cubits/product_cubit.dart';
+import 'package:narzin/core/screen_sizing_constants.dart';
+import 'package:narzin/generated/assets.dart';
+import 'package:narzin/generated/l10n.dart';
+import 'package:narzin/widgets/buttons/custom_main_buttons.dart';
+import 'package:narzin/widgets/text_form_fields/custom_text_form_field.dart';
+
+class AddReviewScreen extends StatelessWidget {
+  const AddReviewScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: kToolbarHeight * 1.1,
+        bottom: PreferredSize(preferredSize: Size(ScreenSizing.width, 0.1), child: const Divider()),
+        backgroundColor: Colors.white,
+        leading: IconButton(
+            onPressed: () {
+              Navigator.canPop(context) ? Navigator.pop(context) : null;
+            },
+            icon: const Icon(Icons.arrow_back_ios_rounded)),
+        title: Text(
+          S.of(context).add_review,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            onPressed: () {
+              // Navigator.canPop(context) ? Navigator.pop(context) : null;
+            },
+            icon: const Icon(Icons.more_vert_sharp),
+          ),
+        ],
+        centerTitle: true,
+      ),
+      body: BlocBuilder<ProductsCubit, ProductsState>(
+        builder: (context, state) {
+          return Container(
+            height: ScreenSizing.height,
+            width: ScreenSizing.width,
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CustomDescFormField(
+                    title: S.of(context).add_comment,
+                    hint: S.of(context).add_comment,
+                    controller: context.read<ProductsCubit>().comment,
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Text(
+                    S.of(context).rating,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      RatingBar.builder(
+                        itemSize: 40,
+                        initialRating: 0,
+                        allowHalfRating: true,
+                        glow: true,
+                        itemCount: 5,
+                        itemPadding: const EdgeInsets.symmetric(horizontal: 5),
+                        itemBuilder: (context, index) {
+                          return SvgPicture.asset(Assets.appIconsRating);
+                        },
+                        onRatingUpdate: (double value) {
+                          context.read<ProductsCubit>().rating = value;
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+      bottomNavigationBar: BlocBuilder<ProductsCubit, ProductsState>(
+        builder: (context, state) {
+          bool isLoading = context.read<ProductsCubit>().isLoading;
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+            child: CustomSignIn_UpOne(
+              title: S.of(context).add_review,
+              customizeChild: isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text(
+                      S.of(context).add_review,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+              ontap:isLoading? null: () async {
+                await context.read<ProductsCubit>().addProductReview(
+                      token: BlocProvider.of<LoginCubit>(context).loginModel?.data?.token ?? '',
+                      productId: context.read<ProductsCubit>().singleProduct?.data?.id ?? "0",
+                    );
+                context.read<ProductsCubit>().getProductReviews(token: BlocProvider.of<LoginCubit>(context).loginModel?.data?.token ?? '',
+                  productId: context.read<ProductsCubit>().singleProduct?.data?.id ?? "0",);
+                context.read<ProductsCubit>().resetReviewForm();
+                Navigator.canPop(context)? Navigator.pop(context):null;
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
