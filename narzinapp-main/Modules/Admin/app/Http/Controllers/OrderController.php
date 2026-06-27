@@ -463,6 +463,12 @@ class OrderController extends Controller
                 'notes' => ($order->notes ?? '') . ' | Refunded by admin: ' . ($request->reason ?? 'No reason provided')
             ]);
 
+            $order->load('items');
+            $ledger = new \Modules\Vendor\Services\VendorLedgerService();
+            foreach ($order->items as $orderItem) {
+                $ledger->reverseEarning($orderItem);
+            }
+
             // Log audit
             OrderAudit::create([
                 'order_id' => $order->id,

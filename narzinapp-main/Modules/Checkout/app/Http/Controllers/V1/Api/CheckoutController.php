@@ -276,6 +276,8 @@ class CheckoutController extends Controller
                 ]);
 
                 // Create order items (with markup baked into the price)
+                $resolver = new VendorRateResolver();
+                $calc = new VendorEarningCalculator();
                 foreach ($cartItems as $item) {
                     $vendor = $item->product->vendor ?? null;
                     $markup = ($vendor && $vendor->markup_percentage !== null)
@@ -286,8 +288,6 @@ class CheckoutController extends Controller
                     $markedUpUnitPrice = $basePrice * (1 + $markup / 100);
                     $itemSubtotal = $markedUpUnitPrice * $item->quantity;
 
-                    $resolver = new VendorRateResolver();
-                    $calc = new VendorEarningCalculator();
                     $earning = $calc->compute(
                         (float) $basePrice,
                         (int) $item->quantity,
@@ -936,6 +936,12 @@ class CheckoutController extends Controller
                 'data' => ['stock_refilled' => $stockRefilled],
                 'notes' => 'Order cancelled by user, stock released'
             ]);
+
+            $order->load('items');
+            $ledger = new \Modules\Vendor\Services\VendorLedgerService();
+            foreach ($order->items as $orderItem) {
+                $ledger->reverseEarning($orderItem);
+            }
 
         } elseif ($order->order_status === 'completed') {
             $order->order_status = 'returned';
