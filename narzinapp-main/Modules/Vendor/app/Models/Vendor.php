@@ -30,6 +30,8 @@ class Vendor extends Model
         'is_active',
         'status',
         'markup_percentage',
+        'commission_percentage',
+        'discount_absorption_percentage',
         'exchange_rate',
     ];
 
