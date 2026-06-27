@@ -18,6 +18,8 @@ return new class extends Migration {
             $table->unsignedBigInteger('created_by')->nullable();
             $table->timestamps();
             $table->foreign('vendor_id')->references('id')->on('vendors')->onDelete('cascade');
+            $table->unique(['order_item_id', 'type']);
+            $table->foreign('payout_id')->references('id')->on('vendor_payouts')->onDelete('set null');
         });
     }
 

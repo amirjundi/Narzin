@@ -92,4 +92,22 @@ class VendorLedgerServiceTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $svc->recordPayout($vendor->id, 999.0, 'bank', 'REF2', null, null); // over balance
     }
+
+    public function test_payout_rejects_non_positive_amount(): void
+    {
+        $svc = new VendorLedgerService();
+        $vendor = $this->vendor();
+
+        $this->expectException(\InvalidArgumentException::class);
+        $svc->recordPayout($vendor->id, 0, 'bank', null, null, null);
+    }
+
+    public function test_pending_earnings_counts_non_collected_items(): void
+    {
+        $svc = new VendorLedgerService();
+        $vendor = $this->vendor();
+        $this->orderItem($vendor, 30.0, 'pending');
+
+        $this->assertSame(30.0, $svc->pendingEarnings($vendor->id));
+    }
 }

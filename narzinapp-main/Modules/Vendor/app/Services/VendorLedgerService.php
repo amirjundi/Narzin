@@ -18,13 +18,17 @@ class VendorLedgerService
         if ($exists) {
             return; // idempotent
         }
-        VendorTransaction::create([
-            'vendor_id' => $item->vendor_id,
-            'type' => 'earning',
-            'amount' => (float) $item->vendor_earning,
-            'order_item_id' => $item->id,
-            'description' => 'Earning for order item #' . $item->id,
-        ]);
+        try {
+            VendorTransaction::create([
+                'vendor_id' => $item->vendor_id,
+                'type' => 'earning',
+                'amount' => (float) $item->vendor_earning,
+                'order_item_id' => $item->id,
+                'description' => 'Earning for order item #' . $item->id,
+            ]);
+        } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+            // already credited by a concurrent request — safe to ignore
+        }
     }
 
     public function reverseEarning(OrderItem $item): void
@@ -37,13 +41,17 @@ class VendorLedgerService
         if ($alreadyReversed) {
             return;
         }
-        VendorTransaction::create([
-            'vendor_id' => $earning->vendor_id,
-            'type' => 'reversal',
-            'amount' => -1 * (float) $earning->amount,
-            'order_item_id' => $item->id,
-            'description' => 'Reversal for order item #' . $item->id,
-        ]);
+        try {
+            VendorTransaction::create([
+                'vendor_id' => $earning->vendor_id,
+                'type' => 'reversal',
+                'amount' => -1 * (float) $earning->amount,
+                'order_item_id' => $item->id,
+                'description' => 'Reversal for order item #' . $item->id,
+            ]);
+        } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+            // already reversed by a concurrent request — safe to ignore
+        }
     }
 
     public function recordPayout(int $vendorId, float $amount, ?string $method, ?string $reference, ?string $notes, ?int $adminId): VendorPayout
@@ -51,7 +59,7 @@ class VendorLedgerService
         if ($amount <= 0) {
             throw new \InvalidArgumentException('Payout amount must be positive.');
         }
-        if ($amount > $this->payableBalance($vendorId) + 0.001) {
+        if (round($amount, 2) > round($this->payableBalance($vendorId), 2)) {
             throw new \InvalidArgumentException('Payout exceeds the payable balance.');
         }
 
