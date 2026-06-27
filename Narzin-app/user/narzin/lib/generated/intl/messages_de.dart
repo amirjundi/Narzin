@@ -478,6 +478,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "Einfaches und kreatives Interface: Sie benötigen nicht viel Zeit, um sich an die App zu gewöhnen. Die Benutzeroberfläche ist komfortabel und ansprechend gestaltet, sodass Sie problemlos die Gebete und Werkzeuge finden, die Sie benötigen.",
     ),
     "size": MessageLookupByLibrary.simpleMessage("Größe"),
+    "sizeGuide": MessageLookupByLibrary.simpleMessage("Größentabelle"),
+    "sizeLabel": MessageLookupByLibrary.simpleMessage("Größe"),
     "sizes": MessageLookupByLibrary.simpleMessage("Größe"),
     "skip": MessageLookupByLibrary.simpleMessage("Überspringen"),
     "sold_by": MessageLookupByLibrary.simpleMessage("Verkauft von"),

@@ -306,6 +306,10 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // NOTE: This intentionally persists base fields + size_chart only.
+        // Variant and image editing are NOT handled here yet (the method was
+        // previously an unimplemented stub). The edit form may submit variant/
+        // image data that is ignored. Tracked as a separate follow-up.
         $validator = Validator::make($request->all(), [
             'name_arabic' => 'sometimes|required|string|max:255',
             'name_german' => 'sometimes|required|string|max:255',
@@ -357,9 +361,10 @@ class ProductController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Admin product update failed', ['id' => $id, 'error' => $e->getMessage()]);
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update product: ' . $e->getMessage()
+                'message' => config('app.debug') ? 'Failed to update product: ' . $e->getMessage() : 'Failed to update product.'
             ], 500);
         }
     }

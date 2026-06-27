@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:narzin/generated/l10n.dart';
 import 'package:narzin/model_layer/single_product_model.dart';
 
 class SizeGuideWidget extends StatelessWidget {
@@ -16,14 +17,14 @@ class SizeGuideWidget extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Text('Size guide (${sc.unit})',
+          child: Text('${S.of(context).sizeGuide} (${sc.unit})',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
         ),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: DataTable(
             columns: [
-              const DataColumn(label: Text('Size')),
+              DataColumn(label: Text(S.of(context).sizeLabel)),
               ...sc.columns.map((c) => DataColumn(label: Text(c))),
             ],
             rows: sc.rows.map((r) {

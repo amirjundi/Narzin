@@ -448,6 +448,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "A simple and intuitive interface with a touch of creativity: You won’t need much time to get accustomed to the app, as the user interface is designed to be comfortable and appealing, making it easy to find the supplications and tools you need.",
     ),
     "size": MessageLookupByLibrary.simpleMessage("Size"),
+    "sizeGuide": MessageLookupByLibrary.simpleMessage("Size guide"),
+    "sizeLabel": MessageLookupByLibrary.simpleMessage("Size"),
     "sizes": MessageLookupByLibrary.simpleMessage("Size"),
     "skip": MessageLookupByLibrary.simpleMessage("Skip"),
     "sold_by": MessageLookupByLibrary.simpleMessage("Sold by"),

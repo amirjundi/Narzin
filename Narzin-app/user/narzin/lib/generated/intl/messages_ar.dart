@@ -428,6 +428,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "واجهة بسيطة وسلسة بلمسة من الإبداع: لن تحتاج إلى الكثير من الوقت لتعتاد على استخدام التطبيق، فواجهة الاستخدام مصممة لتكون مريحة وجذابة، بحيث تجد بسهولة الأذكار التي تحتاجها والأدوات المفضلة لديك دون عناء.",
     ),
     "size": MessageLookupByLibrary.simpleMessage("الحجم"),
+    "sizeGuide": MessageLookupByLibrary.simpleMessage("دليل المقاسات"),
+    "sizeLabel": MessageLookupByLibrary.simpleMessage("المقاس"),
     "sizes": MessageLookupByLibrary.simpleMessage("المقاس"),
     "skip": MessageLookupByLibrary.simpleMessage("تخطي"),
     "sold_by": MessageLookupByLibrary.simpleMessage("تم البيع من قبل"),

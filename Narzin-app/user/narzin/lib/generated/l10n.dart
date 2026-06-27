@@ -2334,6 +2334,16 @@ class S {
   String get deflt {
     return Intl.message('Default', name: 'deflt', desc: '', args: []);
   }
+
+  /// `Size guide`
+  String get sizeGuide {
+    return Intl.message('Size guide', name: 'sizeGuide', desc: '', args: []);
+  }
+
+  /// `Size`
+  String get sizeLabel {
+    return Intl.message('Size', name: 'sizeLabel', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

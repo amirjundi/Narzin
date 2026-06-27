@@ -283,5 +283,7 @@
   "title_hint": "z.B. Zuhause, Arbeit, Oma's Haus",
   "out_of_stock": "Ausverkauft",
   "TaxDetail": "Die Steuer wird bei der Buchung detailliert berechnet.",
-  "deflt": "Standard"
+  "deflt": "Standard",
+  "sizeGuide": "Größentabelle",
+  "sizeLabel": "Größe"
 }

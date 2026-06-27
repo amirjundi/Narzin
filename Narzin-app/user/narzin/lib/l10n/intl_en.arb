@@ -289,5 +289,7 @@
   "title_hint": "e.g. Home, Work, Grandma's House",
   "out_of_stock": "Out of Stock",
   "TaxDetail": "The tax is calculated in detail at the time of booking.",
-  "deflt": "Default"
+  "deflt": "Default",
+  "sizeGuide": "Size guide",
+  "sizeLabel": "Size"
 }
