@@ -14,6 +14,7 @@ import {
 
 import ProductsSection from "../components/pages/home/ProductsSection";
 import FullDescription from "../components/pages/singleProduct/FullDescription";
+import SizeGuide from "../components/pages/singleProduct/SizeGuide";
 import Reviews from "../components/pages/singleProduct/Reviews";
 import SellerInfo from "../components/pages/singleProduct/SellerInfo";
 import { useDispatch, useSelector } from "react-redux";
@@ -665,6 +666,7 @@ return (
         </div>
         <div className="space-y-6">
           <FullDescription data={singleProduct} />
+          <SizeGuide sizeChart={singleProduct?.size_chart} />
         </div>
       </div>
       
