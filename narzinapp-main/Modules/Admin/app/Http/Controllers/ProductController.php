@@ -76,6 +76,13 @@ class ProductController extends Controller
             'product_images' => 'required|array|min:1',
             'product_images.*.image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'product_images.*.color' => 'nullable|string',
+            'size_chart' => 'nullable|array',
+            'size_chart.columns' => 'nullable|array',
+            'size_chart.columns.*' => 'required|string|max:50',
+            'size_chart.rows' => 'nullable|array',
+            'size_chart.rows.*.size' => 'required|string|max:50',
+            'size_chart.rows.*.values' => 'nullable|array',
+            'size_chart.rows.*.values.*' => 'nullable|numeric|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -103,6 +110,9 @@ class ProductController extends Controller
                 'weight' => $request->weight ?? 0,
                 'is_active' => $request->boolean('is_active', true),
             ]);
+
+            $product->size_chart = $this->normalizeSizeChart($request->input('size_chart'));
+            $product->save();
 
             // Handle product images
             if ($request->has('product_images')) {
@@ -236,6 +246,37 @@ class ProductController extends Controller
     }
 
     /**
+     * Normalize and validate the size chart input.
+     * Forces unit to 'cm', casts values to float, and returns null when empty.
+     */
+    private function normalizeSizeChart(?array $input): ?array
+    {
+        if (!$input) {
+            return null;
+        }
+        $columns = array_values(array_unique(array_filter(
+            array_map('trim', $input['columns'] ?? [])
+        )));
+        $rows = [];
+        foreach ($input['rows'] ?? [] as $row) {
+            $size = trim($row['size'] ?? '');
+            if ($size === '') {
+                continue;
+            }
+            $values = [];
+            foreach ($columns as $col) {
+                $v = $row['values'][$col] ?? null;
+                $values[$col] = ($v === null || $v === '') ? null : (float) $v;
+            }
+            $rows[] = ['size' => $size, 'values' => $values];
+        }
+        if (empty($columns) || empty($rows)) {
+            return null;
+        }
+        return ['unit' => 'cm', 'columns' => $columns, 'rows' => $rows];
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit($id)
@@ -265,8 +306,62 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Similar to store but with update logic
-        // Will be implemented based on your needs
+        $validator = Validator::make($request->all(), [
+            'name_arabic' => 'sometimes|required|string|max:255',
+            'name_german' => 'sometimes|required|string|max:255',
+            'description_arabic' => 'nullable|string',
+            'description_german' => 'nullable|string',
+            'category_id' => 'sometimes|required|exists:categories,id',
+            'child_category_id' => 'nullable|exists:categories,id',
+            'vendor_id' => 'sometimes|required|exists:vendors,id',
+            'weight' => 'nullable|numeric|min:0',
+            'is_active' => 'boolean',
+            'size_chart' => 'nullable|array',
+            'size_chart.columns' => 'nullable|array',
+            'size_chart.columns.*' => 'required|string|max:50',
+            'size_chart.rows' => 'nullable|array',
+            'size_chart.rows.*.size' => 'required|string|max:50',
+            'size_chart.rows.*.values' => 'nullable|array',
+            'size_chart.rows.*.values.*' => 'nullable|numeric|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $product = Product::findOrFail($id);
+
+            $product->fill(array_filter([
+                'name_arabic' => $request->name_arabic,
+                'name_german' => $request->name_german,
+                'description_arabic' => $request->description_arabic,
+                'description_german' => $request->description_german,
+                'category_id' => $request->category_id,
+                'child_category_id' => $request->child_category_id,
+                'vendor_id' => $request->vendor_id,
+                'weight' => $request->weight,
+                'is_active' => $request->has('is_active') ? $request->boolean('is_active') : null,
+            ], fn($v) => $v !== null));
+
+            $product->size_chart = $this->normalizeSizeChart($request->input('size_chart'));
+            $product->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product updated successfully!',
+                'redirect' => route('products.show', $product->id)
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update product: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

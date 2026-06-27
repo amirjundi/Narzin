@@ -62,4 +62,25 @@ class ProductSizeChartTest extends TestCase
 
         $this->assertNull(Product::find($product->id)->size_chart);
     }
+
+    public function test_normalize_forces_cm_and_nulls_empty(): void
+    {
+        $c = new \Modules\Admin\Http\Controllers\ProductController();
+        $m = new \ReflectionMethod($c, 'normalizeSizeChart');
+        $m->setAccessible(true);
+
+        // empty -> null
+        $this->assertNull($m->invoke($c, null));
+        $this->assertNull($m->invoke($c, ['columns' => [], 'rows' => []]));
+
+        // valid -> unit forced to cm
+        $out = $m->invoke($c, [
+            'unit' => 'inches',
+            'columns' => ['Shoulder'],
+            'rows' => [['size' => 'S', 'values' => ['Shoulder' => '42.5']]],
+        ]);
+        $this->assertSame('cm', $out['unit']);
+        $this->assertSame(['Shoulder'], $out['columns']);
+        $this->assertSame(42.5, $out['rows'][0]['values']['Shoulder']);
+    }
 }
