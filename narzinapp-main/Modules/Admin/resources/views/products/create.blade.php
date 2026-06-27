@@ -200,6 +200,53 @@
                             </div>
                         </div>
                     </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-lg font-semibold text-gray-800">Size guide (optional, cm)</h3>
+                            <button type="button" class="px-3 py-1 text-sm bg-blue-50 text-blue-700 rounded"
+                                    @click="addSizeColumn()">+ Measurement</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left p-2" style="min-width:90px">Size</th>
+                                        <template x-for="(col, ci) in sizeChartColumns" :key="ci">
+                                            <th class="p-2">
+                                                <input type="text" class="w-32 border rounded px-2 py-1"
+                                                       x-model="sizeChartColumns[ci]" placeholder="e.g. Shoulder">
+                                                <button type="button" class="text-red-500 text-xs ml-1"
+                                                        @click="removeSizeColumn(ci)">remove</button>
+                                            </th>
+                                        </template>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template x-for="(row, ri) in sizeChartRows" :key="ri">
+                                        <tr>
+                                            <td class="p-2">
+                                                <input type="text" class="w-24 border rounded px-2 py-1"
+                                                       x-model="row.size" placeholder="e.g. M">
+                                            </td>
+                                            <template x-for="(col, ci) in sizeChartColumns" :key="ci">
+                                                <td class="p-2">
+                                                    <input type="number" step="0.1" min="0"
+                                                           class="w-24 border rounded px-2 py-1"
+                                                           x-model="row.values[col]">
+                                                </td>
+                                            </template>
+                                            <td class="p-2">
+                                                <button type="button" class="text-red-500"
+                                                        @click="removeSizeRow(ri)">×</button>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="mt-2 px-3 py-1 text-sm bg-gray-100 rounded"
+                                @click="addSizeRow()">+ Size row</button>
+                    </div>
                 </div>
 
                 <!-- Step 2: Product Images -->
@@ -831,6 +878,9 @@
                     is_active: true
                 },
 
+                sizeChartColumns: [],
+                sizeChartRows: [],
+
                 // Categories data
                 categories: @json($categories),
                 subCategories: [],
@@ -1107,6 +1157,15 @@
                     return vendor ? `${vendor.store_name_in_arabic} / ${vendor.store_name_in_german}` : '';
                 },
 
+                addSizeColumn() { this.sizeChartColumns.push(''); },
+                removeSizeColumn(ci) {
+                    const name = this.sizeChartColumns[ci];
+                    this.sizeChartColumns.splice(ci, 1);
+                    this.sizeChartRows.forEach(r => { delete r.values[name]; });
+                },
+                addSizeRow() { this.sizeChartRows.push({ size: '', values: {} }); },
+                removeSizeRow(ri) { this.sizeChartRows.splice(ri, 1); },
+
                 // Form submission
                 async submitForm() {
                     this.validateAll();
@@ -1165,6 +1224,20 @@
                                     formData.append(`variants[${vi}][attributes][${ai}][value]`, this.convertColorToFlutter(attr.value));
                                 } else {
                                     formData.append(`variants[${vi}][attributes][${ai}][value]`, attr.value);
+                                }
+                            });
+                        });
+
+                        this.sizeChartColumns.forEach((col, ci) => {
+                            if (col) formData.append(`size_chart[columns][${ci}]`, col);
+                        });
+                        this.sizeChartRows.forEach((row, ri) => {
+                            if (!row.size) return;
+                            formData.append(`size_chart[rows][${ri}][size]`, row.size);
+                            this.sizeChartColumns.forEach((col) => {
+                                const v = row.values ? row.values[col] : undefined;
+                                if (v !== undefined && v !== '' && v !== null) {
+                                    formData.append(`size_chart[rows][${ri}][values][${col}]`, v);
                                 }
                             });
                         });
