@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\ProductManagement\Models\Category;
 use Modules\ProductManagement\Models\Product;
 use Tests\TestCase;
 
@@ -19,6 +20,17 @@ class ProductSizeChartTest extends TestCase
         ],
     ];
 
+    /** Create a real category so the products.category_id foreign key is satisfied. */
+    private function categoryId(): int
+    {
+        return Category::create([
+            'name_arabic' => 'تصنيف',
+            'name_german' => 'Kategorie',
+            'slug_arabic' => 'cat-ar-' . uniqid(),
+            'slug_german' => 'cat-de-' . uniqid(),
+        ])->id;
+    }
+
     public function test_product_persists_and_casts_size_chart(): void
     {
         $product = Product::create([
@@ -26,7 +38,7 @@ class ProductSizeChartTest extends TestCase
             'name_german' => 'Hemd',
             'slug_arabic' => 'qamis-' . uniqid(),
             'slug_german' => 'hemd-' . uniqid(),
-            'category_id' => 1,
+            'category_id' => $this->categoryId(),
             'is_active' => true,
             'size_chart' => $this->chart,
         ]);
@@ -44,7 +56,7 @@ class ProductSizeChartTest extends TestCase
             'name_german' => 'Schuh',
             'slug_arabic' => 'hidaa-' . uniqid(),
             'slug_german' => 'schuh-' . uniqid(),
-            'category_id' => 1,
+            'category_id' => $this->categoryId(),
             'is_active' => true,
         ]);
 
