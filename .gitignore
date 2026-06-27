@@ -11,6 +11,9 @@
 narzinapp-main/storage/*.key
 narzinapp-main/public/storage
 narzinapp-main/public/build/
+# Laravel vendor-publish output (regenerated; the server keeps its own copy)
+narzinapp-main/public/vendor/
+narzinapp-main/resources/views/vendor/
 
 # ── Node / web build ──────────────────────────────────
 **/node_modules/
