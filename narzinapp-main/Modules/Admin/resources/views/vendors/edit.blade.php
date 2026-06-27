@@ -100,6 +100,20 @@
                 'width' => 'half',
                 'value' => old('exchange_rate', $vendor?->exchange_rate ?? '')
             ],
+            [
+                'name' => 'commission_percentage',
+                'label' => 'Commission % Override (Leave empty for global default)',
+                'type' => 'number',
+                'width' => 'half',
+                'value' => old('commission_percentage', $vendor?->commission_percentage ?? '')
+            ],
+            [
+                'name' => 'discount_absorption_percentage',
+                'label' => 'Discount Absorption % Override (Leave empty for global default)',
+                'type' => 'number',
+                'width' => 'half',
+                'value' => old('discount_absorption_percentage', $vendor?->discount_absorption_percentage ?? '')
+            ],
         ];
     @endphp
 

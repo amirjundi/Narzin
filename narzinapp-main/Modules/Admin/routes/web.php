@@ -137,4 +137,11 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::get('/create', [PlatformMarkupController::class, 'create'])->name('create');
         Route::post('/', [PlatformMarkupController::class, 'store'])->name('store');
     });
+
+    Route::get('vendor-payouts', [\Modules\Admin\Http\Controllers\VendorPayoutController::class, 'index'])->name('vendor-payouts.index');
+    Route::get('vendor-payouts/settings', [\Modules\Admin\Http\Controllers\VendorPayoutController::class, 'settings'])->name('vendor-payouts.settings');
+    Route::post('vendor-payouts/settings', [\Modules\Admin\Http\Controllers\VendorPayoutController::class, 'saveSettings'])->name('vendor-payouts.settings.save');
+    Route::get('vendor-payouts/{vendor}', [\Modules\Admin\Http\Controllers\VendorPayoutController::class, 'show'])->name('vendor-payouts.show');
+    Route::post('vendor-payouts/{vendor}/payout', [\Modules\Admin\Http\Controllers\VendorPayoutController::class, 'payout'])->name('vendor-payouts.payout');
+    Route::post('vendor-payouts/{vendor}/adjust', [\Modules\Admin\Http\Controllers\VendorPayoutController::class, 'adjust'])->name('vendor-payouts.adjust');
 });

@@ -487,6 +487,8 @@ private function getMonthlyReports($vendorId)
                 'store_id' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
                 'markup_percentage' => 'nullable|numeric|min:0|max:100',
                 'exchange_rate' => 'nullable|numeric|min:0',
+                'commission_percentage' => 'nullable|numeric|min:0|max:100',
+                'discount_absorption_percentage' => 'nullable|numeric|min:0|max:100',
             ]);
 
             $vendor->update([
@@ -523,6 +525,8 @@ private function getMonthlyReports($vendorId)
                 'store_type' => $validated['Store_type'],
                 'markup_percentage' => $validated['markup_percentage'] ?: null,
                 'exchange_rate' => $validated['exchange_rate'] ?: null,
+                'commission_percentage' => $validated['commission_percentage'] ?: null,
+                'discount_absorption_percentage' => $validated['discount_absorption_percentage'] ?: null,
             ]);
 
             DB::commit();
