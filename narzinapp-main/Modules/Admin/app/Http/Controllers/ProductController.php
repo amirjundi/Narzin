@@ -306,10 +306,6 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // NOTE: This intentionally persists base fields + size_chart only.
-        // Variant and image editing are NOT handled here yet (the method was
-        // previously an unimplemented stub). The edit form may submit variant/
-        // image data that is ignored. Tracked as a separate follow-up.
         $validator = Validator::make($request->all(), [
             'name_arabic' => 'sometimes|required|string|max:255',
             'name_german' => 'sometimes|required|string|max:255',
@@ -320,6 +316,19 @@ class ProductController extends Controller
             'vendor_id' => 'sometimes|required|exists:vendors,id',
             'weight' => 'nullable|numeric|min:0',
             'is_active' => 'boolean',
+            'existing_variants' => 'nullable|array',
+            'existing_variants.*.price' => 'nullable|numeric|min:0',
+            'existing_variants.*.cost' => 'nullable|numeric|min:0',
+            'existing_variants.*.stock' => 'nullable|integer|min:0',
+            'existing_variants.*.tax' => 'nullable|integer|min:0|max:100',
+            'existing_variants.*.expiry_date' => 'nullable|date',
+            'existing_variants.*.expiry_days' => 'nullable|integer|min:0',
+            'new_variants' => 'nullable|array',
+            'new_variants.*.price' => 'required_with:new_variants|numeric|min:0',
+            'new_variants.*.stock' => 'required_with:new_variants|integer|min:0',
+            'new_variants.*.attributes' => 'nullable|array',
+            'new_images' => 'nullable|array',
+            'new_images.*.image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'size_chart' => 'nullable|array',
             'size_chart.columns' => 'nullable|array',
             'size_chart.columns.*' => 'required|string|max:50',
@@ -337,6 +346,8 @@ class ProductController extends Controller
         }
 
         try {
+            DB::beginTransaction();
+
             $product = Product::findOrFail($id);
 
             $product->fill(array_filter([
@@ -354,6 +365,116 @@ class ProductController extends Controller
             $product->size_chart = $this->normalizeSizeChart($request->input('size_chart'));
             $product->save();
 
+            // Update existing variants (keyed by variant id)
+            foreach ((array) $request->input('existing_variants', []) as $variantId => $data) {
+                $variant = ProductVariant::where('product_id', $product->id)->find($variantId);
+                if (!$variant) {
+                    continue;
+                }
+                if (isset($data['price']) && $data['price'] !== '') {
+                    $variant->price = $data['price'];
+                }
+                if (isset($data['cost']) && $data['cost'] !== '') {
+                    $variant->cost = $data['cost'];
+                }
+                if (isset($data['tax']) && $data['tax'] !== '') {
+                    $variant->tax = $data['tax'];
+                }
+                if (array_key_exists('expiry_date', $data)) {
+                    $variant->expiry_date = $data['expiry_date'] !== '' ? $data['expiry_date'] : null;
+                }
+                if (array_key_exists('expiry_days', $data)) {
+                    $variant->expiry_days = $data['expiry_days'] !== '' ? $data['expiry_days'] : null;
+                }
+                if (isset($data['stock']) && $data['stock'] !== '') {
+                    $variant->stock = $data['stock'];
+                    $variant->is_out_of_stock = $data['stock'] <= 0;
+                }
+                if (isset($data['is_active'])) {
+                    $variant->is_active = (bool) $data['is_active'];
+                }
+                $variant->save();
+            }
+
+            // Delete removed variants (+ their attribute values)
+            $deleteVariants = json_decode($request->input('delete_variants', '[]'), true) ?: [];
+            foreach ($deleteVariants as $vId) {
+                $variant = ProductVariant::where('product_id', $product->id)->find($vId);
+                if ($variant) {
+                    VariantValue::where('product_variants_id', $variant->id)->delete();
+                    $variant->delete();
+                }
+            }
+
+            // Add new variants (mirrors store())
+            foreach ((array) $request->input('new_variants', []) as $variantIndex => $variantData) {
+                $sku = $this->generateSKU($product->id, $variantIndex, $variantData);
+                $variant = ProductVariant::create([
+                    'product_id' => $product->id,
+                    'price' => $variantData['price'],
+                    'cost' => $variantData['cost'] ?? 0,
+                    'stock' => $variantData['stock'],
+                    'tax' => $variantData['tax'] ?? 0,
+                    'sku' => $sku,
+                    'expiry_date' => $variantData['expiry_date'] ?? null,
+                    'expiry_days' => $variantData['expiry_days'] ?? null,
+                    'color_tag_id' => $variantData['color_tag_id'] ?? null,
+                    'is_active' => true,
+                    'is_out_of_stock' => ($variantData['stock'] ?? 0) <= 0,
+                ]);
+
+                foreach (($variantData['attributes'] ?? []) as $attrIndex => $attribute) {
+                    $variantAttribute = VariantAttribute::find($attribute['attribute_id'] ?? null);
+                    if (!$variantAttribute) {
+                        continue;
+                    }
+                    $value = $attribute['value'] ?? null;
+                    // Pattern image upload (edit form sends it as pattern_file)
+                    foreach (['pattern_file', 'value'] as $fileKey) {
+                        if ($request->hasFile("new_variants.{$variantIndex}.attributes.{$attrIndex}.{$fileKey}")) {
+                            $value = $request->file("new_variants.{$variantIndex}.attributes.{$attrIndex}.{$fileKey}")
+                                ->store('products/images/patterns', 'public');
+                            break;
+                        }
+                    }
+                    if ($variantAttribute->type === 'color' && is_string($value) && $value !== '' && !str_starts_with($value, '0x')) {
+                        $value = $this->hexToFlutterColor($value);
+                    }
+                    VariantValue::create([
+                        'product_variants_id' => $variant->id,
+                        'variant_attribute_id' => $attribute['attribute_id'],
+                        'value' => $value,
+                    ]);
+                }
+            }
+
+            // Delete removed images (+ files)
+            $deleteImages = json_decode($request->input('delete_images', '[]'), true) ?: [];
+            foreach ($deleteImages as $imgId) {
+                // Bypass the 'image_url' global scope so $img->image is the raw
+                // storage path (the scope rewrites it to a full URL).
+                $img = ProductImage::withoutGlobalScope('image_url')
+                    ->where('product_id', $product->id)->find($imgId);
+                if ($img) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($img->image);
+                    $img->delete();
+                }
+            }
+
+            // Add new images
+            foreach ((array) $request->input('new_images', []) as $index => $imageData) {
+                if ($request->hasFile("new_images.{$index}.image")) {
+                    $path = $request->file("new_images.{$index}.image")->store('products/images', 'public');
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image' => $path,
+                        'color' => $request->input("new_images.{$index}.color"),
+                    ]);
+                }
+            }
+
+            DB::commit();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Product updated successfully!',
@@ -361,6 +482,7 @@ class ProductController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            DB::rollBack();
             \Illuminate\Support\Facades\Log::error('Admin product update failed', ['id' => $id, 'error' => $e->getMessage()]);
             return response()->json([
                 'success' => false,
