@@ -16,6 +16,7 @@ import 'package:narzin/presentation_layer/main_app_user/cart_screens/cart_screen
 import 'package:narzin/presentation_layer/main_app_user/products_screens/reviews_screen.dart';
 import 'package:narzin/presentation_layer/main_app_user/products_screens/vendor_products.dart';
 import 'package:narzin/widgets/app_infrastructure_widgets/product_item_widget.dart';
+import 'package:narzin/widgets/app_infrastructure_widgets/size_guide_widget.dart';
 import 'package:narzin/widgets/buttons/custom_main_buttons.dart';
 import 'package:narzin/widgets/image_widgets/insta_image_widget.dart';
 import 'package:narzin/widgets/text_form_fields/custom_text_form_field.dart';
@@ -176,6 +177,7 @@ class ProductDetailsScreen extends StatelessWidget {
                               const SizedBox(
                                 height: 30,
                               ),
+                              SizeGuideWidget(sizeChart: product.data?.sizeChart),
                               // ===== Colors Section =====
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,

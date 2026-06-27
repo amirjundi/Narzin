@@ -30,6 +30,7 @@ class Data {
   List<SingleProductVariants>? variants;
   List<SingleProductImages>? images;
   Category? category;
+  SizeChart? sizeChart;
 
   Data({
     this.id,
@@ -66,6 +67,7 @@ class Data {
     updatedAt = json['updated_at']?.toString();
     childCategoryId = json['child_category_id']?.toString();
     averageRating = json['average_rating']?.toString();
+    sizeChart = json['size_chart'] == null ? null : SizeChart.fromJson(Map<String, dynamic>.from(json['size_chart']));
 
     if (json['variants'] != null) {
       variants = <SingleProductVariants>[];
@@ -219,4 +221,30 @@ class Category {
     createdAt = json['created_at']?.toString();
     updatedAt = json['updated_at']?.toString();
   }
+}
+
+class SizeChart {
+  final String unit;
+  final List<String> columns;
+  final List<SizeRow> rows;
+
+  SizeChart({required this.unit, required this.columns, required this.rows});
+
+  factory SizeChart.fromJson(Map<String, dynamic> json) => SizeChart(
+        unit: json['unit'] ?? 'cm',
+        columns: List<String>.from(json['columns'] ?? const []),
+        rows: (json['rows'] as List? ?? const [])
+            .map((r) => SizeRow.fromJson(Map<String, dynamic>.from(r)))
+            .toList(),
+      );
+}
+
+class SizeRow {
+  final String size;
+  final Map<String, dynamic> values;
+  SizeRow({required this.size, required this.values});
+  factory SizeRow.fromJson(Map<String, dynamic> json) => SizeRow(
+        size: json['size'] ?? '',
+        values: Map<String, dynamic>.from(json['values'] ?? const {}),
+      );
 }
