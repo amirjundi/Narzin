@@ -1,0 +1,118 @@
+body{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+/* Auth */
+
+/* auth-styles.css */
+
+/* Shake animation for error states */
+.animate-shake {
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+  
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+  
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+
+/* Transition effects for field states */
+.transition-colors {
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Focus and error states for form fields */
+.input-error {
+  border-color: rgb(252, 165, 165) !important;
+  box-shadow: 0 0 0 1px rgb(248, 113, 113) !important;
+}
+
+.input-error:focus {
+  border-color: rgb(239, 68, 68) !important;
+  box-shadow: 0 0 0 2px rgb(254, 202, 202) !important;
+}
+
+/* Success indication for fields */
+.input-success {
+  border-color: rgb(167, 243, 208) !important;
+}
+
+.input-success:focus {
+  border-color: rgb(16, 185, 129) !important;
+  box-shadow: 0 0 0 2px rgb(209, 250, 229) !important;
+}
+
+/* Button transitions */
+.btn-primary {
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Error message fade in/out */
+.error-message {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s ease, max-height 0.3s ease;
+}
+
+.error-message.show {
+  opacity: 1;
+  max-height: 100px;
+}
+
+/* Form element focus state transitions */
+input:focus, 
+select:focus, 
+textarea:focus, 
+button:focus {
+  transition: all 0.2s ease-in-out;
+  outline: none;
+}
+
+/* Custom checkbox styles */
+.custom-checkbox {
+  position: relative;
+  height: 1rem;
+  width: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  transition: all 0.2s ease-in-out;
+}
+
+.custom-checkbox.checked {
+  background-color: #3084C2;
+  border-color: #3084C2;
+}
+
+.custom-checkbox.checked:after {
+  content: '';
+  position: absolute;
+  left: 0.3rem;
+  top: 0.1rem;
+  width: 0.3rem;
+  height: 0.6rem;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}

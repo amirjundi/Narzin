@@ -1,0 +1,44 @@
+# Deployment
+
+Monorepo layout:
+
+| Folder | What | Deploys to |
+|--------|------|------------|
+| `narzinapp-main/` | Laravel API | `admin.narzin.com` → `/var/www/Narzin/narzinapp-main/public` |
+| `narzin-main/` | React web | `narzin.com` → `/var/www/Narzin/narzin-main/dist` |
+| `Narzin-app/` | Flutter apps | Not server-deployed (built into APKs/AABs) |
+
+## One-time server provisioning
+
+On the VPS as root:
+
+```bash
+sudo bash /var/www/Narzin/scripts/server-setup.sh   # after first clone
+# or paste the script and run it before the repo exists
+```
+
+The script installs nginx + PHP 8.2-FPM + MySQL + Node + Composer + Certbot,
+creates the `deployer` user, generates a **read-only GitHub Deploy Key** (printed
+once — add it under repo → Settings → Deploy keys), scaffolds the production
+`.env`, runs migrations, configures the nginx vhosts, and issues SSL certs.
+Re-run it after adding the Deploy Key. Fill `NASS_*` and `MAIL_*` in
+`/var/www/Narzin/narzinapp-main/.env` before going live.
+
+## CI/CD (auto-deploy on merge to `main`)
+
+GitHub Actions secrets (repo → Settings → Secrets and variables → Actions):
+
+| Name | Kind | Value |
+|------|------|-------|
+| `SSH_HOST` | secret | `75.119.157.158` |
+| `SSH_USER` | secret | `deployer` |
+| `SSH_PORT` | secret | `22` |
+| `SSH_PRIVATE_KEY` | secret | contents of the CI deploy private key |
+| `VITE_API_URL` | variable | `https://admin.narzin.com/api/` |
+
+- **`.github/workflows/deploy-api.yml`** — on backend changes, SSHes in and runs
+  `scripts/deploy-api.sh` (pull → composer → DB backup → migrate → cache → reload).
+- **`.github/workflows/deploy-web.yml`** — on web changes, builds on the runner
+  and rsyncs `dist/` to the server.
+
+The production `.env` lives only on the server and is never committed.

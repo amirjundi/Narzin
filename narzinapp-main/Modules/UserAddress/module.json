@@ -1,0 +1,11 @@
+{
+    "name": "UserAddress",
+    "alias": "useraddress",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\UserAddress\\Providers\\UserAddressServiceProvider"
+    ],
+    "files": []
+}

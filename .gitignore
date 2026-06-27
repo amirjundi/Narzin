@@ -1,0 +1,36 @@
+# ── Secrets / environment ─────────────────────────────
+**/.env
+**/.env.*
+!**/.env.example
+
+# ── PHP / Laravel ─────────────────────────────────────
+**/vendor/
+narzinapp-main/storage/*.key
+narzinapp-main/public/storage
+narzinapp-main/public/build/
+
+# ── Node / web build ──────────────────────────────────
+**/node_modules/
+**/dist/
+**/dist-ssr/
+
+# ── Flutter / mobile build artifacts ──────────────────
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/*.apk
+**/*.aab
+**/*.keystore
+**/*.jks
+**/key.properties
+
+# ── Backed-up nested git histories (from monorepo merge) ─
+**/.git.bak/
+
+# ── OS / editor ───────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/

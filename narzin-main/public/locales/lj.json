@@ -1,0 +1,558 @@
+{
+  "ar": {
+    "footer": {
+      "description": "منصة التجارة الإلكترونية الموثوقة التي تخدم أوروبا والعراق",
+      "links": {
+        "title": "روابط سريعة",
+        "store": "المتجر",
+        "about": "حسابي"
+      },
+      "legal": {
+        "title": "قانوني",
+        "privacy": "سياسة الخصوصية",
+        "return": "سياسة الإرجاع"
+      }
+    },
+    "privacy": {
+      "title": "سياسة الخصوصية",
+      "lastUpdated": "آخر تحديث",
+      "introduction": {
+        "title": "مقدمة",
+        "content": "تلتزم نارزين كوميرس بحماية خصوصيتك وضمان أمان معلوماتك الشخصية. تشرح سياسة الخصوصية هذه كيفية جمعنا واستخدامنا وتخزيننا وحماية بياناتك وفقاً للائحة العامة لحماية البيانات (GDPR) وقوانين حماية البيانات العراقية."
+      },
+      "controller": {
+        "title": "مراقب البيانات",
+        "company": "الشركة:",
+        "address": "العنوان:",
+        "addressValue": "بغداد، العراق / مركز العمليات الأوروبية",
+        "email": "البريد الإلكتروني:",
+        "phone": "الهاتف:"
+      },
+      "collection": {
+        "title": "البيانات التي نجمعها",
+        "personal": {
+          "title": "المعلومات الشخصية",
+          "name": "الاسم الكامل وتفاصيل الاتصال",
+          "email": "عنوان البريد الإلكتروني وتفضيلات التواصل",
+          "phone": "رقم الهاتف لتحديثات الطلبات",
+          "address": "عناوين الشحن والفوترة",
+          "payment": "معلومات الدفع (تتم معالجتها بأمان من قبل جهات خارجية)"
+        },
+        "technical": {
+          "title": "المعلومات التقنية",
+          "ip": "عنوان IP وبيانات الموقع",
+          "browser": "نوع المتصفح ومعلومات الجهاز",
+          "cookies": "ملفات تعريف الارتباط وتقنيات التتبع المماثلة",
+          "usage": "أنماط استخدام الموقع والتفضيلات"
+        }
+      },
+      "legal": {
+        "title": "الأساس القانوني للمعالجة",
+        "contract": "تنفيذ العقد - لتنفيذ الطلبات وتوفير الخدمات",
+        "consent": "موافقتك - لاتصالات التسويق والخدمات الاختيارية",
+        "legitimate": "المصالح المشروعة - لمنع الاحتيال وتحسين الخدمة",
+        "compliance": "الامتثال القانوني - لتلبية متطلبات الضرائب والتنظيم"
+      },
+      "usage": {
+        "title": "كيف نستخدم بياناتك",
+        "orders": "معالجة وتنفيذ طلباتك",
+        "communication": "إرسال تحديثات الطلبات واتصالات العملاء",
+        "support": "تقديم دعم العملاء والتعامل مع الاستفسارات",
+        "improvement": "تحسين خدماتنا ووظائف الموقع",
+        "legal": "الامتثال للالتزامات القانونية ومنع الاحتيال"
+      },
+      "sharing": {
+        "title": "مشاركة البيانات",
+        "intro": "قد نشارك بياناتك الشخصية مع أطراف ثالثة موثوقة فقط عند الضرورة:",
+        "payment": "معالجات الدفع للتعامل الآمن مع المعاملات",
+        "shipping": "شركاء الشحن لتسليم الطلبات",
+        "analytics": "خدمات التحليل لتحسين الموقع (بيانات مجهولة)",
+        "legal": "السلطات القانونية عند الطلب بموجب القانون"
+      },
+      "rights": {
+        "title": "حقوقك تحت GDPR",
+        "access": {
+          "title": "حق الوصول",
+          "desc": "طلب نسخة من بياناتك الشخصية التي نحتفظ بها"
+        },
+        "rectification": {
+          "title": "حق التصحيح",
+          "desc": "تصحيح البيانات الشخصية غير الدقيقة أو غير المكتملة"
+        },
+        "erasure": {
+          "title": "حق المحو",
+          "desc": "طلب حذف بياناتك الشخصية ('الحق في النسيان')"
+        },
+        "portability": {
+          "title": "حق نقل البيانات",
+          "desc": "تلقي بياناتك بتنسيق منظم وقابل للقراءة آلياً"
+        },
+        "restriction": {
+          "title": "حق التقييد",
+          "desc": "تقييد معالجة بياناتك الشخصية في ظروف معينة"
+        },
+        "objection": {
+          "title": "حق الاعتراض",
+          "desc": "الاعتراض على المعالجة القائمة على المصالح المشروعة أو التسويق المباشر"
+        }
+      },
+      "security": {
+        "title": "أمان البيانات",
+        "content": "نطبق تدابير أمنية تقنية وتنظيمية مناسبة لحماية بياناتك الشخصية:",
+        "encryption": "تشفير SSL/TLS لجميع عمليات نقل البيانات",
+        "access": "وصول مقيد للبيانات الشخصية على أساس الحاجة للمعرفة",
+        "monitoring": "مراقبة أمنية منتظمة وتقييمات الثغرات الأمنية",
+        "updates": "تحديثات البرامج المنتظمة والإصلاحات الأمنية"
+      },
+      "retention": {
+        "title": "الاحتفاظ بالبيانات",
+        "account": "بيانات الحساب: حتى حذف الحساب أو 3 سنوات من عدم النشاط",
+        "orders": "تاريخ الطلبات: 7 سنوات للامتثال الضريبي والقانوني",
+        "analytics": "بيانات التحليل: 26 شهراً (مجهولة)",
+        "marketing": "تفضيلات التسويق: حتى سحب الموافقة"
+      },
+      "cookies": {
+        "title": "سياسة ملفات تعريف الارتباط",
+        "content": "نستخدم ملفات تعريف الارتباط لتحسين تجربة التصفح:",
+        "essential": {
+          "title": "ملفات تعريف الارتباط الأساسية",
+          "desc": "مطلوبة للوظائف الأساسية للموقع والأمان"
+        },
+        "analytics": {
+          "title": "ملفات تعريف الارتباط التحليلية",
+          "desc": "تساعدنا في فهم كيفية استخدام الزوار لموقعنا"
+        },
+        "marketing": {
+          "title": "ملفات تعريف الارتباط التسويقية",
+          "desc": "تستخدم لتقديم إعلانات ذات صلة وتتبع فعالية الحملات"
+        }
+      },
+      "transfers": {
+        "title": "نقل البيانات الدولية",
+        "content": "عند نقل البيانات خارج العراق أو الاتحاد الأوروبي، نضمن الحماية الكافية من خلال آليات معتمدة مثل البنود التعاقدية القياسية وقرارات الكفاية."
+      },
+      "contact": {
+        "title": "اتصل بنا",
+        "intro": "لأي أسئلة متعلقة بالخصوصية أو لممارسة حقوقك:",
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف",
+        "address": "العنوان"
+      },
+      "changes": {
+        "title": "تغييرات السياسة",
+        "content": "قد نحدث سياسة الخصوصية هذه بشكل دوري. سنخطرك بالتغييرات المهمة عبر البريد الإلكتروني أو إشعار الموقع."
+      }
+    },
+    "return": {
+      "title": "سياسة الإرجاع والاسترداد",
+      "lastUpdated": "آخر تحديث",
+      "summary": {
+        "title": "ملخص سريع",
+        "period": "فترة إرجاع 30 يوماً من التسليم",
+        "condition": "يجب أن تكون السلع غير مستخدمة وفي حالتها الأصلية",
+        "shipping": "إرجاع مجاني للسلع المعيبة/الخاطئة",
+        "refund": "معالجة المبالغ المستردة خلال 7-14 يوم عمل"
+      },
+      "period": {
+        "title": "فترة الإرجاع",
+        "main": "نافذة إرجاع 30 يوماً",
+        "calculation": "تبدأ فترة الإرجاع من يوم استلام طلبك.",
+        "exceptions": {
+          "title": "فترات إرجاع ممتدة",
+          "electronics": "الإلكترونيات: 60 يوماً لعيوب المصنع",
+          "clothing": "الملابس: 60 يوماً خلال مواسم التخفيضات",
+          "books": "الكتب: 90 يوماً (يجب أن تكون غير مفتوحة)"
+        }
+      },
+      "eligible": {
+        "title": "أهلية الإرجاع",
+        "returnable": {
+          "title": "السلع التي يمكن إرجاعها",
+          "unused": "السلع غير المستخدمة في حالتها الأصلية",
+          "packaging": "التغليف والملصقات الأصلية سليمة",
+          "tags": "جميع العلامات والمواد الواقية مرفقة",
+          "accessories": "جميع الإكسسوارات والمكونات مشمولة"
+        },
+        "nonReturnable": {
+          "title": "السلع التي لا يمكن إرجاعها",
+          "hygiene": "منتجات العناية الشخصية والنظافة",
+          "food": "المواد الغذائية والسلع القابلة للتلف",
+          "customized": "السلع المخصصة أو الشخصية",
+          "digital": "المنتجات الرقمية والبرمجيات",
+          "intimate": "الملابس الداخلية ومنتجات النظافة الشخصية"
+        }
+      },
+      "process": {
+        "title": "عملية الإرجاع",
+        "step1": {
+          "title": "بدء الإرجاع",
+          "desc": "تسجيل الدخول إلى حسابك وبدء طلب الإرجاع"
+        },
+        "step2": {
+          "title": "تعبئة السلع",
+          "desc": "تعبئة السلع بأمان في التغليف الأصلي"
+        },
+        "step3": {
+          "title": "الشحن",
+          "desc": "استخدام ملصق الإرجاع المقدم وشحن السلع"
+        },
+        "step4": {
+          "title": "المعالجة",
+          "desc": "سنعالج إرجاعك خلال 3-5 أيام عمل"
+        }
+      },
+      "shipping": {
+        "title": "الشحن والتكاليف",
+        "table": {
+          "reason": "سبب الإرجاع",
+          "cost": "تكلفة الشحن",
+          "refund": "الاسترداد",
+          "defective": "سلعة معيبة",
+          "wrong": "سلعة خاطئة",
+          "changeOfMind": "تغيير الرأي",
+          "free": "مجاني",
+          "customerPays": "العميل يدفع",
+          "fullRefund": "استرداد كامل",
+          "minusShipping": "ناقص تكلفة الشحن"
+        }
+      },
+      "refund": {
+        "title": "عملية الاسترداد",
+        "timeline": "سيتم معالجة المبالغ المستردة خلال 7-14 يوم عمل بعد استلام الإرجاع.",
+        "method": "سيتم الاسترداد بنفس طريقة الدفع الأصلية.",
+        "processing": {
+          "title": "خطوات المعالجة",
+          "inspection": "فحص السلع المرجعة للتأكد من الحالة",
+          "approval": "الموافقة على الاسترداد أو الاستبدال",
+          "bank": "معالجة الاسترداد مع البنك/معالج الدفع",
+          "notification": "إرسال تأكيد الاسترداد عبر البريد الإلكتروني"
+        }
+      },
+      "exchange": {
+        "title": "الاستبدالات",
+        "content": "نحن لا نقدم استبدالات مباشرة. إذا كنت بحاجة إلى حجم أو لون مختلف، يرجى إرجاع السلعة الأصلية وطلب سلعة جديدة.",
+        "note": {
+          "title": "ملاحظة مهمة",
+          "content": "قد لا تكون السلع الجديدة متوفرة بنفس السعر أو قد تكون نفدت من المخزون."
+        }
+      },
+      "international": {
+        "title": "الإرجاعات الدولية",
+        "period": "فترة إرجاع ممتدة: 45 يوماً للطلبات الدولية",
+        "shipping": "العميل مسؤول عن تكاليف الشحن ما لم تكن السلعة معيبة",
+        "duties": "أي رسوم جمركية أو ضرائب لن يتم استردادها",
+        "processing": "وقت معالجة إضافي 5-10 أيام عمل للإرجاعات الدولية"
+      },
+      "damaged": {
+        "title": "السلع التالفة أو المعيبة",
+        "content": "إذا تلقيت سلعة تالفة أو معيبة، نحن نتحمل المسؤولية الكاملة عن الإرجاع والاستبدال.",
+        "requirements": {
+          "title": "متطلبات الإبلاغ",
+          "photos": "التقاط صور واضحة للضرر أو العيب",
+          "packaging": "الاحتفاظ بجميع مواد التغليف الأصلية",
+          "report": "الإبلاغ خلال 48 ساعة من التسليم",
+          "contact": "الاتصال بخدمة العملاء فوراً"
+        }
+      },
+      "contact": {
+        "title": "معلومات الاتصال",
+        "support": {
+          "title": "دعم الإرجاعات",
+          "email": "البريد الإلكتروني",
+          "phone": "الهاتف",
+          "hours": "ساعات العمل",
+          "hoursValue": "الأحد - الخميس: 9 صباحاً - 6 مساءً"
+        },
+        "address": {
+          "title": "عنوان الإرجاع",
+          "value": "شارع الكرادة، بناية التجارة الحديثة",
+          "city": "بغداد 10001، العراق"
+        }
+      },
+      "legal": {
+        "title": "الامتثال القانوني",
+        "eu": "تتوافق سياسة الإرجاع لدينا مع قوانين حماية المستهلك في الاتحاد الأوروبي.",
+        "iraq": "نلتزم بقانون حماية المستهلك العراقي والأنظمة التجارية.",
+        "rights": "هذه السياسة لا تؤثر على حقوقك القانونية كمستهلك."
+      }
+    }
+  },
+  "de": {
+    "footer": {
+      "description": "Ihre vertrauensvolle E-Commerce-Plattform für Europa und den Irak",
+      "links": {
+        "title": "Schnelllinks",
+        "store": "Shop",
+        "about": "Mein Konto"
+      },
+      "legal": {
+        "title": "Rechtliches",
+        "privacy": "Datenschutzrichtlinie",
+        "return": "Rückgaberichtlinie"
+      }
+    },
+    "privacy": {
+      "title": "Datenschutzrichtlinie",
+      "lastUpdated": "Zuletzt aktualisiert",
+      "introduction": {
+        "title": "Einführung",
+        "content": "Narzin-Commerce verpflichtet sich, Ihre Privatsphäre zu schützen und die Sicherheit Ihrer persönlichen Daten zu gewährleisten. Diese Datenschutzrichtlinie erklärt, wie wir Ihre Daten in Übereinstimmung mit der Datenschutz-Grundverordnung (DSGVO) und den irakischen Datenschutzgesetzen sammeln, verwenden, speichern und schützen."
+      },
+      "controller": {
+        "title": "Datenverantwortlicher",
+        "company": "Unternehmen:",
+        "address": "Adresse:",
+        "addressValue": "Bagdad, Irak / Europäisches Betriebszentrum",
+        "email": "E-Mail:",
+        "phone": "Telefon:"
+      },
+      "collection": {
+        "title": "Daten, die wir sammeln",
+        "personal": {
+          "title": "Persönliche Informationen",
+          "name": "Vollständiger Name und Kontaktdaten",
+          "email": "E-Mail-Adresse und Kommunikationspräferenzen",
+          "phone": "Telefonnummer für Bestellaktualisierungen",
+          "address": "Versand- und Rechnungsadressen",
+          "payment": "Zahlungsinformationen (sicher von Dritten verarbeitet)"
+        },
+        "technical": {
+          "title": "Technische Informationen",
+          "ip": "IP-Adresse und Standortdaten",
+          "browser": "Browser-Typ und Geräteinformationen",
+          "cookies": "Cookies und ähnliche Tracking-Technologien",
+          "usage": "Website-Nutzungsmuster und Präferenzen"
+        }
+      },
+      "legal": {
+        "title": "Rechtsgrundlage für die Verarbeitung",
+        "contract": "Vertragserfüllung - zur Erfüllung von Bestellungen und Bereitstellung von Dienstleistungen",
+        "consent": "Ihre Einwilligung - für Marketing-Kommunikation und optionale Dienste",
+        "legitimate": "Berechtigte Interessen - zur Betrugsverhinderung und Serviceverbesserung",
+        "compliance": "Rechtliche Compliance - zur Erfüllung steuerlicher und regulatorischer Anforderungen"
+      },
+      "usage": {
+        "title": "Wie wir Ihre Daten verwenden",
+        "orders": "Verarbeitung und Erfüllung Ihrer Bestellungen",
+        "communication": "Versendung von Bestellaktualisierungen und Kundenkommunikation",
+        "support": "Bereitstellung von Kundensupport und Bearbeitung von Anfragen",
+        "improvement": "Verbesserung unserer Dienste und Website-Funktionalität",
+        "legal": "Einhaltung rechtlicher Verpflichtungen und Betrugsverhinderung"
+      },
+      "sharing": {
+        "title": "Datenweitergabe",
+        "intro": "Wir können Ihre persönlichen Daten nur bei Bedarf an vertrauensvolle Dritte weitergeben:",
+        "payment": "Zahlungsdienstleister für sichere Transaktionsabwicklung",
+        "shipping": "Versandpartner für die Bestellauslieferung",
+        "analytics": "Analysedienste zur Website-Verbesserung (anonymisierte Daten)",
+        "legal": "Rechtsbehörden bei gesetzlicher Anforderung"
+      },
+      "rights": {
+        "title": "Ihre Rechte unter der DSGVO",
+        "access": {
+          "title": "Auskunftsrecht",
+          "desc": "Anfrage einer Kopie Ihrer bei uns gespeicherten persönlichen Daten"
+        },
+        "rectification": {
+          "title": "Recht auf Berichtigung",
+          "desc": "Korrektur ungenauer oder unvollständiger persönlicher Daten"
+        },
+        "erasure": {
+          "title": "Recht auf Löschung",
+          "desc": "Anfrage zur Löschung Ihrer persönlichen Daten ('Recht auf Vergessenwerden')"
+        },
+        "portability": {
+          "title": "Recht auf Datenübertragbarkeit",
+          "desc": "Erhalt Ihrer Daten in einem strukturierten, maschinenlesbaren Format"
+        },
+        "restriction": {
+          "title": "Recht auf Einschränkung",
+          "desc": "Einschränkung der Verarbeitung Ihrer persönlichen Daten unter bestimmten Umständen"
+        },
+        "objection": {
+          "title": "Widerspruchsrecht",
+          "desc": "Widerspruch gegen Verarbeitung basierend auf berechtigten Interessen oder Direktmarketing"
+        }
+      },
+      "security": {
+        "title": "Datensicherheit",
+        "content": "Wir implementieren angemessene technische und organisatorische Sicherheitsmaßnahmen zum Schutz Ihrer persönlichen Daten:",
+        "encryption": "SSL/TLS-Verschlüsselung für alle Datenübertragungen",
+        "access": "Eingeschränkter Zugang zu persönlichen Daten nach dem Need-to-know-Prinzip",
+        "monitoring": "Regelmäßige Sicherheitsüberwachung und Schwachstellenbewertungen",
+        "updates": "Regelmäßige Software-Updates und Sicherheitspatches"
+      },
+      "retention": {
+        "title": "Datenspeicherung",
+        "account": "Kontodaten: Bis zur Kontolöschung oder 3 Jahre Inaktivität",
+        "orders": "Bestellhistorie: 7 Jahre für steuerliche und rechtliche Compliance",
+        "analytics": "Analysedaten: 26 Monate (anonymisiert)",
+        "marketing": "Marketing-Präferenzen: Bis zum Widerruf der Einwilligung"
+      },
+      "cookies": {
+        "title": "Cookie-Richtlinie",
+        "content": "Wir verwenden Cookies, um Ihr Browsing-Erlebnis zu verbessern:",
+        "essential": {
+          "title": "Wesentliche Cookies",
+          "desc": "Erforderlich für grundlegende Website-Funktionalität und Sicherheit"
+        },
+        "analytics": {
+          "title": "Analyse-Cookies",
+          "desc": "Helfen uns zu verstehen, wie Besucher unsere Website nutzen"
+        },
+        "marketing": {
+          "title": "Marketing-Cookies",
+          "desc": "Werden verwendet, um relevante Werbung zu liefern und Kampagneneffektivität zu verfolgen"
+        }
+      },
+      "transfers": {
+        "title": "Internationale Datenübertragungen",
+        "content": "Bei der Übertragung von Daten außerhalb des Irak oder der EU gewährleisten wir angemessenen Schutz durch genehmigte Mechanismen wie Standardvertragsklauseln und Angemessenheitsbeschlüsse."
+      },
+      "contact": {
+        "title": "Kontaktieren Sie uns",
+        "intro": "Bei datenschutzbezogenen Fragen oder zur Ausübung Ihrer Rechte:",
+        "email": "E-Mail",
+        "phone": "Telefon",
+        "address": "Adresse"
+      },
+      "changes": {
+        "title": "Richtlinienänderungen",
+        "content": "Wir können diese Datenschutzrichtlinie regelmäßig aktualisieren. Wir werden Sie über wesentliche Änderungen per E-Mail oder Website-Benachrichtigung informieren."
+      }
+    },
+    "return": {
+      "title": "Rückgabe- und Erstattungsrichtlinie",
+      "lastUpdated": "Zuletzt aktualisiert",
+      "summary": {
+        "title": "Kurze Zusammenfassung",
+        "period": "30-tägige Rückgabefrist ab Lieferung",
+        "condition": "Artikel müssen unbenutzt und im Originalzustand sein",
+        "shipping": "Kostenlose Rückgabe für defekte/falsche Artikel",
+        "refund": "Erstattungen werden innerhalb von 7-14 Werktagen bearbeitet"
+      },
+      "period": {
+        "title": "Rückgabezeitraum",
+        "main": "30-Tage-Rückgabefenster",
+        "calculation": "Die Rückgabefrist beginnt am Tag des Erhalts Ihrer Bestellung.",
+        "exceptions": {
+          "title": "Verlängerte Rückgabefristen",
+          "electronics": "Elektronik: 60 Tage für Herstellerdefekte",
+          "clothing": "Kleidung: 60 Tage während der Verkaufssaisons",
+          "books": "Bücher: 90 Tage (müssen ungeöffnet sein)"
+        }
+      },
+      "eligible": {
+        "title": "Rückgabeberechtigung",
+        "returnable": {
+          "title": "Artikel, die Sie zurückgeben können",
+          "unused": "Unbenutzte Artikel im Originalzustand",
+          "packaging": "Originalverpackung und Etiketten intakt",
+          "tags": "Alle Anhänger und Schutzmaterialien befestigt",
+          "accessories": "Alle Zubehörteile und Komponenten enthalten"
+        },
+        "nonReturnable": {
+          "title": "Artikel, die Sie nicht zurückgeben können",
+          "hygiene": "Körperpflege- und Hygieneprodukte",
+          "food": "Lebensmittel und verderbliche Waren",
+          "customized": "Maßgeschneiderte oder personalisierte Artikel",
+          "digital": "Digitale Produkte und Software",
+          "intimate": "Unterwäsche und persönliche Hygieneartikel"
+        }
+      },
+      "process": {
+        "title": "Rückgabeprozess",
+        "step1": {
+          "title": "Rückgabe einleiten",
+          "desc": "Melden Sie sich in Ihrem Konto an und starten Sie eine Rückgabeanfrage"
+        },
+        "step2": {
+          "title": "Artikel verpacken",
+          "desc": "Verpacken Sie Artikel sicher in der Originalverpackung"
+        },
+        "step3": {
+          "title": "Versenden",
+          "desc": "Verwenden Sie das bereitgestellte Rückgabeetikett und versenden Sie die Artikel"
+        },
+        "step4": {
+          "title": "Bearbeitung",
+          "desc": "Wir bearbeiten Ihre Rückgabe innerhalb von 3-5 Werktagen"
+        }
+      },
+      "shipping": {
+        "title": "Versand und Kosten",
+        "table": {
+          "reason": "Rückgabegrund",
+          "cost": "Versandkosten",
+          "refund": "Erstattung",
+          "defective": "Defekter Artikel",
+          "wrong": "Falscher Artikel",
+          "changeOfMind": "Meinungsänderung",
+          "free": "Kostenlos",
+          "customerPays": "Kunde zahlt",
+          "fullRefund": "Vollständige Erstattung",
+          "minusShipping": "Abzüglich Versandkosten"
+        }
+      },
+      "refund": {
+        "title": "Erstattungsprozess",
+        "timeline": "Erstattungen werden innerhalb von 7-14 Werktagen nach Erhalt der Rückgabe bearbeitet.",
+        "method": "Die Erstattung erfolgt über die ursprüngliche Zahlungsmethode.",
+        "processing": {
+          "title": "Bearbeitungsschritte",
+          "inspection": "Prüfung der zurückgegebenen Artikel auf Zustand",
+          "approval": "Genehmigung der Erstattung oder des Umtauschs",
+          "bank": "Verarbeitung der Erstattung mit Bank/Zahlungsdienstleister",
+          "notification": "E-Mail-Bestätigung der Erstattung senden"
+        }
+      },
+      "exchange": {
+        "title": "Umtausch",
+        "content": "Wir bieten keine direkten Umtausche an. Wenn Sie eine andere Größe oder Farbe benötigen, geben Sie bitte den ursprünglichen Artikel zurück und bestellen Sie einen neuen.",
+        "note": {
+          "title": "Wichtiger Hinweis",
+          "content": "Neue Artikel sind möglicherweise nicht zum gleichen Preis verfügbar oder könnten ausverkauft sein."
+        }
+      },
+      "international": {
+        "title": "Internationale Rückgaben",
+        "period": "Verlängerte Rückgabefrist: 45 Tage für internationale Bestellungen",
+        "shipping": "Kunde ist für Versandkosten verantwortlich, es sei denn, der Artikel ist defekt",
+        "duties": "Zölle oder Steuern werden nicht erstattet",
+        "processing": "Zusätzliche Bearbeitungszeit von 5-10 Werktagen für internationale Rückgaben"
+      },
+      "damaged": {
+        "title": "Beschädigte oder defekte Artikel",
+        "content": "Wenn Sie einen beschädigten oder defekten Artikel erhalten haben, übernehmen wir die volle Verantwortung für Rückgabe und Ersatz.",
+        "requirements": {
+          "title": "Meldeanforderungen",
+          "photos": "Klare Fotos des Schadens oder Defekts aufnehmen",
+          "packaging": "Alle ursprünglichen Verpackungsmaterialien aufbewahren",
+          "report": "Innerhalb von 48 Stunden nach Lieferung melden",
+          "contact": "Sofort den Kundendienst kontaktieren"
+        }
+      },
+      "contact": {
+        "title": "Kontaktinformationen",
+        "support": {
+          "title": "Rückgabe-Support",
+          "email": "E-Mail",
+          "phone": "Telefon",
+          "hours": "Öffnungszeiten",
+          "hoursValue": "Sonntag - Donnerstag: 9:00 - 18:00 Uhr"
+        },
+        "address": {
+          "title": "Rückgabeadresse",
+          "value": "Al-Karrada Straße, Modernes Handelsgebäude",
+          "city": "Bagdad 10001, Irak"
+        }
+      },
+      "legal": {
+        "title": "Rechtliche Compliance",
+        "eu": "Unsere Rückgaberichtlinie entspricht den EU-Verbraucherschutzgesetzen.",
+        "iraq": "Wir halten uns an das irakische Verbraucherschutzgesetz und Handelsvorschriften.",
+        "rights": "Diese Richtlinie beeinträchtigt nicht Ihre gesetzlichen Rechte als Verbraucher."
+      }
+    }
+  }
+}

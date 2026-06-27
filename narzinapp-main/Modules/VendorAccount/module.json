@@ -1,0 +1,11 @@
+{
+    "name": "VendorAccount",
+    "alias": "vendoraccount",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\VendorAccount\\Providers\\VendorAccountServiceProvider"
+    ],
+    "files": []
+}

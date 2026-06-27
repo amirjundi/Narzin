@@ -1,0 +1,297 @@
+{
+	"info": {
+		"_postman_id": "16c4ec70-b442-458b-b212-31d185a12183",
+		"name": "Nass Gateway UAT transaction",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28642886",
+		"_collection_link": "https://nass66.postman.co/workspace/PG~ee1181f8-060e-4cbb-9544-ac7f74ddfe58/collection/28642886-16c4ec70-b442-458b-b212-31d185a12183?action=share&source=collection_link&creator=28642886"
+	},
+	"item": [
+		{
+			"name": "Nass Payment Gateway",
+			"item": [
+				{
+					"name": "Auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set('n_access_token', pm.response.json().data.access_token)\r",
+									"\r",
+									"\r",
+									"// pm.globals.set(\"n_access_token\", (pm.response.json()).data.access_token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"renas.adnan@nass.iq\",\n    \"password\": \"?Testforbest2?\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/auth/merchant/login",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"merchant",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Init Transaction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"response_data = pm.response.json()",
+									"console.log(response_data)",
+									"pm.environment.set('p_sign', response_data.pSign)",
+									"",
+									"pm.environment.set('nonce', response_data.transactionParams.NONCE)",
+									"",
+									"pm.environment.set('timestamp', response_data.transactionParams.TIMESTAMP)",
+									"",
+									"pm.environment.set('orderId', response_data.transactionParams.ORDER)",
+									"",
+									"pm.environment.set('currency', response_data.transactionParams.CURRENCY)",
+									"",
+									"pm.environment.set('desc', response_data.transactionParams.DESC)",
+									"",
+									"pm.environment.set('terminal', response_data.transactionParams.TERMINAL)",
+									"",
+									"pm.environment.set('trType', response_data.transactionParams.TRTYPE)",
+									"",
+									"pm.environment.set('orderId', response_data.transactionParams.ORDER)",
+									"",
+									"pm.environment.set('backRefUrl', response_data.transactionParams.BACKREF)",
+									"",
+									"pm.environment.set('amount', response_data.transactionParams.AMOUNT)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function generateRandomNumber(minLength = 6, maxLength = 12) {",
+									"    const length = Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;",
+									"    let number = Math.floor(Math.random() * 9) + 1; // Ensure the first digit is non-zero",
+									"",
+									"    for (let i = 1; i < length; i++) {",
+									"        number = number * 10 + Math.floor(Math.random() * 10);",
+									"    }",
+									"",
+									"    return number.toString();",
+									"}",
+									"",
+									"pm.environment.set('orderId', generateRandomNumber())"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{n_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"orderId\": \"{{orderId}}\",\n    \"orderDesc\": \"Purchase of electronics\",\n    \"amount\": \"10\",\n    \"currency\": \"368\",\n    \"transactionType\": 1,\n    \"backRef\": \"https://nw.iq/\"\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/transaction",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"transaction"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Card Authorization",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var template = `",
+									"<style type=\"text/css\">",
+									"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+									"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+									"    .tftable tr {background-color:#ffffff;}",
+									"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+									"    .tftable tr:hover {background-color:#e0ffff;}",
+									"</style>",
+									"",
+									"<table class=\"tftable\" border=\"1\">",
+									"    <tr>",
+									"        <th>Status</th>",
+									"        <th>Card</th>",
+									"        <th>Amount</th>",
+									"        <th>Currency</th>",
+									"        <th>Order ID</th>",
+									"        <th>RRN</th>",
+									"        <th>Int Ref</th>",
+									"        <th>Auth Code</th>",
+									"    </tr>",
+									"    <tr>",
+									"        <td>{{response.status}}</td>",
+									"        <td>{{response.card}}</td>",
+									"        <td>{{response.amount}}</td>",
+									"        <td>{{response.currency}}</td>",
+									"        <td>{{response.orderId}}</td>",
+									"        <td>{{response.rrn}}</td>",
+									"        <td>{{response.intRef}}</td>",
+									"        <td>{{response.authCode}}</td>",
+									"    </tr>",
+									"</table>",
+									"`;",
+									"",
+									"function constructVisualizerPayload() {",
+									"    return {response: pm.response.json()}",
+									"}",
+									"",
+									"pm.visualizer.set(template, constructVisualizerPayload());"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{n_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"card\": \"5185520050000010\",\n    \"expMonth\": \"12\",\n    \"expYear\": \"25\",\n    \"currency\": \"{{currency}}\",\n    \"name\": \"John Doe\",\n    \"trtype\": \"{{trType}}\",\n    \"terminal\": \"{{terminal}}\",\n    \"desc\": \"{{desc}}\",\n    \"cvc2_rc\": \"0\",\n    \"orderId\": \"{{orderId}}\",\n    \"timestamp\": \"{{timestamp}}\",\n    \"nonce\": \"{{nonce}}\",\n    \"p_sign\": \"{{p_sign}}\",\n    \"amount\": \"{{amount}}\",\n    \"cvc2\": \"356\",\n    \"backRefUrl\": \"https://webhook.site/66bb45e6-08d9-4b24-b34a-5ec60ceb739f\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://3dsecure.nass.iq/cgi-bin/cgi_json",
+							"protocol": "https",
+							"host": [
+								"3dsecure",
+								"nass",
+								"iq"
+							],
+							"path": [
+								"cgi-bin",
+								"cgi_json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Order Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{n_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/transaction/{{orderId}}/checkStatus",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"transaction",
+								"{{orderId}}",
+								"checkStatus"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "n_access_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
