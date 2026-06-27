@@ -51,7 +51,8 @@ echo "==> Migrating and caching"
 php artisan migrate --force
 php artisan storage:link || true
 php artisan config:cache
-php artisan route:cache
+# NOTE: route:cache is intentionally omitted — this app has a closure route
+# (Admin module) which cannot be serialized, so route:cache always fails.
 php artisan view:cache
 php artisan queue:restart || true
 

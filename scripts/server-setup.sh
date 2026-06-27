@@ -58,6 +58,18 @@ usermod -aG www-data "$DEPLOY_USER"
 mkdir -p "$APP_DIR"
 chown -R "$DEPLOY_USER":www-data "$APP_DIR"
 
+log "Installing CI deploy key (lets GitHub Actions SSH in as $DEPLOY_USER)"
+CI_KEY='ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEIwlx1MCBlyzbFU1NV4D9mJoLA/8RwJYqToMGSDuZmM github-actions-deploy@narzin'
+install -d -o "$DEPLOY_USER" -g "$DEPLOY_USER" -m 700 /home/$DEPLOY_USER/.ssh
+grep -qF "$CI_KEY" /home/$DEPLOY_USER/.ssh/authorized_keys 2>/dev/null || echo "$CI_KEY" >> /home/$DEPLOY_USER/.ssh/authorized_keys
+chown "$DEPLOY_USER":"$DEPLOY_USER" /home/$DEPLOY_USER/.ssh/authorized_keys
+chmod 600 /home/$DEPLOY_USER/.ssh/authorized_keys
+
+log "Opening firewall (if ufw active)"
+if command -v ufw >/dev/null && ufw status | grep -q "Status: active"; then
+  ufw allow 22/tcp; ufw allow 80/tcp; ufw allow 443/tcp
+fi
+
 log "Granting deployer passwordless reload of php-fpm + nginx"
 cat >/etc/sudoers.d/deployer-deploy <<EOF
 $DEPLOY_USER ALL=(root) NOPASSWD: /bin/systemctl reload php${PHP_VER}-fpm, /bin/systemctl reload nginx
@@ -100,25 +112,32 @@ SQL
 log "Scaffolding production .env (if missing)"
 if [ ! -f "$API_DIR/.env" ]; then
   sudo -u "$DEPLOY_USER" cp "$API_DIR/.env.example" "$API_DIR/.env"
-  sudo -u "$DEPLOY_USER" tee -a "$API_DIR/.env" >/dev/null <<EOF
 
-# ─── filled by server-setup.sh ───
-EOF
-  sed_env() { sudo -u "$DEPLOY_USER" sed -i "s|^$1=.*|$1=$2|" "$API_DIR/.env"; }
-  sed_env APP_ENV production
-  sed_env APP_DEBUG false
-  sed_env APP_URL "https://$API_DOMAIN"
-  sed_env DB_CONNECTION mysql
-  sed_env DB_HOST 127.0.0.1
-  sed_env DB_PORT 3306
-  sed_env DB_DATABASE "$DB_NAME"
-  sed_env DB_USERNAME "$DB_USER"
-  sed_env DB_PASSWORD "$DB_PASS"
-  sed_env SESSION_DRIVER database
-  sed_env SESSION_DOMAIN ".narzin.com"
-  sed_env SESSION_SECURE_COOKIE true
-  sed_env SANCTUM_STATEFUL_DOMAINS "$WEB_DOMAIN,$WEB_WWW"
-  sed_env CORS_ALLOWED_ORIGINS "https://$WEB_DOMAIN,https://$WEB_WWW"
+  # Robustly set a key whether it is present-uncommented, present-commented
+  # (e.g. "# DB_DATABASE=..."), or absent. Avoids the duplicate-key pitfall
+  # where phpdotenv keeps the FIRST definition.
+  set_env() {
+    local key="$1" val="$2" file="$API_DIR/.env"
+    if sudo -u "$DEPLOY_USER" grep -qE "^[# ]*${key}=" "$file"; then
+      sudo -u "$DEPLOY_USER" sed -i -E "s|^[# ]*${key}=.*|${key}=${val}|" "$file"
+    else
+      echo "${key}=${val}" | sudo -u "$DEPLOY_USER" tee -a "$file" >/dev/null
+    fi
+  }
+  set_env APP_ENV production
+  set_env APP_DEBUG false
+  set_env APP_URL "https://$API_DOMAIN"
+  set_env DB_CONNECTION mysql
+  set_env DB_HOST 127.0.0.1
+  set_env DB_PORT 3306
+  set_env DB_DATABASE "$DB_NAME"
+  set_env DB_USERNAME "$DB_USER"
+  set_env DB_PASSWORD "$DB_PASS"
+  set_env SESSION_DRIVER database
+  set_env SESSION_DOMAIN ".narzin.com"
+  set_env SESSION_SECURE_COOKIE true
+  set_env SANCTUM_STATEFUL_DOMAINS "$WEB_DOMAIN,$WEB_WWW"
+  set_env CORS_ALLOWED_ORIGINS "https://$WEB_DOMAIN,https://$WEB_WWW"
   sudo -u "$DEPLOY_USER" bash -lc "cd $API_DIR && composer install --no-dev -o --no-interaction && php artisan key:generate"
   echo "!! EDIT $API_DIR/.env and fill NASS_* (production) + MAIL_* before going live."
 fi
@@ -130,7 +149,7 @@ sudo -u "$DEPLOY_USER" bash -lc "
   [ -f package.json ] && npm ci --no-audit --no-fund && npm run build || true
   php artisan migrate --force
   php artisan storage:link || true
-  php artisan config:cache && php artisan route:cache && php artisan view:cache
+  php artisan config:cache && php artisan view:cache
 "
 
 log "Fixing Laravel writable perms"
