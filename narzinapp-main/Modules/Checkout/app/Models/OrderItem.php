@@ -30,6 +30,10 @@ class OrderItem extends Model
         'discount',
         'final_price',
         'collection_status',
+        'vendor_base_subtotal',
+        'vendor_commission_amount',
+        'vendor_discount_absorbed',
+        'vendor_earning',
     ];
 
     protected $casts = [
