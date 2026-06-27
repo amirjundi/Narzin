@@ -22,6 +22,8 @@ use Modules\Admin\Models\PriceExchange;
 use Modules\Checkout\Models\WalletTransaction;
 use Modules\ProductManagement\Models\Product;
 use Modules\ProductManagement\Models\ProductVariant;
+use Modules\Vendor\Services\VendorEarningCalculator;
+use Modules\Vendor\Services\VendorRateResolver;
 
 class CheckoutController extends Controller
 {
@@ -284,6 +286,18 @@ class CheckoutController extends Controller
                     $markedUpUnitPrice = $basePrice * (1 + $markup / 100);
                     $itemSubtotal = $markedUpUnitPrice * $item->quantity;
 
+                    $resolver = new VendorRateResolver();
+                    $calc = new VendorEarningCalculator();
+                    $earning = $calc->compute(
+                        (float) $basePrice,
+                        (int) $item->quantity,
+                        (float) $itemSubtotal,
+                        (float) $discountAmount,   // order coupon discount
+                        (float) $totalAmount,      // order pre-discount total
+                        $vendor ? $resolver->commission($vendor) : 0.0,
+                        $vendor ? $resolver->absorption($vendor) : 0.0
+                    );
+
                     OrderItem::create([
                         'order_id' => $order->id,
                         'product_id' => $item->product_id,
@@ -293,6 +307,10 @@ class CheckoutController extends Controller
                         'unit_price' => $markedUpUnitPrice,
                         'subtotal' => $itemSubtotal,
                         'final_price' => $itemSubtotal,
+                        'vendor_base_subtotal' => $earning['vendor_base_subtotal'],
+                        'vendor_commission_amount' => $earning['vendor_commission_amount'],
+                        'vendor_discount_absorbed' => $earning['vendor_discount_absorbed'],
+                        'vendor_earning' => $earning['vendor_earning'],
                     ]);
                 }
 

@@ -15,6 +15,7 @@ use Modules\Checkout\Models\OrderItem;
 use Modules\Checkout\Models\UserWallet;
 use Modules\Checkout\Models\WalletTransaction;
 use Modules\Vendor\Models\Vendor;
+use Modules\Vendor\Services\VendorLedgerService;
 
 class ShipmentController extends Controller
 {
@@ -302,6 +303,7 @@ class ShipmentController extends Controller
 
             // Sync to order item
             $item->orderItem->update(['collection_status' => 'collected']);
+            (new VendorLedgerService())->creditEarning($item->orderItem->fresh());
         } elseif ($item->collection_status === 'collected') {
             $item->update([
                 'collection_status' => 'pending',
@@ -311,6 +313,7 @@ class ShipmentController extends Controller
 
             // Sync to order item
             $item->orderItem->update(['collection_status' => 'pending']);
+            (new VendorLedgerService())->reverseEarning($item->orderItem->fresh());
         }
 
         // Update batch status to collecting if it was pending
@@ -371,6 +374,7 @@ class ShipmentController extends Controller
 
             // Sync to order item
             $item->orderItem->update(['collection_status' => 'collected']);
+            (new VendorLedgerService())->creditEarning($item->orderItem->fresh());
         }
 
         // Update batch status
@@ -441,6 +445,7 @@ class ShipmentController extends Controller
 
             // 2. Sync to order item
             $orderItem->update(['collection_status' => 'unavailable']);
+            (new VendorLedgerService())->reverseEarning($orderItem->fresh());
 
             // 3. Refund to customer wallet
             $order = $batchItem->order;

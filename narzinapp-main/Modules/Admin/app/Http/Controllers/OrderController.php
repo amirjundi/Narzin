@@ -185,9 +185,14 @@ class OrderController extends Controller
         $order = Order::findOrFail($id);
         $oldStatus = $order->order_status;
 
-        // If cancelling, refill stock
+        // If cancelling, refill stock and reverse vendor ledger entries
         if ($request->order_status === 'cancelled' && !in_array($oldStatus, ['cancelled', 'expired'])) {
             $this->refillOrderStock($order);
+            $order->load('items');
+            $ledger = new \Modules\Vendor\Services\VendorLedgerService();
+            foreach ($order->items as $orderItem) {
+                $ledger->reverseEarning($orderItem);
+            }
         }
 
         $order->update([
