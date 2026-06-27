@@ -28,10 +28,12 @@ class Product extends Model
         'is_active',
         'vendor_id',
         'weight',
+        'size_chart',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'size_chart' => 'array',
     ];
 
     protected $appends = ['average_rating'];
