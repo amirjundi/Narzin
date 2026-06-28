@@ -22,6 +22,7 @@ use Modules\Admin\Models\PriceExchange;
 use Modules\Checkout\Models\WalletTransaction;
 use Modules\ProductManagement\Models\Product;
 use Modules\ProductManagement\Models\ProductVariant;
+use Modules\Checkout\Services\PromotionEvaluator;
 use Modules\Vendor\Services\VendorEarningCalculator;
 use Modules\Vendor\Services\VendorRateResolver;
 
@@ -231,10 +232,17 @@ class CheckoutController extends Controller
                     }
                 }
 
+                // Promotions: best-one-wins vs the coupon; free shipping rides on top.
+                $promoResult = (new PromotionEvaluator())->evaluate((float) $totalAmount, (float) $discountAmount);
+                $discountAmount = $promoResult->discountAmount;
+
                 // Get shipping cost based on delivery method and weight
                 $deliveryMethod = \Modules\Admin\Models\DeliveryMethod::find($request->delivery_method_id);
                 $calculatedPriceByKg = $totalWeight * $deliveryMethod->price_per_kg;
                 $shippingCost = max($deliveryMethod->base_price, $calculatedPriceByKg);
+                if ($promoResult->freeShipping) {
+                    $shippingCost = 0;
+                }
 
                 // Calculate final amount
                 $priceAfterDiscount = $totalAmount - $discountAmount;
@@ -268,6 +276,8 @@ class CheckoutController extends Controller
                     'shipping_type' => $deliveryMethod->name,
                     'shipping_cost' => $shippingCost,
                     'coupon_id' => $coupon?->id,
+                    'promotion_id' => $promoResult->promotionId,
+                    'free_shipping_promotion_id' => $promoResult->freeShippingPromotionId,
                     'wallet_usage' => $walletUsage,
                     'final_price' => $finalAmount,
                     'payment_status' => 'not_paid',
@@ -288,6 +298,10 @@ class CheckoutController extends Controller
                     $markedUpUnitPrice = $basePrice * (1 + $markup / 100);
                     $itemSubtotal = $markedUpUnitPrice * $item->quantity;
 
+                    $absorptionPct = $promoResult->discountSource === 'promotion'
+                        ? (float) $promoResult->absorbedByVendorPercentage
+                        : ($vendor ? $resolver->absorption($vendor) : 0.0);
+
                     $earning = $calc->compute(
                         (float) $basePrice,
                         (int) $item->quantity,
@@ -295,7 +309,7 @@ class CheckoutController extends Controller
                         (float) $discountAmount,   // order coupon discount
                         (float) $totalAmount,      // order pre-discount total
                         $vendor ? $resolver->commission($vendor) : 0.0,
-                        $vendor ? $resolver->absorption($vendor) : 0.0
+                        $absorptionPct
                     );
 
                     OrderItem::create([
