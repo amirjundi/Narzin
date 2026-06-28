@@ -57,6 +57,13 @@ Route::middleware(['admin.auth'])->group(function () {
 
 
     Route::resource('coupons', CouponController::class)->names('coupons');
+
+    Route::get('promotions', [\Modules\Admin\Http\Controllers\PromotionController::class, 'index'])->name('promotions.index');
+    Route::get('promotions/create', [\Modules\Admin\Http\Controllers\PromotionController::class, 'create'])->name('promotions.create');
+    Route::post('promotions', [\Modules\Admin\Http\Controllers\PromotionController::class, 'store'])->name('promotions.store');
+    Route::get('promotions/{id}/edit', [\Modules\Admin\Http\Controllers\PromotionController::class, 'edit'])->name('promotions.edit');
+    Route::put('promotions/{id}', [\Modules\Admin\Http\Controllers\PromotionController::class, 'update'])->name('promotions.update');
+    Route::delete('promotions/{id}', [\Modules\Admin\Http\Controllers\PromotionController::class, 'destroy'])->name('promotions.destroy');
     
     // Delivery Zones & Methods
     Route::resource('delivery-zones', \Modules\Admin\Http\Controllers\DeliveryZoneController::class)->names('delivery-zones');
