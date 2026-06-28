@@ -35,6 +35,19 @@ class Vendor extends Model
         'exchange_rate',
     ];
 
+    /**
+     * Separation of duties: a user who is an admin cannot also be a vendor.
+     * Enforced centrally so no controller, future flow, or manual insert can bypass it.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (Vendor $vendor) {
+            if ($vendor->user_id && \Illuminate\Support\Facades\DB::table('users_admins')
+                    ->where('user_id', $vendor->user_id)->exists()) {
+                throw new \DomainException('This user is an admin; admins cannot also be vendors (separation of duties).');
+            }
+        });
+    }
 
     public function user()
     {
