@@ -20,7 +20,7 @@ class PromotionEvaluator
         $bestPromoValue = 0.0;
         foreach ($promos as $p) {
             if ($p->type === 'percentage') {
-                $v = round($subtotal * (float) $p->value / 100, 2);
+                $v = min(round($subtotal * (float) $p->value / 100, 2), $subtotal);
             } elseif ($p->type === 'fixed') {
                 $v = min((float) $p->value, $subtotal);
             } else {

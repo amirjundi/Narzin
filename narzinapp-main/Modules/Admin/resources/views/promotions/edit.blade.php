@@ -17,7 +17,6 @@
             <div class="col-span-6 px-4">
                 <label class="block text-sm font-medium mb-2">Type</label>
                 <select name="type" class="w-full rounded border px-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary">
-                    <option value="">leave empty?</option>
                     @foreach (['free_shipping', 'percentage', 'fixed'] as $typeOption)
                         <option value="{{ $typeOption }}" {{ old('type', $promotion->type) === $typeOption ? 'selected' : '' }}>
                             {{ $typeOption }}

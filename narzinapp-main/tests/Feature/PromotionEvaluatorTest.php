@@ -83,4 +83,11 @@ class PromotionEvaluatorTest extends TestCase
         $this->assertSame(25.0, $r->discountAmount);
         $this->assertSame($big->id, $r->promotionId);
     }
+
+    public function test_percentage_discount_is_capped_at_subtotal(): void
+    {
+        Promotion::create(['name' => 'Over 100%', 'type' => 'percentage', 'value' => 150, 'minimum_cart_amount' => 10, 'is_active' => true]);
+        $r = $this->evaluator->evaluate(80.0, 0.0);
+        $this->assertSame(80.0, $r->discountAmount); // capped at subtotal, not 120
+    }
 }
