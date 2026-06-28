@@ -235,6 +235,9 @@ class CheckoutController extends Controller
                 // Promotions: best-one-wins vs the coupon; free shipping rides on top.
                 $promoResult = (new PromotionEvaluator())->evaluate((float) $totalAmount, (float) $discountAmount);
                 $discountAmount = $promoResult->discountAmount;
+                if ($promoResult->discountSource === 'promotion') {
+                    $coupon = null; // promotion beat the coupon; the coupon is not consumed
+                }
 
                 // Get shipping cost based on delivery method and weight
                 $deliveryMethod = \Modules\Admin\Models\DeliveryMethod::find($request->delivery_method_id);
@@ -306,7 +309,7 @@ class CheckoutController extends Controller
                         (float) $basePrice,
                         (int) $item->quantity,
                         (float) $itemSubtotal,
-                        (float) $discountAmount,   // order coupon discount
+                        (float) $discountAmount,   // winning discount amount (promo or coupon)
                         (float) $totalAmount,      // order pre-discount total
                         $vendor ? $resolver->commission($vendor) : 0.0,
                         $absorptionPct
