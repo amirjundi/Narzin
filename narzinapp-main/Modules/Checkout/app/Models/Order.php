@@ -40,6 +40,8 @@ class Order extends Model
         'callback_data',
         'paid_at',
         'payment_id',
+        'promotion_id',
+        'free_shipping_promotion_id',
     ];
 
     protected $casts = [
