@@ -31,6 +31,13 @@ class VendorLedgerService
         }
     }
 
+    public function removeEarning(OrderItem $item): void
+    {
+        VendorTransaction::where('order_item_id', $item->id)
+            ->whereIn('type', ['earning', 'reversal'])
+            ->delete();
+    }
+
     public function reverseEarning(OrderItem $item): void
     {
         $earning = VendorTransaction::where('order_item_id', $item->id)->where('type', 'earning')->first();
@@ -59,11 +66,12 @@ class VendorLedgerService
         if ($amount <= 0) {
             throw new \InvalidArgumentException('Payout amount must be positive.');
         }
-        if (round($amount, 2) > round($this->payableBalance($vendorId), 2)) {
-            throw new \InvalidArgumentException('Payout exceeds the payable balance.');
-        }
 
         return DB::transaction(function () use ($vendorId, $amount, $method, $reference, $notes, $adminId) {
+            $balance = (float) VendorTransaction::where('vendor_id', $vendorId)->lockForUpdate()->sum('amount');
+            if (round($amount, 2) > round($balance, 2)) {
+                throw new \InvalidArgumentException('Payout exceeds the payable balance.');
+            }
             $payout = VendorPayout::create([
                 'vendor_id' => $vendorId, 'amount' => $amount, 'method' => $method,
                 'reference' => $reference, 'notes' => $notes, 'paid_at' => now(), 'created_by' => $adminId,
@@ -92,8 +100,11 @@ class VendorLedgerService
 
     public function pendingEarnings(int $vendorId): float
     {
-        return (float) OrderItem::where('vendor_id', $vendorId)
-            ->where('collection_status', '!=', 'collected')
+        return (float) OrderItem::where('order_items.vendor_id', $vendorId)
+            ->whereNotIn('order_items.collection_status', ['collected', 'unavailable'])
+            ->whereHas('order', function ($q) {
+                $q->whereNotIn('order_status', ['cancelled', 'expired']);
+            })
             ->sum('vendor_earning');
     }
 

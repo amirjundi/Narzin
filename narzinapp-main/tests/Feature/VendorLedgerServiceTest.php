@@ -110,4 +110,21 @@ class VendorLedgerServiceTest extends TestCase
 
         $this->assertSame(30.0, $svc->pendingEarnings($vendor->id));
     }
+
+    public function test_uncollect_then_recollect_recredits(): void
+    {
+        $svc = new VendorLedgerService();
+        $vendor = $this->vendor();
+        $item = $this->orderItem($vendor, 90.0);
+
+        $svc->creditEarning($item);
+        $svc->removeEarning($item);
+        $svc->creditEarning($item);
+
+        $this->assertSame(90.0, $svc->payableBalance($vendor->id));
+        $this->assertSame(1, \Illuminate\Support\Facades\DB::table('vendor_transactions')
+            ->where('order_item_id', $item->id)
+            ->where('type', 'earning')
+            ->count());
+    }
 }

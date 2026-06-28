@@ -525,8 +525,8 @@ private function getMonthlyReports($vendorId)
                 'store_type' => $validated['Store_type'],
                 'markup_percentage' => $validated['markup_percentage'] ?: null,
                 'exchange_rate' => $validated['exchange_rate'] ?: null,
-                'commission_percentage' => $validated['commission_percentage'] ?: null,
-                'discount_absorption_percentage' => $validated['discount_absorption_percentage'] ?: null,
+                'commission_percentage' => (($validated['commission_percentage'] ?? '') === '') ? null : $validated['commission_percentage'],
+                'discount_absorption_percentage' => (($validated['discount_absorption_percentage'] ?? '') === '') ? null : $validated['discount_absorption_percentage'],
             ]);
 
             DB::commit();

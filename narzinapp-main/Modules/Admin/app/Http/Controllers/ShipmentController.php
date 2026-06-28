@@ -313,7 +313,7 @@ class ShipmentController extends Controller
 
             // Sync to order item
             $item->orderItem->update(['collection_status' => 'pending']);
-            (new VendorLedgerService())->reverseEarning($item->orderItem->fresh());
+            (new VendorLedgerService())->removeEarning($item->orderItem->fresh());
         }
 
         // Update batch status to collecting if it was pending
