@@ -30,11 +30,12 @@ class PromotionEvaluatorTest extends TestCase
 
     public function test_percentage_promo_applies_when_threshold_met(): void
     {
-        Promotion::create(['name' => '10% over 75', 'type' => 'percentage', 'value' => 10, 'minimum_cart_amount' => 75, 'absorbed_by_vendor_percentage' => 40, 'is_active' => true]);
+        $promo = Promotion::create(['name' => '10% over 75', 'type' => 'percentage', 'value' => 10, 'minimum_cart_amount' => 75, 'absorbed_by_vendor_percentage' => 40, 'is_active' => true]);
         $r = $this->evaluator->evaluate(100.0, 0.0);
         $this->assertSame('promotion', $r->discountSource);
         $this->assertSame(10.0, $r->discountAmount);
         $this->assertSame(40.0, $r->absorbedByVendorPercentage);
+        $this->assertSame($promo->id, $r->promotionId);
     }
 
     public function test_fixed_promo_is_capped_at_subtotal(): void
@@ -63,10 +64,23 @@ class PromotionEvaluatorTest extends TestCase
 
     public function test_free_shipping_flag_is_independent_of_discount(): void
     {
-        Promotion::create(['name' => 'Free ship over 100', 'type' => 'free_shipping', 'minimum_cart_amount' => 100, 'is_active' => true]);
+        $fs = Promotion::create(['name' => 'Free ship over 100', 'type' => 'free_shipping', 'minimum_cart_amount' => 100, 'is_active' => true]);
         $r = $this->evaluator->evaluate(120.0, 15.0); // coupon still wins the discount slot
         $this->assertTrue($r->freeShipping);
         $this->assertSame('coupon', $r->discountSource);
         $this->assertSame(15.0, $r->discountAmount);
+        $this->assertSame($fs->id, $r->freeShippingPromotionId);
+    }
+
+    public function test_highest_value_discount_promo_wins(): void
+    {
+        Promotion::create(['name' => 'Small', 'type' => 'fixed', 'value' => 10, 'minimum_cart_amount' => 10, 'is_active' => true]);
+        $big = Promotion::create(['name' => 'Big', 'type' => 'fixed', 'value' => 25, 'minimum_cart_amount' => 10, 'is_active' => true]);
+
+        $r = $this->evaluator->evaluate(100.0, 0.0);
+
+        $this->assertSame('promotion', $r->discountSource);
+        $this->assertSame(25.0, $r->discountAmount);
+        $this->assertSame($big->id, $r->promotionId);
     }
 }
