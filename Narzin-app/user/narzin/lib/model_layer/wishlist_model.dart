@@ -6,11 +6,17 @@ class WishlistModel {
 
   WishlistModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
-    if (json['data'] != null) {
+    // The wishlist endpoint is paginated: `data` is a paginator object whose
+    // items live under `data.data`. Tolerate a flat list too, just in case.
+    var items = json['data'];
+    if (items is Map) {
+      items = items['data'];
+    }
+    if (items is List) {
       data = <WishlistItemData>[];
-      json['data'].forEach((v) {
+      for (var v in items) {
         data!.add(WishlistItemData.fromJson(v));
-      });
+      }
     }
   }
 
