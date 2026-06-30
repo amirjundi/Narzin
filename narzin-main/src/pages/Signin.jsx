@@ -18,17 +18,10 @@ import { useTranslation } from "react-i18next";
 
 const SignIn = () => {
 
-    const isAuthenticatedState = useSelector((state) => state.auth.isAuthenticated);
-
-    const navigate = useNavigate();
-    if(isAuthenticatedState){
-        navigate("/");
-    }
-
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading, error, isAuthenticated } = useSelector(
-    (state) => state.userLogin
+    (state) => state.auth
   );
   const { t } = useTranslation();
   const [formData, setFormData] = useState({

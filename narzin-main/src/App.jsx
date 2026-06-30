@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "./Store/slices/CategorySlice";
 import ShowToast from "./components/ShowToast";
 import { fetchProducts } from "./Store/slices/ProductSlice";
-import { verifyToken } from "./Store/slices/Auth/authTestSlice";
+import { verifyToken } from "./Store/slices/Auth/AuthSlice";
 import Return from "./pages/Return";
 import Privacy from "./pages/Privacy";
 import PaymentCallback from "./pages/PaymentCallback";

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   User,
   Package,
@@ -32,11 +32,16 @@ const MyAccountLayout = () => {
   
   const navigate = useNavigate();
 
-  const {isAuthenticated} = useSelector((state) => state.auth);
+  // Guard on the single auth slice. Redirect from an effect (not during render)
+  // and use the router instead of a hard reload, which previously ping-ponged
+  // with the login page and refreshed continuously.
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
-  if(!isAuthenticated){
-      window.location.href = '/signin';
-  }
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/signin', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const tabs = [
     { id: 'my-account', label: t('accountPage.myAccount') , icon: User },

@@ -43,6 +43,24 @@ export const login = createAsyncThunk(
   }
 );
 
+// Verify the session (httpOnly cookie) is still valid by calling a protected
+// endpoint. The auth indicator is the stored user object, not a token. This
+// lives in the same slice as login/logout so there is a single source of truth
+// for `isAuthenticated` (previously a second `authTestSlice` held a competing
+// flag, which caused a post-login redirect loop).
+export const verifyToken = createAsyncThunk('auth/verifyToken', async () => {
+  const hasUser = localStorage.getItem('user') || sessionStorage.getItem('user');
+  if (!hasUser) return false;
+
+  try {
+    const response = await api.get('/v1/profile');
+    return response.data.status === true;
+  } catch (error) {
+    console.error('Error verifying session:', error);
+    return false;
+  }
+});
+
 // Logout thunk
 export const logout = createAsyncThunk('auth/logout', async (_, { rejectWithValue }) => {
   try {
@@ -113,6 +131,25 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
         state.error = action.payload || 'Logout failed';
+      })
+
+      // Session verification cases
+      .addCase(verifyToken.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(verifyToken.fulfilled, (state, action) => {
+        state.isAuthenticated = action.payload;
+        if (!action.payload) {
+          // Session is no longer valid — drop the stale auth indicator.
+          state.user = null;
+          localStorage.removeItem('user');
+          sessionStorage.removeItem('user');
+        }
+        state.loading = false;
+      })
+      .addCase(verifyToken.rejected, (state) => {
+        state.isAuthenticated = false;
+        state.loading = false;
       });
   }
 });

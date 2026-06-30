@@ -19,11 +19,16 @@ import { useTranslation } from 'react-i18next';
 const SignUp = () => {
   const navigate = useNavigate();
 
-      const isAuthenticatedState = useSelector((state) => state.auth.isAuthenticated);
-  
-      if(isAuthenticatedState){
-          navigate("/my-account");
-      }
+  const isAuthenticatedState = useSelector((state) => state.auth.isAuthenticated);
+
+  // Redirect away from signup if already authenticated. Must run in an effect,
+  // not during render, otherwise navigate() fires on every render and loops.
+  useEffect(() => {
+    if (isAuthenticatedState) {
+      navigate("/my-account", { replace: true });
+    }
+  }, [isAuthenticatedState, navigate]);
+
   const dispatch = useDispatch();
   const { loading, success, error, fieldErrors, message } = useSelector((state) => state.registration);
   const [animateError, setAnimateError] = useState(false);

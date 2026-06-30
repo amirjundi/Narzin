@@ -6,9 +6,7 @@ import SingleVendorSlice from "./slices/SingleVendorSlice";
 import ReviewsSlice from "./slices/Reviews/GetReviewsSlice";
 import PostReviewSlice from "./slices/Reviews/PostReviewSlice";
 import StoreSlice from "./slices/StoreSlice";
-import authReducer from "./slices/Auth/authTestSlice";
-
-import userLoginReducer from "./slices/Auth/AuthSlice";
+import authReducer from "./slices/Auth/AuthSlice";
 
 import registrationReducer from "./slices/Auth/RegistrationSlice";
 
@@ -45,7 +43,6 @@ export const store = configureStore({
     postReview: PostReviewSlice,
     store: StoreSlice,
     auth: authReducer,
-    userLogin: userLoginReducer,
     registration: registrationReducer,
     cart: cartReducer,
     wishlist: wishlistReducer,
