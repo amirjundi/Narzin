@@ -1,0 +1,11 @@
+{
+    "name": "HomeContent",
+    "alias": "homecontent",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\HomeContent\\Providers\\HomeContentServiceProvider"
+    ],
+    "files": []
+}
