@@ -13,26 +13,30 @@ class BeforeNavController extends Controller
 
     public function getCurrent()
     {
-        $feed = app(HomeFeedService::class)->feed('web', 'ar');
-        $bar = collect($feed)->firstWhere('type', 'announcement_bar');
+        try {
+            $feed = app(HomeFeedService::class)->feed('web', 'ar');
+            $bar = collect($feed)->firstWhere('type', 'announcement_bar');
 
-        if (!$bar) {
+            if (!$bar) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'No active banner found',
+                    'data' => null,
+                ], 404);
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'No active banner found',
-                'data' => null,
-            ], 404);
+                'message' => 'Active banner retrieved successfully',
+                'data' => [
+                    'id' => $bar['id'],
+                    'text' => $bar['content']['text'],
+                    'start_date' => null,
+                    'end_date' => null,
+                ],
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage(), 'data' => null], 500);
         }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Active banner retrieved successfully',
-            'data' => [
-                'id' => $bar['id'],
-                'text' => $bar['content']['text'],
-                'start_date' => null,
-                'end_date' => null,
-            ],
-        ], 200);
     }
 }

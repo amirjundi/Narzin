@@ -35,7 +35,7 @@ class BannerController extends Controller
                 ]);
 
             return response()->json(['status' => true, 'data' => $banners]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
         }
     }
