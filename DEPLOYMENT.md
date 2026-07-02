@@ -42,3 +42,15 @@ GitHub Actions secrets (repo → Settings → Secrets and variables → Actions)
   and rsyncs `dist/` to the server.
 
 The production `.env` lives only on the server and is never committed.
+
+## Homepage Builder (Phase 1)
+
+Release steps for the HomeContent module:
+
+1. `php artisan migrate` (creates `home_blocks`).
+2. Set in `.env`: `HOME_PREVIEW_TOKEN` (any long random string) and `STOREFRONT_URL` (the React storefront origin, e.g. https://narzin.com).
+3. `php artisan home:migrate-legacy` — one-time conversion of `banners` + `before_nav` rows into blocks (idempotent).
+4. `php artisan config:clear && php artisan route:clear && php artisan cache:clear`.
+5. Verify `GET /api/v1/home?platform=web`, `GET /api/v1/banners/mobile`, `GET /api/v1/before-nav/current`.
+
+The legacy `banners`/`before_nav` tables and endpoints stay until Phase 4 cleanup.
