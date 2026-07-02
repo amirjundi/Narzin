@@ -43,7 +43,7 @@ class HomeContentServiceProvider extends ServiceProvider
      */
     protected function registerCommands(): void
     {
-        // $this->commands([]);
+        $this->commands([\Modules\HomeContent\Console\MigrateLegacyHomeContent::class]);
     }
 
     /**
