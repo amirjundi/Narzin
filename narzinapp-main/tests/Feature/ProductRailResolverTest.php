@@ -95,6 +95,47 @@ class ProductRailResolverTest extends TestCase
         $this->assertSame([$c->id, $a->id, $b->id], array_column($cards, 'id'));
     }
 
+    public function test_manual_truncates_in_admin_order(): void
+    {
+        $a = $this->product('a', 10);
+        $b = $this->product('b', 20);
+        $c = $this->product('c', 30);
+        $d = $this->product('d', 40);
+
+        $cards = $this->resolver->resolve([
+            'rule' => 'manual',
+            'product_ids' => [$c->id, $a->id, $d->id, $b->id],
+            'limit' => 2,
+        ]);
+
+        $this->assertSame([$c->id, $a->id], array_column($cards, 'id'));
+    }
+
+    public function test_rail_backfills_when_invalid_product_is_newer(): void
+    {
+        $p1 = $this->product('p1', 10);
+        $p1->created_at = now()->subDays(4);
+        $p1->save();
+        $p2 = $this->product('p2', 20);
+        $p2->created_at = now()->subDays(3);
+        $p2->save();
+        $p3 = $this->product('p3', 30);
+        $p3->created_at = now()->subDays(2);
+        $p3->save();
+        $ghost = Product::create([
+            'name_arabic' => 'ghost', 'name_german' => 'ghost',
+            'slug_arabic' => 'g-ar-' . uniqid(), 'slug_german' => 'g-de-' . uniqid(),
+            'category_id' => $this->categoryId, 'is_active' => true,
+        ]);
+        $ghost->created_at = now();
+        $ghost->save();
+
+        $cards = $this->resolver->resolve(['rule' => 'newest', 'limit' => 3]);
+
+        $this->assertCount(3, $cards);
+        $this->assertNotContains($ghost->id, array_column($cards, 'id'));
+    }
+
     public function test_category_rule_matches_category_and_child(): void
     {
         $inCat = $this->product('in', 10);

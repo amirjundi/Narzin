@@ -24,6 +24,9 @@ class ProductRailResolver
 
         $query = Product::with(['vendor'])
             ->where('products.is_active', true)
+            ->whereHas('variants', fn ($q) => $q
+                ->where('is_active', true)
+                ->where('is_out_of_stock', false))
             ->select('products.*')
             ->addSelect([
                 'min_price' => ProductVariant::selectRaw('price / ?', [$rate])
@@ -68,11 +71,17 @@ class ProductRailResolver
                 $query->latest();
         }
 
-        $products = $query->limit($limit)->get();
-
         if ($rule === 'manual') {
+            // SQL LIMIT has no ORDER BY guarantee here, so truncating in SQL could
+            // arbitrarily drop products the admin intended to keep. Fetch all matches,
+            // sort by admin order in PHP, then truncate.
             $ids = array_map('intval', $content['product_ids']);
-            $products = $products->sortBy(fn ($p) => array_search($p->id, $ids, true))->values();
+            $products = $query->get()
+                ->sortBy(fn ($p) => array_search($p->id, $ids, true))
+                ->values()
+                ->take($limit);
+        } else {
+            $products = $query->limit($limit)->get();
         }
 
         // ProductImage has a global scope that does CONCAT(app.url, image) in SQL,
