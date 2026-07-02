@@ -70,7 +70,7 @@ New module: `Modules/HomeContent` (follows the existing nwidart module pattern).
 
 ### Migration of existing data
 
-One-time migration/seeder: each `before_nav` row → an `announcement_bar` block (keeping dates); all `banners` rows → one `hero_slider` block (web images from `is_mobile=0`, app from `is_mobile=1`). Legacy tables retained until Phase 4 cleanup.
+One-time migration/seeder: each `before_nav` row → an `announcement_bar` block (keeping dates; `end_date` is inclusive, so it maps to `ends_at` at end-of-day); `banners` rows → **two** `hero_slider` blocks, one `platform: web` (slides from `is_mobile=0`) and one `platform: app` (slides from `is_mobile=1`). *Amendment (2026-07-03, final review):* originally specced as one `platform: both` block, but combined with the hero slide cross-platform image fallback that would have served web art to app clients and vice versa through the legacy endpoints — per-platform blocks preserve the legacy `is_mobile` split exactly. Legacy tables retained until Phase 4 cleanup.
 
 ## 4. API
 

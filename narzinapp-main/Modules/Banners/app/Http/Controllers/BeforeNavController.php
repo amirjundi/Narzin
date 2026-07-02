@@ -3,41 +3,40 @@
 namespace Modules\Banners\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Modules\HomeContent\Services\HomeFeedService;
 
 class BeforeNavController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index() {}
+    public function index()
+    {
+    }
 
-    /**
-     * Get the current active before nav banner
-     */
     public function getCurrent()
     {
-        $today = Carbon::today()->format('Y-m-d');
+        try {
+            $feed = app(HomeFeedService::class)->feed('web', 'ar');
+            $bar = collect($feed)->firstWhere('type', 'announcement_bar');
 
-        $banner = DB::table('before_nav')
-            ->where('start_date', '<=', $today)
-            ->where('end_date', '>=', $today)
-            ->orderBy('created_at', 'desc')
-            ->first();
-        if (!$banner) {
+            if (!$bar) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'No active banner found',
+                    'data' => null,
+                ], 404);
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'No active banner found',
-                'data' => null
-            ], 404);
+                'message' => 'Active banner retrieved successfully',
+                'data' => [
+                    'id' => $bar['id'],
+                    'text' => $bar['content']['text'],
+                    'start_date' => null,
+                    'end_date' => null,
+                ],
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage(), 'data' => null], 500);
         }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Active banner retrieved successfully',
-            'data' => $banner
-        ], 200);
     }
 }

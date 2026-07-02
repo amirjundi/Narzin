@@ -7,5 +7,6 @@
     "VendorAccount": true,
     "UserAddress": true,
     "Wishlist": true,
-    "Banners": true
+    "Banners": true,
+    "HomeContent": true
 }
