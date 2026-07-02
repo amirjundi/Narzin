@@ -412,7 +412,7 @@
                                      : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }}">
                             <div class="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg
                                         {{ request()->routeIs('home-blocks.*') ? 'bg-white/20' : 'bg-slate-700/50' }}">
-                                <i class="fa-solid fa-house w-5 h-5"></i>
+                                <span class="inline-flex items-center justify-center w-5 h-5"><i class="fa-solid fa-house"></i></span>
                             </div>
                             <span x-show="sidebarOpen" class="font-medium">Homepage</span>
                         </a>

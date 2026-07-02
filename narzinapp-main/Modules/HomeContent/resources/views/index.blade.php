@@ -77,30 +77,49 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
     <script>
         const csrfToken = document.querySelector('meta[name=csrf-token]').content;
+        const toggleUrlTemplate = '{{ route('home-blocks.toggle', ['home_block' => '__ID__']) }}';
 
         new Sortable(document.getElementById('blocks-list'), {
             handle: '.drag-handle',
             animation: 150,
             onEnd() {
-                const ids = [...document.querySelectorAll('#blocks-list [data-id]')].map(el => Number(el.dataset.id));
-                fetch('{{ route('home-blocks.reorder') }}', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-                    body: JSON.stringify({ ids }),
-                });
+                try {
+                    const ids = [...document.querySelectorAll('#blocks-list [data-id]')].map(el => Number(el.dataset.id));
+                    fetch('{{ route('home-blocks.reorder') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                        body: JSON.stringify({ ids }),
+                    }).then(res => {
+                        if (!res.ok) {
+                            alert('Saving the new order failed — reload the page and try again.');
+                        }
+                    }).catch(() => {
+                        alert('Saving the new order failed — reload the page and try again.');
+                    });
+                } catch (error) {
+                    alert('Saving the new order failed — reload the page and try again.');
+                }
             },
         });
 
         document.querySelectorAll('.toggle-btn').forEach((btn) => {
             btn.addEventListener('click', async () => {
-                const res = await fetch(`/home-blocks/${btn.dataset.id}/toggle`, {
-                    method: 'POST',
-                    headers: { 'X-CSRF-TOKEN': csrfToken },
-                });
-                const json = await res.json();
-                btn.textContent = json.is_active ? 'ON' : 'OFF';
-                btn.className = 'toggle-btn text-xs px-3 py-1 rounded-full ' +
-                    (json.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500');
+                try {
+                    const res = await fetch(toggleUrlTemplate.replace('__ID__', btn.dataset.id), {
+                        method: 'POST',
+                        headers: { 'X-CSRF-TOKEN': csrfToken },
+                    });
+                    if (!res.ok) {
+                        alert('Toggling failed — reload the page and try again.');
+                        return;
+                    }
+                    const json = await res.json();
+                    btn.textContent = json.is_active ? 'ON' : 'OFF';
+                    btn.className = 'toggle-btn text-xs px-3 py-1 rounded-full ' +
+                        (json.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500');
+                } catch (error) {
+                    alert('Toggling failed — reload the page and try again.');
+                }
             });
         });
     </script>
