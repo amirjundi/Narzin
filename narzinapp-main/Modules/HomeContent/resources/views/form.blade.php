@@ -70,5 +70,11 @@
             container.dataset.nextIdx = String(index + 1);
             container.insertAdjacentHTML('beforeend', template.innerHTML.replaceAll('__IDX__', String(index)));
         }
+
+        // Eagerly initialize nextIdx at page load to prevent index collisions
+        document.querySelectorAll('template[data-repeater-for]').forEach((t) => {
+            const c = document.getElementById(`${t.dataset.repeaterFor}-rows`);
+            if (c) c.dataset.nextIdx = String(c.children.length);
+        });
     </script>
 </x-admin-layout>
