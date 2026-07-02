@@ -3,57 +3,40 @@
 namespace Modules\Banners\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Modules\Admin\Models\Banner;
+use Modules\HomeContent\Services\HomeFeedService;
 
 class BannerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function indexMobile()
     {
-        try {
-            $banners = Banner::where('is_mobile', 1)->get();
-            $baseUrl = config('app.url');
-
-            $banners->transform(function ($banner) use ($baseUrl) {
-                $banner->image = $baseUrl . '/storage/' . $banner->image;
-                return $banner;
-            });
-
-            return response()->json([
-                'status' => true,
-                'data' => $banners
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }
+        return $this->legacyBanners('app', 1);
     }
 
-    public function indexWeb(){
-        try {
-            $banners = Banner::where('is_mobile', 0)->get();
-            $baseUrl = config('app.url');
-
-            $banners->transform(function ($banner) use ($baseUrl) {
-                $banner->image = $baseUrl . '/storage/' . $banner->image;
-                return $banner;
-            });
-
-            return response()->json([
-                'status' => true,
-                'data' => $banners
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }
+    public function indexWeb()
+    {
+        return $this->legacyBanners('web', 0);
     }
 
+    private function legacyBanners(string $platform, int $isMobile)
+    {
+        try {
+            $feed = app(HomeFeedService::class)->feed($platform, 'ar');
+
+            $banners = collect($feed)
+                ->where('type', 'hero_slider')
+                ->flatMap(fn ($block) => $block['content']['slides'])
+                ->values()
+                ->map(fn ($slide, $i) => [
+                    'id' => $i + 1,
+                    'image' => $slide['image'],
+                    'title' => $slide['title'],
+                    'description' => $slide['subtitle'],
+                    'is_mobile' => $isMobile,
+                ]);
+
+            return response()->json(['status' => true, 'data' => $banners]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
 }
