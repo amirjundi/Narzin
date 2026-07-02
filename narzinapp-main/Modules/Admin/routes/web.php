@@ -4,8 +4,6 @@ use Illuminate\Support\Facades\Route;
 use Modules\Admin\Http\Controllers\AddressController;
 use Modules\Admin\Http\Controllers\AdminController;
 use Modules\Admin\Http\Controllers\AttributeController;
-use Modules\Admin\Http\Controllers\BannerController;
-use Modules\Admin\Http\Controllers\BeforeNavController;
 use Modules\Admin\Http\Controllers\CategoryController;
 use Modules\Admin\Http\Controllers\CouponController;
 use Modules\Admin\Http\Controllers\DeliveryPriceController;
@@ -50,7 +48,11 @@ Route::middleware(['admin.auth'])->group(function () {
 
 
     Route::resource('attributes', AttributeController::class)->names('attributes');
-    Route::resource('banners', BannerController::class)->names('banners');
+
+    // Legacy pages superseded by the Homepage Builder (HomeContent module)
+    Route::get('banners', fn () => redirect()->route('home-blocks.index'))->name('banners.index');
+    Route::get('before-nav', fn () => redirect()->route('home-blocks.index'))->name('before-nav.index');
+
     Route::get('orders/finished/orders', [OrderController::class, 'indexFinishedOrders'])->name('orders.finished');
     Route::get('orders/remaining/orders', [OrderController::class, 'indexRemainingOrders'])->name('orders.remaining');
     Route::post('/admin/orders/set-shipped', [OrderController::class, 'setShipped'])->name('set.shipped');
@@ -70,7 +72,6 @@ Route::middleware(['admin.auth'])->group(function () {
     Route::post('delivery-zones/{deliveryZone}/methods', [\Modules\Admin\Http\Controllers\DeliveryMethodController::class, 'store'])->name('delivery-methods.store');
     Route::delete('delivery-zones/{deliveryZone}/methods/{deliveryMethod}', [\Modules\Admin\Http\Controllers\DeliveryMethodController::class, 'destroy'])->name('delivery-methods.destroy');
     
-    Route::resource('before-nav', BeforeNavController::class)->names('before-nav');
     Route::post('/wallet/{user}/update-balance', [UserController::class, 'updateWallet'])->name('wallet.update-balance');
 
 

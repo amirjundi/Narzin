@@ -403,20 +403,18 @@
                     Marketing
                 </p>
                 <ul class="space-y-1">
-                    <!-- Banners -->
+                    <!-- Homepage -->
                     <li>
-                        <a href="{{ route('banners.index') }}" 
+                        <a href="{{ route('home-blocks.index') }}"
                            class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
-                                  {{ request()->routeIs('banners.*') 
-                                     ? 'bg-gradient-to-r from-fuchsia-600 to-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/30' 
+                                  {{ request()->routeIs('home-blocks.*')
+                                     ? 'bg-gradient-to-r from-fuchsia-600 to-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/30'
                                      : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }}">
-                            <div class="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg 
-                                        {{ request()->routeIs('banners.*') ? 'bg-white/20' : 'bg-slate-700/50' }}">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
+                            <div class="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg
+                                        {{ request()->routeIs('home-blocks.*') ? 'bg-white/20' : 'bg-slate-700/50' }}">
+                                <i class="fa-solid fa-house w-5 h-5"></i>
                             </div>
-                            <span x-show="sidebarOpen" class="font-medium">Banners</span>
+                            <span x-show="sidebarOpen" class="font-medium">Homepage</span>
                         </a>
                     </li>
 
@@ -454,22 +452,6 @@
                         </a>
                     </li>
 
-                    <!-- Before Nav Text -->
-                    <li>
-                        <a href="{{ route('before-nav.index') }}" 
-                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
-                                  {{ request()->routeIs('before-nav.*') 
-                                     ? 'bg-gradient-to-r from-sky-600 to-sky-500 text-white shadow-lg shadow-sky-500/30' 
-                                     : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }}">
-                            <div class="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg 
-                                        {{ request()->routeIs('before-nav.*') ? 'bg-white/20' : 'bg-slate-700/50' }}">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-                                </svg>
-                            </div>
-                            <span x-show="sidebarOpen" class="font-medium">Announcement</span>
-                        </a>
-                    </li>
                 </ul>
             </div>
 
