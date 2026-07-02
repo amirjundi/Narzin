@@ -36,13 +36,16 @@
 <script>
     new Sortable(document.getElementById('picked-categories'), { handle: '.drag-handle', animation: 150 });
 
+    const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
     function addPickedCategory(category) {
         if (document.querySelector(`#picked-categories [data-id="${category.id}"]`)) return;
+        const id = Number(category.id);
         document.getElementById('picked-categories').insertAdjacentHTML('beforeend', `
-            <li class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-1.5 text-sm" data-id="${category.id}">
+            <li class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-1.5 text-sm" data-id="${id}">
                 <span class="drag-handle cursor-grab text-gray-400 select-none">&#8801;</span>
-                <span class="flex-1">${category.name_german || category.name_arabic}</span>
-                <input type="hidden" name="content[category_ids][]" value="${category.id}">
+                <span class="flex-1">${escapeHtml(category.name_german || category.name_arabic)}</span>
+                <input type="hidden" name="content[category_ids][]" value="${id}">
                 <button type="button" onclick="this.closest('li').remove()" class="text-red-500">&times;</button>
             </li>`);
     }

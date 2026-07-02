@@ -85,13 +85,16 @@
     const pickedProductsList = document.getElementById('picked-products');
     if (pickedProductsList) new Sortable(pickedProductsList, { handle: '.drag-handle', animation: 150 });
 
+    const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
     function addPickedProduct(product) {
         if (document.querySelector(`#picked-products [data-id="${product.id}"]`)) return;
+        const id = Number(product.id);
         pickedProductsList.insertAdjacentHTML('beforeend', `
-            <li class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-1.5 text-sm" data-id="${product.id}">
+            <li class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-3 py-1.5 text-sm" data-id="${id}">
                 <span class="drag-handle cursor-grab text-gray-400 select-none">&#8801;</span>
-                <span class="flex-1">${product.name_german || product.name_arabic}</span>
-                <input type="hidden" name="content[product_ids][]" value="${product.id}">
+                <span class="flex-1">${escapeHtml(product.name_german || product.name_arabic)}</span>
+                <input type="hidden" name="content[product_ids][]" value="${id}">
                 <button type="button" onclick="this.closest('li').remove()" class="text-red-500">&times;</button>
             </li>`);
     }
@@ -116,10 +119,10 @@
             ? json.data.map(p => `
                 <div class="w-28 text-xs text-center">
                     <div class="h-28 bg-gray-100 rounded overflow-hidden mb-1">
-                        ${p.image ? `<img src="${p.image}" class="w-full h-full object-cover" alt="">` : ''}
+                        ${p.image ? `<img src="${escapeHtml(p.image)}" class="w-full h-full object-cover" alt="">` : ''}
                     </div>
-                    <div class="truncate">${p.name_german || p.name_arabic}</div>
-                    <div class="font-semibold">€${p.min_price}</div>
+                    <div class="truncate">${escapeHtml(p.name_german || p.name_arabic)}</div>
+                    <div class="font-semibold">€${escapeHtml(p.min_price)}</div>
                 </div>`).join('')
             : '<p class="text-sm text-red-600">No products match this rule yet — the rail would be hidden on the homepage.</p>';
     }
