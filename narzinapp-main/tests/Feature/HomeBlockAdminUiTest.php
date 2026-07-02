@@ -70,4 +70,14 @@ class HomeBlockAdminUiTest extends TestCase
             ->assertSee('Existing bar')
             ->assertSee('Kostenloser Versand');
     }
+
+    public function test_create_forms_render_for_media_block_types(): void
+    {
+        foreach (['hero_slider', 'promo_tiles', 'category_grid', 'product_rail'] as $type) {
+            $this->actingAs($this->admin())
+                ->get(route('home-blocks.create', ['type' => $type]))
+                ->assertOk()
+                ->assertSee('name="name"', false);
+        }
+    }
 }
