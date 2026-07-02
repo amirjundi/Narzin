@@ -4,6 +4,7 @@ namespace Modules\HomeContent\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Modules\HomeContent\Services\HomeFeedService;
 
 class HomeBlock extends Model
 {
@@ -30,6 +31,12 @@ class HomeBlock extends Model
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => HomeFeedService::flushCache());
+        static::deleted(fn () => HomeFeedService::flushCache());
+    }
 
     public function scopeVisible(Builder $query, string $platform): Builder
     {
