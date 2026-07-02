@@ -44,4 +44,30 @@ class HomeBlockAdminUiTest extends TestCase
         $this->actingAs($this->admin())->get('/banners')->assertRedirect(route('home-blocks.index'));
         $this->actingAs($this->admin())->get('/before-nav')->assertRedirect(route('home-blocks.index'));
     }
+
+    public function test_create_forms_render_for_text_block_types(): void
+    {
+        foreach (['announcement_bar', 'countdown_banner', 'info_strip', 'popup'] as $type) {
+            $this->actingAs($this->admin())
+                ->get(route('home-blocks.create', ['type' => $type]))
+                ->assertOk()
+                ->assertSee('name="name"', false)
+                ->assertSee('content[', false);
+        }
+    }
+
+    public function test_edit_form_shows_existing_values(): void
+    {
+        $block = HomeBlock::create([
+            'type' => 'announcement_bar', 'name' => 'Existing bar', 'platform' => 'web',
+            'is_active' => true, 'sort_order' => 1,
+            'content' => ['text' => ['de' => 'Kostenloser Versand']],
+        ]);
+
+        $this->actingAs($this->admin())
+            ->get(route('home-blocks.edit', $block))
+            ->assertOk()
+            ->assertSee('Existing bar')
+            ->assertSee('Kostenloser Versand');
+    }
 }
