@@ -181,7 +181,12 @@ class HomeBlockAdminController extends Controller
             $content['image'] = $store($request->file('countdown_image'));
         }
         if ($type === 'hero_slider') {
-            foreach (array_keys($content['slides'] ?? []) as $i) {
+            $indices = array_keys(array_replace(
+                $content['slides'] ?? [],
+                $request->file('slide_images_web') ?? [],
+                $request->file('slide_images_app') ?? [],
+            ));
+            foreach ($indices as $i) {
                 if ($request->hasFile("slide_images_web.{$i}")) {
                     $content['slides'][$i]['image_web'] = $store($request->file("slide_images_web.{$i}"));
                 }
@@ -189,12 +194,24 @@ class HomeBlockAdminController extends Controller
                     $content['slides'][$i]['image_app'] = $store($request->file("slide_images_app.{$i}"));
                 }
             }
+            if (isset($content['slides'])) {
+                ksort($content['slides']);
+                $content['slides'] = array_values($content['slides']);
+            }
         }
         if ($type === 'promo_tiles') {
-            foreach (array_keys($content['tiles'] ?? []) as $i) {
+            $indices = array_keys(array_replace(
+                $content['tiles'] ?? [],
+                $request->file('tile_images') ?? [],
+            ));
+            foreach ($indices as $i) {
                 if ($request->hasFile("tile_images.{$i}")) {
                     $content['tiles'][$i]['image'] = $store($request->file("tile_images.{$i}"));
                 }
+            }
+            if (isset($content['tiles'])) {
+                ksort($content['tiles']);
+                $content['tiles'] = array_values($content['tiles']);
             }
         }
 

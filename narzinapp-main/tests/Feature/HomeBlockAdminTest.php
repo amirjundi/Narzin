@@ -99,6 +99,30 @@ class HomeBlockAdminTest extends TestCase
             ->assertSessionHasErrors();
     }
 
+    public function test_hero_slide_with_only_uploaded_image_is_kept(): void
+    {
+        Storage::fake('public');
+
+        $this->actingAs($this->admin())
+            ->post(route('home-blocks.store'), [
+                'type' => 'hero_slider', 'name' => 'Hero', 'platform' => 'both',
+                'content' => ['slides' => [['title' => ['ar' => 'صيف']]]],
+                'slide_images_web' => [
+                    0 => UploadedFile::fake()->image('slide0.jpg', 1200, 600),
+                    1 => UploadedFile::fake()->image('slide1.jpg', 1200, 600),
+                ],
+            ])
+            ->assertRedirect(route('home-blocks.index'));
+
+        $block = HomeBlock::firstOrFail();
+        $slides = $block->content['slides'];
+        $this->assertCount(2, $slides);
+        $this->assertNotEmpty($slides[0]['image_web'] ?? null);
+        $this->assertNotEmpty($slides[1]['image_web'] ?? null);
+        Storage::disk('public')->assertExists($slides[0]['image_web']);
+        Storage::disk('public')->assertExists($slides[1]['image_web']);
+    }
+
     public function test_admin_can_update_and_delete(): void
     {
         $block = $this->block();
