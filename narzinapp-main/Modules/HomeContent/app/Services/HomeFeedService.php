@@ -52,7 +52,7 @@ class HomeFeedService
             ->where('is_active', true)
             ->whereIn('platform', ['both', $platform])
             ->where(fn ($q) => $q->whereNull('ends_at')->orWhere('ends_at', '>=', $now))
-            ->orderBy('sort_order');
+            ->orderBy('sort_order')->orderBy('id');
 
         if (!$preview) {
             $query->where(fn ($q) => $q->whereNull('starts_at')->orWhere('starts_at', '<=', $now));
@@ -187,7 +187,6 @@ class HomeFeedService
         if ($categories->isEmpty()) {
             return null;
         }
-        $appUrl = rtrim((string) config('app.url'), '/');
 
         return [
             'categories' => $categories->map(fn ($cat) => [
@@ -195,7 +194,7 @@ class HomeFeedService
                 'name' => $locale === 'ar'
                     ? ($cat->name_arabic ?: $cat->name_german)
                     : ($cat->name_german ?: $cat->name_arabic),
-                'image' => $cat->image ? $appUrl . '/storage/' . $cat->image : null,
+                'image' => ImageUrl::make($cat->image),
             ])->all(),
         ];
     }
