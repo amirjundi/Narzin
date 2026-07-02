@@ -63,9 +63,12 @@
         function addRepeaterRow(key) {
             const template = document.querySelector(`template[data-repeater-for="${key}"]`);
             const container = document.getElementById(`${key}-rows`);
-            const index = container.children.length;
-            const html = template.innerHTML.replaceAll('__IDX__', String(index));
-            container.insertAdjacentHTML('beforeend', html);
+            if (container.dataset.nextIdx === undefined) {
+                container.dataset.nextIdx = String(container.children.length);
+            }
+            const index = Number(container.dataset.nextIdx);
+            container.dataset.nextIdx = String(index + 1);
+            container.insertAdjacentHTML('beforeend', template.innerHTML.replaceAll('__IDX__', String(index)));
         }
     </script>
 </x-admin-layout>

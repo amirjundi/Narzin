@@ -2,6 +2,7 @@
 
 namespace Modules\HomeContent\Console;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Modules\HomeContent\Models\HomeBlock;
@@ -20,47 +21,72 @@ class MigrateLegacyHomeContent extends Command
             return self::SUCCESS;
         }
 
-        $sort = (int) HomeBlock::max('sort_order');
-        $created = 0;
+        $created = DB::transaction(function () {
+            $sort = (int) HomeBlock::max('sort_order');
+            $created = 0;
 
-        foreach (DB::table('before_nav')->orderBy('created_at')->get() as $row) {
-            HomeBlock::create([
-                'type' => 'announcement_bar',
-                'name' => 'Legacy announcement #' . $row->id,
-                'platform' => 'both',
-                'is_active' => true,
-                'starts_at' => $row->start_date,
-                'ends_at' => $row->end_date,
-                'sort_order' => ++$sort,
-                'content' => [
-                    'text' => ['ar' => $row->text],
-                    'bg_color' => '#141923',
-                    'text_color' => '#C5A880',
-                ],
-            ]);
-            $created++;
-        }
+            foreach (DB::table('before_nav')->orderBy('created_at')->get() as $row) {
+                HomeBlock::create([
+                    'type' => 'announcement_bar',
+                    'name' => 'Legacy announcement #' . $row->id,
+                    'platform' => 'both',
+                    'is_active' => true,
+                    'starts_at' => $row->start_date,
+                    'ends_at' => $row->end_date !== null ? Carbon::parse($row->end_date)->endOfDay() : null,
+                    'sort_order' => ++$sort,
+                    'content' => [
+                        'text' => ['ar' => $row->text],
+                        'bg_color' => '#141923',
+                        'text_color' => '#C5A880',
+                    ],
+                ]);
+                $created++;
+            }
 
-        $banners = DB::table('banners')->orderBy('created_at')->get();
-        if ($banners->isNotEmpty()) {
-            $slides = $banners->map(fn ($banner) => [
-                'image_web' => $banner->is_mobile ? null : $banner->image,
-                'image_app' => $banner->is_mobile ? $banner->image : null,
+            $banners = DB::table('banners')->orderBy('created_at')->get();
+
+            $webSlides = $banners->where('is_mobile', 0)->map(fn ($banner) => [
+                'image_web' => $banner->image,
+                'image_app' => null,
                 'title' => $banner->title ? ['ar' => $banner->title] : null,
                 'subtitle' => $banner->description ? ['ar' => $banner->description] : null,
                 'link' => null,
             ])->values()->all();
 
-            HomeBlock::create([
-                'type' => 'hero_slider',
-                'name' => 'Legacy hero slider',
-                'platform' => 'both',
-                'is_active' => true,
-                'sort_order' => ++$sort,
-                'content' => ['slides' => $slides],
-            ]);
-            $created++;
-        }
+            if (!empty($webSlides)) {
+                HomeBlock::create([
+                    'type' => 'hero_slider',
+                    'name' => 'Legacy hero slider (web)',
+                    'platform' => 'web',
+                    'is_active' => true,
+                    'sort_order' => ++$sort,
+                    'content' => ['slides' => $webSlides],
+                ]);
+                $created++;
+            }
+
+            $appSlides = $banners->where('is_mobile', 1)->map(fn ($banner) => [
+                'image_web' => null,
+                'image_app' => $banner->image,
+                'title' => $banner->title ? ['ar' => $banner->title] : null,
+                'subtitle' => $banner->description ? ['ar' => $banner->description] : null,
+                'link' => null,
+            ])->values()->all();
+
+            if (!empty($appSlides)) {
+                HomeBlock::create([
+                    'type' => 'hero_slider',
+                    'name' => 'Legacy hero slider (app)',
+                    'platform' => 'app',
+                    'is_active' => true,
+                    'sort_order' => ++$sort,
+                    'content' => ['slides' => $appSlides],
+                ]);
+                $created++;
+            }
+
+            return $created;
+        });
 
         $this->info("Created {$created} home blocks from legacy data.");
 

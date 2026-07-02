@@ -2,8 +2,11 @@
 <p class="text-sm text-gray-500">Recommended sizes — web ≈ 1600×530 (3:1), app ≈ 800×400 (2:1). Each slide needs at least one image.</p>
 <div id="slides-rows" class="space-y-4">
     @foreach ($slides as $i => $slide)
-        <div class="border border-gray-200 rounded-lg p-4 space-y-3">
-            <p class="text-xs font-semibold text-gray-400">Slide {{ $i + 1 }}</p>
+        <div class="repeater-row border border-gray-200 rounded-lg p-4 space-y-3">
+            <div class="flex items-start justify-between">
+                <p class="text-xs font-semibold text-gray-400">Slide {{ $i + 1 }}</p>
+                <button type="button" onclick="this.closest('.repeater-row').remove()" class="text-red-500 text-sm">&times; Remove</button>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Web image</label>
@@ -29,8 +32,11 @@
     @endforeach
 </div>
 <template data-repeater-for="slides">
-    <div class="border border-gray-200 rounded-lg p-4 space-y-3">
-        <p class="text-xs font-semibold text-gray-400">New slide</p>
+    <div class="repeater-row border border-gray-200 rounded-lg p-4 space-y-3">
+        <div class="flex items-start justify-between">
+            <p class="text-xs font-semibold text-gray-400">New slide</p>
+            <button type="button" onclick="this.closest('.repeater-row').remove()" class="text-red-500 text-sm">&times; Remove</button>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1">Web image</label>

@@ -68,4 +68,35 @@ class LegacyBannerEndpointsTest extends TestCase
             ->assertJsonPath('success', true)
             ->assertJsonPath('data', null);
     }
+
+    public function test_platform_split_is_preserved_for_single_image_slides(): void
+    {
+        config(['app.url' => 'https://api.test']);
+
+        HomeBlock::create([
+            'type' => 'hero_slider', 'name' => 'Web hero', 'platform' => 'web',
+            'is_active' => true, 'sort_order' => 1,
+            'content' => ['slides' => [[
+                'image_web' => 'homeBlocks/w-only.jpg', 'image_app' => null,
+            ]]],
+        ]);
+
+        HomeBlock::create([
+            'type' => 'hero_slider', 'name' => 'App hero', 'platform' => 'app',
+            'is_active' => true, 'sort_order' => 2,
+            'content' => ['slides' => [[
+                'image_web' => null, 'image_app' => 'homeBlocks/a-only.jpg',
+            ]]],
+        ]);
+
+        $this->getJson('/api/v1/banners/web')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.image', 'https://api.test/storage/homeBlocks/w-only.jpg');
+
+        $this->getJson('/api/v1/banners/mobile')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.image', 'https://api.test/storage/homeBlocks/a-only.jpg');
+    }
 }

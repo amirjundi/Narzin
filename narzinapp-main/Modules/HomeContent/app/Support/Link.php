@@ -13,7 +13,9 @@ class Link
         $value = $link['value'] ?? null;
 
         if ($type === 'url') {
-            return filter_var($value, FILTER_VALIDATE_URL) ? ['type' => 'url', 'value' => $value] : null;
+            $isValid = filter_var($value, FILTER_VALIDATE_URL) && preg_match('#^https?://#i', (string) $value);
+
+            return $isValid ? ['type' => 'url', 'value' => $value] : null;
         }
         if (in_array($type, ['category', 'product'], true)) {
             return is_numeric($value) ? ['type' => $type, 'value' => (int) $value] : null;

@@ -42,6 +42,7 @@ class HomeContentSupportTest extends TestCase
         $this->assertNull(Link::resolve(['type' => 'url', 'value' => 'not a url']));
         $this->assertNull(Link::resolve(['type' => 'product', 'value' => 'abc']));
         $this->assertNull(Link::resolve('nope'));
+        $this->assertNull(Link::resolve(['type' => 'url', 'value' => 'ftp://x.test/a']));
     }
 
     public function test_image_url(): void
