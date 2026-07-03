@@ -6,6 +6,7 @@ import Footer from "./includes/Footer";
 import Nav from "./includes/NavTest";
 import { ToastContainer } from "react-toastify";
 import NavBar from "./New/NavBar";
+import HomePopup from "./pages/home/blocks/HomePopup";
 
 const Layout = ({data , beforeNav}) => {
   return (
@@ -13,6 +14,7 @@ const Layout = ({data , beforeNav}) => {
       {/* <Navbar />
       <AfterNav /> */}
         <NavBar data={data} beforeNav={beforeNav} />
+        <HomePopup />
       <Outlet />
       <ToastContainer position="top-right" autoClose={3000} />
 

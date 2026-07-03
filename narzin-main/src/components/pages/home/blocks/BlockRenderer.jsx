@@ -4,6 +4,7 @@ import CategoryCircles from "./CategoryCircles";
 import InfoStrip from "./InfoStrip";
 import ProductRail from "./ProductRail";
 import PromoTiles from "./PromoTiles";
+import CountdownBanner from "./CountdownBanner";
 
 // Later tasks import their block component here and add it to the registry.
 // Types that render at Layout level (announcement_bar, popup) or are not yet
@@ -14,6 +15,7 @@ const registry = {
   info_strip: InfoStrip,
   product_rail: ProductRail,
   promo_tiles: PromoTiles,
+  countdown_banner: CountdownBanner,
 };
 
 // Test hook: lets tests inject a stub without depending on real block components.
