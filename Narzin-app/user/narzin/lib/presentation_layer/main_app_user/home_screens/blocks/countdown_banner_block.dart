@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../model_layer/home_blocks_model.dart';
@@ -61,27 +62,42 @@ class _CountdownBannerBlockState extends State<CountdownBannerBlock> {
         width: double.infinity,
         color: parseHexColor(widget.content['bg_color'], const Color(0xFF141923)),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        child: Column(
+        child: Stack(
           children: [
-            Text(text,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: parseHexColor(
-                        widget.content['text_color'], const Color(0xFFD4AF37)))),
-            const SizedBox(height: 4),
-            Directionality(
-              textDirection: TextDirection.ltr,
-              child: Text(
-                '${_pad(days)}:${_pad(hours)}:${_pad(minutes)}:${_pad(seconds)}',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                    color: parseHexColor(
-                        widget.content['text_color'], const Color(0xFFD4AF37))),
+            if (widget.content['image'] is String && (widget.content['image'] as String).isNotEmpty)
+              Positioned.fill(
+                child: Opacity(
+                  opacity: 0.25,
+                  child: CachedNetworkImage(
+                    imageUrl: widget.content['image'],
+                    fit: BoxFit.cover,
+                    errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                  ),
+                ),
               ),
+            Column(
+              children: [
+                Text(text,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: parseHexColor(
+                            widget.content['text_color'], const Color(0xFFD4AF37)))),
+                const SizedBox(height: 4),
+                Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Text(
+                    '${_pad(days)}:${_pad(hours)}:${_pad(minutes)}:${_pad(seconds)}',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                        color: parseHexColor(
+                            widget.content['text_color'], const Color(0xFFD4AF37))),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

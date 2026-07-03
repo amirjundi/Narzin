@@ -40,9 +40,9 @@ class PromoTilesBlock extends StatelessWidget {
                         ),
                         if (tile['label'] is String &&
                             (tile['label'] as String).isNotEmpty)
-                          Positioned(
+                          PositionedDirectional(
                             bottom: 6,
-                            left: 6,
+                            start: 6,
                             child: Container(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 6, vertical: 3),
