@@ -11,8 +11,8 @@ const content = {
 
 describe("HeroSlider", () => {
   it("renders all slides with images and overlay text", () => {
-    renderWithProviders(<HeroSlider content={content} />);
-    const imgs = screen.getAllByRole("img");
+    const { container } = renderWithProviders(<HeroSlider content={content} />);
+    const imgs = container.querySelectorAll("img");
     expect(imgs).toHaveLength(2);
     expect(imgs[0]).toHaveAttribute("src", "https://cdn.test/a.jpg");
     expect(screen.getByText("Summer")).toBeInTheDocument();
