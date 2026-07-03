@@ -13,8 +13,10 @@ const AnnouncementBar = () => {
     dismissKey ? sessionStorage.getItem(dismissKey) === "1" : false
   );
 
-  if (!block || dismissed) return null;
-  const { text, link, bg_color, text_color } = block.content;
+  if (!block || dismissed || (dismissKey && sessionStorage.getItem(dismissKey) === "1")) {
+    return null;
+  }
+  const { text, link, bg_color, text_color } = block.content ?? {};
 
   const dismiss = () => {
     sessionStorage.setItem(dismissKey, "1");

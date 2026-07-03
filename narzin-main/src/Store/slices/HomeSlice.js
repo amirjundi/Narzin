@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createSelector } from "@reduxjs/toolkit";
 import api from "../../api/axios";
 
 const LAYOUT_TYPES = ["announcement_bar", "popup"];
@@ -39,9 +39,12 @@ const HomeSlice = createSlice({
 });
 
 export const selectHomeStatus = (state) => state.home.status;
-export const selectLayoutBlocks = (state) =>
-  state.home.blocks.filter((b) => LAYOUT_TYPES.includes(b.type));
-export const selectPageBlocks = (state) =>
-  state.home.blocks.filter((b) => !LAYOUT_TYPES.includes(b.type));
+const selectHomeBlocks = (state) => state.home.blocks;
+export const selectLayoutBlocks = createSelector([selectHomeBlocks], (blocks) =>
+  blocks.filter((b) => LAYOUT_TYPES.includes(b.type))
+);
+export const selectPageBlocks = createSelector([selectHomeBlocks], (blocks) =>
+  blocks.filter((b) => !LAYOUT_TYPES.includes(b.type))
+);
 
 export default HomeSlice.reducer;

@@ -48,4 +48,17 @@ describe("AnnouncementBar", () => {
     });
     expect(screen.queryByText("حمل التطبيق")).toBeNull();
   });
+
+  it("stays dismissed when the bar arrives after the feed resolves late", () => {
+    sessionStorage.setItem("home_announcement_dismissed_11", "1");
+
+    const { store } = renderWithProviders(<AnnouncementBar />, {
+      reducers: { home: homeReducer },
+      preloadedState: stateWith([]),
+    });
+
+    store.dispatch({ type: "home/fetchHome/fulfilled", payload: [bar] });
+
+    expect(screen.queryByText("حمل التطبيق")).toBeNull();
+  });
 });

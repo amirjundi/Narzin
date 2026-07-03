@@ -1,49 +1,95 @@
 import React, { useEffect, useRef, useState } from "react";
 import { SmartLink } from "./blockLink";
 
+const SCROLL_SYNC_DEBOUNCE_MS = 150;
+const TOUCH_RESUME_DELAY_MS = 3000;
+
 const HeroSlider = ({ content }) => {
   const slides = content?.slides || [];
   const trackRef = useRef(null);
   const pausedRef = useRef(false);
+  const touchResumeTimerRef = useRef(null);
+  const scrollDebounceRef = useRef(null);
   const [active, setActive] = useState(0);
 
-  const goTo = (index) => {
+  const scrollToIndex = (index) => {
     const track = trackRef.current;
-    if (!track || !track.children[index]) return;
-    track.children[index].scrollIntoView({
+    if (!track || !track.children[index] || typeof track.scrollTo !== "function") return;
+    track.scrollTo({
+      left: track.children[index].offsetLeft,
       behavior: "smooth",
-      block: "nearest",
-      inline: "start",
     });
+  };
+
+  const goTo = (index) => {
+    scrollToIndex(index);
     setActive(index);
   };
 
+  // Auto-advance, always stepping from whatever slide is currently synced
+  // as active (manual swipes included), never a stale closed-over index.
   useEffect(() => {
     if (slides.length < 2) return undefined;
     const timer = setInterval(() => {
       if (pausedRef.current) return;
       setActive((current) => {
         const next = (current + 1) % slides.length;
-        const track = trackRef.current;
-        track?.children[next]?.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "start",
-        });
+        scrollToIndex(next);
         return next;
       });
     }, 4000);
     return () => clearInterval(timer);
   }, [slides.length]);
 
+  // Keep `active` in sync with manual swipes/scrolls on the track itself.
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track || slides.length < 2) return undefined;
+
+    const handleScroll = () => {
+      if (scrollDebounceRef.current) clearTimeout(scrollDebounceRef.current);
+      scrollDebounceRef.current = setTimeout(() => {
+        const width = track.clientWidth || 1;
+        const nearest = Math.round(Math.abs(track.scrollLeft) / width);
+        const clamped = Math.min(Math.max(nearest, 0), slides.length - 1);
+        setActive(clamped);
+      }, SCROLL_SYNC_DEBOUNCE_MS);
+    };
+
+    track.addEventListener("scroll", handleScroll);
+    return () => {
+      track.removeEventListener("scroll", handleScroll);
+      if (scrollDebounceRef.current) clearTimeout(scrollDebounceRef.current);
+    };
+  }, [slides.length]);
+
+  useEffect(() => {
+    return () => {
+      if (touchResumeTimerRef.current) clearTimeout(touchResumeTimerRef.current);
+    };
+  }, []);
+
   if (slides.length === 0) return null;
+
+  const handleTouchStart = () => {
+    pausedRef.current = true;
+    if (touchResumeTimerRef.current) clearTimeout(touchResumeTimerRef.current);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchResumeTimerRef.current) clearTimeout(touchResumeTimerRef.current);
+    touchResumeTimerRef.current = setTimeout(() => {
+      pausedRef.current = false;
+    }, TOUCH_RESUME_DELAY_MS);
+  };
 
   return (
     <section
       className="relative"
       onPointerEnter={() => (pausedRef.current = true)}
       onPointerLeave={() => (pausedRef.current = false)}
-      onTouchStart={() => (pausedRef.current = true)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       <div
         ref={trackRef}

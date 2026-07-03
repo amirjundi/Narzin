@@ -1,4 +1,5 @@
-import { screen } from "@testing-library/react";
+import { screen, fireEvent, act } from "@testing-library/react";
+import { vi } from "vitest";
 import { renderWithProviders } from "../../../../../test/renderWithProviders";
 import HeroSlider from "../HeroSlider";
 
@@ -27,5 +28,31 @@ describe("HeroSlider", () => {
   it("renders nothing with no slides", () => {
     const { container } = renderWithProviders(<HeroSlider content={{ slides: [] }} />);
     expect(container.textContent).toBe("");
+  });
+
+  it("syncs the active dot when the track is scrolled manually", () => {
+    vi.useFakeTimers();
+    const threeSlideContent = {
+      slides: [
+        ...content.slides,
+        { image: "https://cdn.test/c.jpg", title: null, subtitle: null, link: null },
+      ],
+    };
+    const { container } = renderWithProviders(<HeroSlider content={threeSlideContent} />);
+    const track = container.querySelector("div.flex.overflow-x-auto");
+
+    Object.defineProperty(track, "clientWidth", { value: 320, configurable: true });
+    Object.defineProperty(track, "scrollLeft", { value: 640, configurable: true });
+
+    fireEvent.scroll(track);
+    act(() => {
+      vi.advanceTimersByTime(200);
+    });
+
+    const dots = screen.getAllByRole("button", { name: /go to slide/i });
+    expect(dots[2].className).toContain("w-5");
+    expect(dots[0].className).not.toContain("w-5");
+
+    vi.useRealTimers();
   });
 });
