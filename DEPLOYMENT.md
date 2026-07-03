@@ -54,3 +54,18 @@ Release steps for the HomeContent module:
 5. Verify `GET /api/v1/home?platform=web`, `GET /api/v1/banners/mobile`, `GET /api/v1/before-nav/current`.
 
 The legacy `banners`/`before_nav` tables and endpoints stay until Phase 4 cleanup.
+
+### Legacy retirement (post-adoption — DO NOT do at launch)
+
+The legacy endpoints `/api/v1/banners/mobile`, `/api/v1/banners/web`, `/api/v1/before-nav/current`
+and the `banners` / `before_nav` tables are still served (from home_blocks) because installed app
+builds older than the block-renderer release depend on them. Retire them only once app-store
+analytics show the old versions are gone:
+
+1. Remove the routes + controllers in `Modules/Banners`.
+2. Drop the `banners` and `before_nav` tables (migration).
+3. Remove the Flutter legacy home body + BannersCubit (the block view then becomes the only path).
+
+Phase 3 notes: the app refetches blocks whenever the Home tab remounts (locale changes take effect
+on next Home visit); the feed request has a 15s timeout; category/url block links are not yet
+tappable in the app.
