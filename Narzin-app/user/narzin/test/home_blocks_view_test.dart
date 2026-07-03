@@ -54,4 +54,45 @@ void main() {
     expect(find.text('Summer'), findsOneWidget);
     expect(find.text('Kleider'), findsOneWidget);
   });
+
+  testWidgets('product rail renders names and dual prices', (tester) async {
+    final blocks = [
+      HomeBlock(id: 7, type: 'product_rail', content: {
+        'title': 'Super Deals',
+        'products': [
+          {
+            'id': 21,
+            'name_arabic': 'فستان',
+            'name_german': 'Kleid',
+            'image': null,
+            'min_price': 49.99,
+            'min_price_iqd': 72500,
+          }
+        ]
+      }),
+    ];
+
+    await tester.pumpWidget(wrap(HomeBlocksView(blocks: blocks)));
+
+    expect(find.text('Super Deals'), findsOneWidget);
+    expect(find.text('Kleid'), findsOneWidget);
+    expect(find.text('€49.99'), findsOneWidget);
+    expect(find.textContaining('IQD'), findsOneWidget);
+  });
+
+  testWidgets('countdown banner shows for future dates and hides for past',
+      (tester) async {
+    final future = DateTime.now().add(const Duration(hours: 2)).toIso8601String();
+    final past = DateTime.now().subtract(const Duration(hours: 2)).toIso8601String();
+    await tester.pumpWidget(wrap(HomeBlocksView(blocks: [
+      HomeBlock(id: 8, type: 'countdown_banner', content: {'text': 'Sale ends', 'ends_at': future}),
+      HomeBlock(id: 9, type: 'countdown_banner', content: {'text': 'Old sale', 'ends_at': past}),
+    ])));
+    await tester.pump();
+
+    expect(find.text('Sale ends'), findsOneWidget);
+    expect(find.text('Old sale'), findsNothing);
+    // let pending timers fire before teardown
+    await tester.pump(const Duration(seconds: 2));
+  });
 }

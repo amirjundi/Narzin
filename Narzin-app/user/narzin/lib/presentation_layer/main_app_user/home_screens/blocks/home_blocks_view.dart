@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import '../../../../model_layer/home_blocks_model.dart';
 import 'announcement_bar_block.dart';
 import 'category_grid_block.dart';
+import 'countdown_banner_block.dart';
+import 'hero_slider_block.dart';
 import 'info_strip_block.dart';
+import 'product_rail_block.dart';
 import 'promo_tiles_block.dart';
 
 class HomeBlocksView extends StatelessWidget {
@@ -20,8 +23,13 @@ class HomeBlocksView extends StatelessWidget {
         return PromoTilesBlock(content: block.content);
       case 'category_grid':
         return CategoryGridBlock(content: block.content);
+      case 'hero_slider':
+        return HeroSliderBlock(content: block.content);
+      case 'product_rail':
+        return ProductRailBlock(content: block.content);
+      case 'countdown_banner':
+        return CountdownBannerBlock(content: block.content);
       // popup renders as an overlay (home_popup.dart), never inline.
-      // hero_slider / product_rail / countdown_banner arrive in Task 4.
       default:
         return null;
     }
