@@ -1,9 +1,12 @@
 import React from "react";
+import HeroSlider from "./HeroSlider";
 
 // Later tasks import their block component here and add it to the registry.
 // Types that render at Layout level (announcement_bar, popup) or are not yet
 // built stay unregistered — unregistered/unknown types render nothing.
-const registry = {};
+const registry = {
+  hero_slider: HeroSlider,
+};
 
 // Test hook: lets tests inject a stub without depending on real block components.
 export function registerBlockForTests(type, Component) {
