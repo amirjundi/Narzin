@@ -19,6 +19,14 @@ describe("linkTarget", () => {
     expect(linkTarget(null)).toBeNull();
     expect(linkTarget({ type: "weird", value: 1 })).toBeNull();
   });
+
+  it("allows http(s) and rejects script schemes", () => {
+    expect(linkTarget({ type: "url", value: "http://x.test/a" })).toEqual({
+      kind: "external",
+      href: "http://x.test/a",
+    });
+    expect(linkTarget({ type: "url", value: "javascript:alert(1)" })).toBeNull();
+  });
 });
 
 describe("SmartLink", () => {

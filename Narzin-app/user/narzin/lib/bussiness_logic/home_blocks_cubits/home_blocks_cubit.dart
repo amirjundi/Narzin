@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
@@ -22,7 +23,7 @@ class HomeBlocksCubit extends Cubit<HomeBlocksState> {
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: {'Accept': 'application/json'},
-      );
+      ).timeout(const Duration(seconds: 15));
       if (response.statusCode == 200) {
         final model = HomeBlocksModel.fromJson(
             json.decode(response.body) as Map<String, dynamic>);

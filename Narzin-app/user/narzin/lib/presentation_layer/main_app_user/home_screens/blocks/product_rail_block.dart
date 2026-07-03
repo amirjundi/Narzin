@@ -75,8 +75,8 @@ class ProductRailBlock extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                               fontSize: 12, color: Color(0xFF141923))),
-                      if (product['min_price'] != null)
-                        Text('€${product['min_price']}',
+                      if ((product['min_price'] as num?)?.toStringAsFixed(2) case final formatted?)
+                        Text('€$formatted',
                             style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,

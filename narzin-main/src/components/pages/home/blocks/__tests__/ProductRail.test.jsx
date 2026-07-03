@@ -33,6 +33,7 @@ describe("ProductRail", () => {
     expect(screen.getByText("Super Deals")).toBeInTheDocument();
     expect(screen.getByText("Kleid")).toBeInTheDocument();
     expect(screen.getByText("€49.99")).toBeInTheDocument();
+    expect(screen.getByText("€20.00")).toBeInTheDocument();
     expect(screen.getByText("72,500 IQD")).toBeInTheDocument();
     expect(screen.getAllByRole("link")[0]).toHaveAttribute("href", "/product/21");
   });
