@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:narzin/bussiness_logic/Banners_cubits/banners_cubit.dart';
+import 'package:narzin/bussiness_logic/home_blocks_cubits/home_blocks_cubit.dart';
 import 'package:narzin/bussiness_logic/localization_cubit/localization_cubit.dart';
 import 'package:narzin/bussiness_logic/login_cubits/login_cubit.dart';
 import 'package:narzin/bussiness_logic/product_cubits/product_cubit.dart';
@@ -22,6 +23,8 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../core/helpers.dart';
 import '../../../widgets/app_infrastructure_widgets/product_item_widget.dart';
+import 'blocks/home_blocks_view.dart';
+import 'blocks/home_popup.dart';
 import 'search_screens/search_first.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -45,6 +48,8 @@ class _HomeScreenState extends State<HomeScreen> {
       BlocProvider.of<ProfileCubit>(context).getAddresses(token: token);
     }
     BlocProvider.of<BannersCubit>(context).getBanners(token: token);
+    String locale = BlocProvider.of<LocalizationCubit>(context).locale;
+    BlocProvider.of<HomeBlocksCubit>(context).getHomeBlocks(locale: locale);
 
     super.initState();
   }
@@ -188,91 +193,154 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildHeader(BuildContext context) {
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              backgroundColor: Colors.grey[300],
+              radius: 25,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                // child: const SizedBox(
+                //   height: 49,
+                //   width: 49,
+                //   child: InstaNetworkImageWidget(
+                //     imageUrl: '',
+                //   ),
+                // ),
+              ),
+            ),
+            Expanded(
+              child: ListTile(
+                onTap: () {
+                  showAddressesMenu(context);
+                },
+                contentPadding: EdgeInsets.zero,
+                minTileHeight: kToolbarHeight * 1.2,
+                title: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        "${S.of(context).delivery_to} ",
+                        style: TextStyle(fontSize: 13, color: Colors.grey[700], fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.wrong_location_outlined,
+                        size: 17,
+                        color: Colors.grey[600]!,
+                      ),
+                      Container(
+                        constraints: BoxConstraints(maxWidth: ScreenSizing.width * 0.4),
+                        child: Text(
+                          (context.read<ProfileCubit>().showAddress ?? ''),
+                          style: TextStyle(fontSize: 15, color: Colors.grey[600]!, fontWeight: FontWeight.w500),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      SvgPicture.asset(Assets.appIconsArrowDown),
+                    ],
+                  ),
+                ),
+                trailing: IconButton(
+                  style: IconButton.styleFrom(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: BorderSide(color: Colors.grey[300]!)),
+                  ),
+                  onPressed: () {
+                    // Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationsScreen(),),);
+                  },
+                  icon: const Icon(
+                    Icons.notifications_active_outlined,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildSearchBar(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const SearchFirst(),
+            ));
+      },
+      child: Hero(
+        transitionOnUserGestures: true,
+        tag: 'search',
+        child: Material(
+          color: Colors.transparent,
+          child: TextFormField(
+            enabled: false,
+            readOnly: true,
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.search),
+              hintText: S.of(context).search_placeholder,
+              hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(40),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(40),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          BlocBuilder<ProfileCubit, ProfileState>(
-            builder: (context, state) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+      child: BlocListener<HomeBlocksCubit, HomeBlocksState>(
+        listener: (context, state) {
+          if (state is HomeBlocksLoaded) {
+            final blocks = context.read<HomeBlocksCubit>().blocks;
+            maybeShowHomePopup(context, blocks);
+          }
+        },
+        child: BlocBuilder<HomeBlocksCubit, HomeBlocksState>(
+          builder: (context, state) {
+            final blocksCubit = context.read<HomeBlocksCubit>();
+            if (blocksCubit.blocks.isNotEmpty && state is! HomeBlocksError) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.grey[300],
-                    radius: 25,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      // child: const SizedBox(
-                      //   height: 49,
-                      //   width: 49,
-                      //   child: InstaNetworkImageWidget(
-                      //     imageUrl: '',
-                      //   ),
-                      // ),
-                    ),
-                  ),
-                  Expanded(
-                    child: ListTile(
-                      onTap: () {
-                        showAddressesMenu(context);
-                      },
-                      contentPadding: EdgeInsets.zero,
-                      minTileHeight: kToolbarHeight * 1.2,
-                      title: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Row(
-                          children: [
-                            Text(
-                              "${S.of(context).delivery_to} ",
-                              style: TextStyle(fontSize: 13, color: Colors.grey[700], fontWeight: FontWeight.w400),
-                            ),
-                          ],
-                        ),
-                      ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.wrong_location_outlined,
-                              size: 17,
-                              color: Colors.grey[600]!,
-                            ),
-                            Container(
-                              constraints: BoxConstraints(maxWidth: ScreenSizing.width * 0.4),
-                              child: Text(
-                                (context.read<ProfileCubit>().showAddress ?? ''),
-                                style: TextStyle(fontSize: 15, color: Colors.grey[600]!, fontWeight: FontWeight.w500),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            SvgPicture.asset(Assets.appIconsArrowDown),
-                          ],
-                        ),
-                      ),
-                      trailing: IconButton(
-                        style: IconButton.styleFrom(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: BorderSide(color: Colors.grey[300]!)),
-                        ),
-                        onPressed: () {
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationsScreen(),),);
-                        },
-                        icon: const Icon(
-                          Icons.notifications_active_outlined,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
+                  _buildHeader(context),
+                  const SizedBox(height: 20),
+                  _buildSearchBar(context),
+                  const SizedBox(height: 20),
+                  HomeBlocksView(blocks: blocksCubit.blocks),
                 ],
               );
-            },
-          ),
+            }
+            return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildHeader(context),
           const SizedBox(
             height: 20,
           ),
@@ -295,40 +363,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(
             height: 20,
           ),
-          InkWell(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SearchFirst(),
-                  ));
-            },
-            child: Hero(
-              transitionOnUserGestures: true,
-              tag: 'search',
-              child: Material(
-                color: Colors.transparent,
-                child: TextFormField(
-                  enabled: false,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search),
-                    hintText: S.of(context).search_placeholder,
-                    hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(40),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(40),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          _buildSearchBar(context),
           const SizedBox(
             height: 20,
           ),
@@ -757,6 +792,9 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
         ],
+      );
+          },
+        ),
       ),
     );
   }
