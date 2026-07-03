@@ -1,0 +1,23 @@
+import React from "react";
+
+// Later tasks import their block component here and add it to the registry.
+// Types that render at Layout level (announcement_bar, popup) or are not yet
+// built stay unregistered — unregistered/unknown types render nothing.
+const registry = {};
+
+// Test hook: lets tests inject a stub without depending on real block components.
+export function registerBlockForTests(type, Component) {
+  registry[type] = Component;
+}
+
+const BlockRenderer = ({ blocks = [] }) => (
+  <>
+    {blocks.map((block) => {
+      const Component = registry[block.type];
+      if (!Component) return null;
+      return <Component key={block.id} content={block.content} block={block} />;
+    })}
+  </>
+);
+
+export default BlockRenderer;

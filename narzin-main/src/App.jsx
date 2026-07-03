@@ -24,6 +24,7 @@ import Return from "./pages/Return";
 import Privacy from "./pages/Privacy";
 import PaymentCallback from "./pages/PaymentCallback";
 import { fetchBeforeNav } from "./Store/slices/BeforeNavSlice";
+import { fetchHome } from "./Store/slices/HomeSlice";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -59,6 +60,10 @@ function App() {
     dispatch(fetchProducts());
     dispatch(fetchBeforeNav());
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchHome(i18n.language));
+  }, [dispatch, i18n.language]);
 
   useEffect(() => {
     if (CategoryStatus === "failed") {
