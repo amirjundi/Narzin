@@ -12,6 +12,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:narzin/bussiness_logic/Banners_cubits/banners_cubit.dart';
 import 'package:narzin/bussiness_logic/cart_cubits/cart_cubit.dart';
 import 'package:narzin/bussiness_logic/connectivity_cubits/connectivity_cubit.dart';
+import 'package:narzin/bussiness_logic/home_blocks_cubits/home_blocks_cubit.dart';
 import 'package:narzin/bussiness_logic/login_cubits/login_cubit.dart';
 import 'package:narzin/bussiness_logic/main_hub_cubits/main_hub_cubit.dart';
 import 'package:narzin/bussiness_logic/merchant_cubits/merchant_auth_cubit.dart';
@@ -63,6 +64,7 @@ Future<void> main() async {
             BlocProvider(
               create: (context) => BannersCubit(),
             ),
+            BlocProvider(create: (context) => HomeBlocksCubit()),
             BlocProvider(
               create: (context) => WalletCubit(),
             ),

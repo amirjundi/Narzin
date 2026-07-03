@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:narzin/bussiness_logic/Banners_cubits/banners_cubit.dart';
+import 'package:narzin/bussiness_logic/home_blocks_cubits/home_blocks_cubit.dart';
 import 'package:narzin/bussiness_logic/localization_cubit/localization_cubit.dart';
 import 'package:narzin/bussiness_logic/login_cubits/login_cubit.dart';
 import 'package:narzin/bussiness_logic/product_cubits/product_cubit.dart';
@@ -22,6 +23,8 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../core/helpers.dart';
 import '../../../widgets/app_infrastructure_widgets/product_item_widget.dart';
+import 'blocks/home_blocks_view.dart';
+import 'blocks/home_popup.dart';
 import 'search_screens/search_first.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -45,6 +48,8 @@ class _HomeScreenState extends State<HomeScreen> {
       BlocProvider.of<ProfileCubit>(context).getAddresses(token: token);
     }
     BlocProvider.of<BannersCubit>(context).getBanners(token: token);
+    String locale = BlocProvider.of<LocalizationCubit>(context).locale;
+    BlocProvider.of<HomeBlocksCubit>(context).getHomeBlocks(locale: locale);
 
     super.initState();
   }
@@ -191,7 +196,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
+      child: BlocListener<HomeBlocksCubit, HomeBlocksState>(
+        listener: (context, state) {
+          if (state is HomeBlocksLoaded) {
+            final blocks = context.read<HomeBlocksCubit>().blocks;
+            maybeShowHomePopup(context, blocks);
+          }
+        },
+        child: BlocBuilder<HomeBlocksCubit, HomeBlocksState>(
+          builder: (context, state) {
+            final blocksCubit = context.read<HomeBlocksCubit>();
+            if (state is HomeBlocksLoaded && blocksCubit.blocks.isNotEmpty) {
+              return HomeBlocksView(blocks: blocksCubit.blocks);
+            }
+            return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           BlocBuilder<ProfileCubit, ProfileState>(
@@ -757,6 +775,9 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
         ],
+      );
+          },
+        ),
       ),
     );
   }
