@@ -32,6 +32,8 @@ import VendorSlice from "./slices/VendorSlice";
 
 import BeforeNavSlice from "./slices/BeforeNavSlice";
 
+import homeReducer from "./slices/HomeSlice";
+
 
 export const store = configureStore({
   reducer: {
@@ -55,5 +57,6 @@ export const store = configureStore({
     profile: ProfileSlice,
     vendor: VendorSlice,
     beforeNav: BeforeNavSlice,
+    home: homeReducer,
   },
 });
