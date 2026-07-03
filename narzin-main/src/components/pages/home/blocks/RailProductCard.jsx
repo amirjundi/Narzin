@@ -33,7 +33,7 @@ const RailProductCard = ({ product }) => {
       </div>
       <p className="mt-1.5 text-xs sm:text-sm text-narzin-navy truncate">{name}</p>
       <p className="text-sm sm:text-base font-semibold text-narzin-navy">
-        {product.min_price != null ? `€${product.min_price}` : ""}
+        {product.min_price != null ? `€${Number(product.min_price).toFixed(2)}` : ""}
       </p>
       {product.min_price_iqd != null && (
         <p className="text-[10px] sm:text-xs text-gray-500">{formatIqd(product.min_price_iqd)}</p>

@@ -19,6 +19,10 @@ describe("linkTarget", () => {
     expect(linkTarget(null)).toBeNull();
     expect(linkTarget({ type: "weird", value: 1 })).toBeNull();
   });
+
+  it("rejects non-https url links", () => {
+    expect(linkTarget({ type: "url", value: "javascript:alert(1)" })).toBeNull();
+  });
 });
 
 describe("SmartLink", () => {

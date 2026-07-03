@@ -6,7 +6,12 @@ export function linkTarget(link) {
   if (link.type === "product") return { kind: "internal", to: `/product/${link.value}` };
   if (link.type === "category")
     return { kind: "internal", to: `/store?category_id=${link.value}` };
-  if (link.type === "url") return { kind: "external", href: link.value };
+  if (link.type === "url") {
+    if (/^https?:\/\//i.test(String(link.value))) {
+      return { kind: "external", href: link.value };
+    }
+    return null;
+  }
   return null;
 }
 
