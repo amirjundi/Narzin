@@ -193,6 +193,125 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildHeader(BuildContext context) {
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              backgroundColor: Colors.grey[300],
+              radius: 25,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                // child: const SizedBox(
+                //   height: 49,
+                //   width: 49,
+                //   child: InstaNetworkImageWidget(
+                //     imageUrl: '',
+                //   ),
+                // ),
+              ),
+            ),
+            Expanded(
+              child: ListTile(
+                onTap: () {
+                  showAddressesMenu(context);
+                },
+                contentPadding: EdgeInsets.zero,
+                minTileHeight: kToolbarHeight * 1.2,
+                title: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        "${S.of(context).delivery_to} ",
+                        style: TextStyle(fontSize: 13, color: Colors.grey[700], fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.wrong_location_outlined,
+                        size: 17,
+                        color: Colors.grey[600]!,
+                      ),
+                      Container(
+                        constraints: BoxConstraints(maxWidth: ScreenSizing.width * 0.4),
+                        child: Text(
+                          (context.read<ProfileCubit>().showAddress ?? ''),
+                          style: TextStyle(fontSize: 15, color: Colors.grey[600]!, fontWeight: FontWeight.w500),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      SvgPicture.asset(Assets.appIconsArrowDown),
+                    ],
+                  ),
+                ),
+                trailing: IconButton(
+                  style: IconButton.styleFrom(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: BorderSide(color: Colors.grey[300]!)),
+                  ),
+                  onPressed: () {
+                    // Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationsScreen(),),);
+                  },
+                  icon: const Icon(
+                    Icons.notifications_active_outlined,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildSearchBar(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const SearchFirst(),
+            ));
+      },
+      child: Hero(
+        transitionOnUserGestures: true,
+        tag: 'search',
+        child: Material(
+          color: Colors.transparent,
+          child: TextFormField(
+            enabled: false,
+            readOnly: true,
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.search),
+              hintText: S.of(context).search_placeholder,
+              hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(40),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(40),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -207,90 +326,19 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (context, state) {
             final blocksCubit = context.read<HomeBlocksCubit>();
             if (state is HomeBlocksLoaded && blocksCubit.blocks.isNotEmpty) {
-              return HomeBlocksView(blocks: blocksCubit.blocks);
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildHeader(context),
+                  _buildSearchBar(context),
+                  HomeBlocksView(blocks: blocksCubit.blocks),
+                ],
+              );
             }
             return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BlocBuilder<ProfileCubit, ProfileState>(
-            builder: (context, state) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.grey[300],
-                    radius: 25,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      // child: const SizedBox(
-                      //   height: 49,
-                      //   width: 49,
-                      //   child: InstaNetworkImageWidget(
-                      //     imageUrl: '',
-                      //   ),
-                      // ),
-                    ),
-                  ),
-                  Expanded(
-                    child: ListTile(
-                      onTap: () {
-                        showAddressesMenu(context);
-                      },
-                      contentPadding: EdgeInsets.zero,
-                      minTileHeight: kToolbarHeight * 1.2,
-                      title: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Row(
-                          children: [
-                            Text(
-                              "${S.of(context).delivery_to} ",
-                              style: TextStyle(fontSize: 13, color: Colors.grey[700], fontWeight: FontWeight.w400),
-                            ),
-                          ],
-                        ),
-                      ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.wrong_location_outlined,
-                              size: 17,
-                              color: Colors.grey[600]!,
-                            ),
-                            Container(
-                              constraints: BoxConstraints(maxWidth: ScreenSizing.width * 0.4),
-                              child: Text(
-                                (context.read<ProfileCubit>().showAddress ?? ''),
-                                style: TextStyle(fontSize: 15, color: Colors.grey[600]!, fontWeight: FontWeight.w500),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            SvgPicture.asset(Assets.appIconsArrowDown),
-                          ],
-                        ),
-                      ),
-                      trailing: IconButton(
-                        style: IconButton.styleFrom(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: BorderSide(color: Colors.grey[300]!)),
-                        ),
-                        onPressed: () {
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationsScreen(),),);
-                        },
-                        icon: const Icon(
-                          Icons.notifications_active_outlined,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
+          _buildHeader(context),
           const SizedBox(
             height: 20,
           ),
@@ -313,40 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(
             height: 20,
           ),
-          InkWell(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SearchFirst(),
-                  ));
-            },
-            child: Hero(
-              transitionOnUserGestures: true,
-              tag: 'search',
-              child: Material(
-                color: Colors.transparent,
-                child: TextFormField(
-                  enabled: false,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search),
-                    hintText: S.of(context).search_placeholder,
-                    hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(40),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(40),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          _buildSearchBar(context),
           const SizedBox(
             height: 20,
           ),
