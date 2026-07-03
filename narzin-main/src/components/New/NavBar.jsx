@@ -14,8 +14,9 @@ import Logo from "../Logo";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { logout } from "../../Store/slices/Auth/AuthSlice";
+import AnnouncementBar from "../pages/home/blocks/AnnouncementBar";
 
-const NavBar = ({ data, beforeNav }) => {
+const NavBar = ({ data }) => {
   const { t, i18n } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState(null);
@@ -110,13 +111,7 @@ const NavBar = ({ data, beforeNav }) => {
     <>
 
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200/60">
-      {beforeNav && 
-      
-              <p className="flex h-10 items-center justify-center bg-[#3084C2] px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
-          {beforeNav.text}
-        </p>
-        
-        }
+      <AnnouncementBar />
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo Section */}

@@ -30,7 +30,7 @@ import wishlistReducer from "./slices/WishlistSlice";
 
 import VendorSlice from "./slices/VendorSlice";
 
-import BeforeNavSlice from "./slices/BeforeNavSlice";
+import homeReducer from "./slices/HomeSlice";
 
 
 export const store = configureStore({
@@ -54,6 +54,6 @@ export const store = configureStore({
     myOrders: myOrdersSlice,
     profile: ProfileSlice,
     vendor: VendorSlice,
-    beforeNav: BeforeNavSlice,
+    home: homeReducer,
   },
 });
