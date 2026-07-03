@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 import { logout } from "../../Store/slices/Auth/AuthSlice";
 import AnnouncementBar from "../pages/home/blocks/AnnouncementBar";
 
-const NavBar = ({ data, beforeNav }) => {
+const NavBar = ({ data }) => {
   const { t, i18n } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState(null);

@@ -8,12 +8,12 @@ import { ToastContainer } from "react-toastify";
 import NavBar from "./New/NavBar";
 import HomePopup from "./pages/home/blocks/HomePopup";
 
-const Layout = ({data , beforeNav}) => {
+const Layout = ({data}) => {
   return (
     <div className="bg-white">
       {/* <Navbar />
       <AfterNav /> */}
-        <NavBar data={data} beforeNav={beforeNav} />
+        <NavBar data={data} />
         <HomePopup />
       <Outlet />
       <ToastContainer position="top-right" autoClose={3000} />

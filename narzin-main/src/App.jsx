@@ -23,7 +23,6 @@ import { verifyToken } from "./Store/slices/Auth/AuthSlice";
 import Return from "./pages/Return";
 import Privacy from "./pages/Privacy";
 import PaymentCallback from "./pages/PaymentCallback";
-import { fetchBeforeNav } from "./Store/slices/BeforeNavSlice";
 import { fetchHome } from "./Store/slices/HomeSlice";
 
 function App() {
@@ -48,17 +47,10 @@ function App() {
     ProductError,
   } = useSelector((state) => state.products);
 
-  const {
-    items: beforeNav,
-    beforeNavStatus,
-    beforeNavError,
-  } = useSelector((state) => state.beforeNav);
-
   useEffect(() => {
     dispatch(verifyToken());
     dispatch(fetchCategories());
     dispatch(fetchProducts());
-    dispatch(fetchBeforeNav());
   }, [dispatch]);
 
   useEffect(() => {
@@ -72,16 +64,11 @@ function App() {
     if (ProductStatus === "failed") {
       ShowToast(ProductError + " In Products", "error");
     }
-    if (beforeNavStatus === "failed") {
-      ShowToast(beforeNavError + " in BeforeNav", "error");
-    }
   }, [
     CategoryStatus,
     CategoryError,
     ProductStatus,
     ProductError,
-    beforeNavStatus,
-    beforeNavError,
   ]);
 
 
@@ -92,7 +79,7 @@ function App() {
           <Route
             path="/"
             element={
-              <Layout data={categories.data} beforeNav={beforeNav} />
+              <Layout data={categories.data} />
             }
           >
             <Route
