@@ -325,12 +325,14 @@ class _HomeScreenState extends State<HomeScreen> {
         child: BlocBuilder<HomeBlocksCubit, HomeBlocksState>(
           builder: (context, state) {
             final blocksCubit = context.read<HomeBlocksCubit>();
-            if (state is HomeBlocksLoaded && blocksCubit.blocks.isNotEmpty) {
+            if (blocksCubit.blocks.isNotEmpty && state is! HomeBlocksError) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _buildHeader(context),
+                  const SizedBox(height: 20),
                   _buildSearchBar(context),
+                  const SizedBox(height: 20),
                   HomeBlocksView(blocks: blocksCubit.blocks),
                 ],
               );
