@@ -63,6 +63,7 @@ class _CountdownBannerBlockState extends State<CountdownBannerBlock> {
         color: parseHexColor(widget.content['bg_color'], const Color(0xFF141923)),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         child: Stack(
+          alignment: AlignmentDirectional.topCenter,
           children: [
             if (widget.content['image'] is String && (widget.content['image'] as String).isNotEmpty)
               Positioned.fill(

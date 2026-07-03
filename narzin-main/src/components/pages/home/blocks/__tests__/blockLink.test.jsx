@@ -20,7 +20,11 @@ describe("linkTarget", () => {
     expect(linkTarget({ type: "weird", value: 1 })).toBeNull();
   });
 
-  it("rejects non-https url links", () => {
+  it("allows http(s) and rejects script schemes", () => {
+    expect(linkTarget({ type: "url", value: "http://x.test/a" })).toEqual({
+      kind: "external",
+      href: "http://x.test/a",
+    });
     expect(linkTarget({ type: "url", value: "javascript:alert(1)" })).toBeNull();
   });
 });

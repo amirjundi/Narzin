@@ -58,9 +58,9 @@ The legacy `banners`/`before_nav` tables and endpoints stay until Phase 4 cleanu
 ### Legacy retirement (post-adoption — DO NOT do at launch)
 
 The legacy endpoints `/api/v1/banners/mobile`, `/api/v1/banners/web`, `/api/v1/before-nav/current`
-and the `banners` / `before_nav` tables are still served (from home_blocks) because installed app
-builds older than the block-renderer release depend on them. Retire them only once app-store
-analytics show the old versions are gone:
+are still served (reading from home_blocks) because installed app builds older than the
+block-renderer release depend on them. The legacy `banners` / `before_nav` tables still exist
+but are no longer read. Retire them only once app-store analytics show the old versions are gone:
 
 1. Remove the routes + controllers in `Modules/Banners`.
 2. Drop the `banners` and `before_nav` tables (migration).
