@@ -25,13 +25,11 @@ class Category extends Model
     ];
 
 
-    protected static function booted()
+    public function getImageAttribute($value)
     {
-        static::addGlobalScope('image_url', function ($query) {
-            $base = config('app.url');
-            $query->select('*')
-                ->selectRaw("CONCAT(?, image) as image", [$base . "/storage/"]);
-        });
+        if (empty($value)) return $value;
+        $raw = preg_replace('#^https?://[^/]+/storage/#', '', $value);
+        return $raw ? \Modules\ProductManagement\Services\StorageService::url($raw) : '';
     }
 
     public function subcategories()

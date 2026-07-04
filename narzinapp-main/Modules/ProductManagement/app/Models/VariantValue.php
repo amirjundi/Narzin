@@ -21,19 +21,17 @@ class VariantValue extends Model
 
 
 
-    protected static function booted()
+    public function getValueAttribute($value)
     {
-        static::addGlobalScope('image_url', function ($query) {
-            $base = config('app.url');
-            $query->select('variant_values.*')
-                ->leftJoin('variant_attributes', 'variant_values.variant_attribute_id', '=', 'variant_attributes.id')
-                ->selectRaw("
-                    CASE 
-                        WHEN variant_attributes.type = 'pattern' THEN CONCAT(?, variant_values.value)
-                        ELSE variant_values.value
-                    END as value
-                ", [$base . "/storage/"]);
-        });
+        if (empty($value)) return $value;
+        
+        // Only transform paths to URLs if this is a pattern image attribute
+        if ($this->variantAttribute?->type === 'pattern') {
+            $raw = preg_replace('#^https?://[^/]+/storage/#', '', $value);
+            return $raw ? \Modules\ProductManagement\Services\StorageService::url($raw) : '';
+        }
+        
+        return $value;
     }
 
     public function productVariant()

@@ -8,5 +8,6 @@
     "UserAddress": true,
     "Wishlist": true,
     "Banners": true,
-    "HomeContent": true
+    "HomeContent": true,
+    "Telemetry": true
 }
