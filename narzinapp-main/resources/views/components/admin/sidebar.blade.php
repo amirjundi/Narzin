@@ -402,6 +402,7 @@
                 </p>
                 <ul class="space-y-1">
                     <!-- Homepage -->
+                    @if(Route::has('home-blocks.index'))
                     <li>
                         <a href="{{ route('home-blocks.index') }}"
                            class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
@@ -415,6 +416,7 @@
                             <span x-show="sidebarOpen" class="font-medium">Homepage</span>
                         </a>
                     </li>
+                    @endif
 
                     <!-- Coupons -->
                     <li>
