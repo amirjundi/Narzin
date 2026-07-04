@@ -172,13 +172,12 @@
         </div>
         {{ $slot ?? '' }}
 
-        <div class="flex justify-end gap-2 px-4 mt-6">
-            <button type="submit" class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark transition">
-                Submit
-            </button>
-            <a href="{{ route($routePrefix . '.index') }}"
-                class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+        <div class="flex justify-end gap-3 px-4 mt-6">
+            <x-admin.button-secondary href="{{ route($routePrefix . '.index') }}">
                 Cancel
-            </a>
+            </x-admin.button-secondary>
+            <x-admin.button-primary type="submit">
+                Submit
+            </x-admin.button-primary>
         </div>
     </form>

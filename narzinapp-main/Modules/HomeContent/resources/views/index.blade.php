@@ -3,17 +3,15 @@
         <h1 class="text-2xl font-semibold text-slate-800">Homepage Builder</h1>
         <div class="flex items-center gap-2">
             @if (config('homecontent.preview_token'))
-                <a href="{{ rtrim(config('homecontent.storefront_url'), '/') }}/?preview=1&preview_token={{ config('homecontent.preview_token') }}"
-                   target="_blank" rel="noopener"
-                   class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-slate-700 rounded-lg text-sm">
+                <x-admin.button-secondary href="{{ rtrim(config('homecontent.storefront_url'), '/') }}/?preview=1&preview_token={{ config('homecontent.preview_token') }}"
+                   target="_blank" rel="noopener">
                     Preview homepage
-                </a>
+                </x-admin.button-secondary>
             @endif
             <div x-data="{ open: false }" class="relative">
-                <button @click="open = !open"
-                        class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm">
+                <x-admin.button-primary @click="open = !open">
                     + Add block
-                </button>
+                </x-admin.button-primary>
                 <div x-show="open" @click.outside="open = false" x-cloak
                      class="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1">
                     @php

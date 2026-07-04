@@ -30,8 +30,10 @@
             @include('homecontent::forms.' . $type)
         </div>
 
-        <button class="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg">Save</button>
-        <a href="{{ route('home-blocks.index') }}" class="ms-2 text-sm text-gray-500 hover:underline">Cancel</a>
+        <div class="flex items-center gap-3 pt-2">
+            <x-admin.button-primary type="submit">Save Block</x-admin.button-primary>
+            <x-admin.button-secondary href="{{ route('home-blocks.index') }}">Cancel</x-admin.button-secondary>
+        </div>
     </form>
 
     <script>
