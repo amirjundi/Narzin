@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\DB;
 use Modules\Reviews\Models\Review;
 use Modules\Vendor\Models\Vendor;
 use Modules\Wishlist\Models\Wishlist;
@@ -60,7 +59,7 @@ class Product extends Model
 
     public function images(): HasMany
     {
-        return $this->hasMany(ProductImage::class)->select(['id', 'product_id', 'color', 'image', DB::raw("CONCAT('" . config('app.url') . "', '/storage/', image) as url")]);
+        return $this->hasMany(ProductImage::class);
     }
 
     public function reviews(): HasMany

@@ -4,6 +4,10 @@ namespace Modules\ProductManagement\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Modules\ProductManagement\Models\Product;
+use Modules\ProductManagement\Models\ProductImage;
+use Modules\ProductManagement\Observers\ProductObserver;
+use Modules\ProductManagement\Observers\ProductImageObserver;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -27,6 +31,12 @@ class ProductManagementServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
+
+        // Register storage lifecycle observers.
+        // ProductImageObserver deletes the physical file when a record is hard-deleted.
+        // ProductObserver cascades force-delete from Product → ProductImage records.
+        Product::observe(ProductObserver::class);
+        ProductImage::observe(ProductImageObserver::class);
     }
 
     /**
