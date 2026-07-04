@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/telemetry",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Telemetry\\": "app/",
+            "Modules\\Telemetry\\Database\\Factories\\": "database/factories/",
+            "Modules\\Telemetry\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Telemetry\\Tests\\": "tests/"
+        }
+    }
+}
