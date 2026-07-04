@@ -11,9 +11,9 @@ use Modules\ProductManagement\Models\ProductVariant;
 
 class ProductRailResolver
 {
-    public const RULES = ['newest', 'best_sellers', 'category', 'manual'];
+    public const RULES = ['newest', 'best_sellers', 'category', 'manual', 'random'];
 
-    public function resolve(array $content): array
+    public function resolve(array $content, int $minCount = 0): array
     {
         $rule = $content['rule'] ?? 'newest';
         $limit = min(max((int) ($content['limit'] ?? 12), 1), 24);
@@ -65,6 +65,10 @@ class ProductRailResolver
                     return [];
                 }
                 $query->whereIn('products.id', $ids);
+                break;
+
+            case 'random':
+                $query->inRandomOrder();
                 break;
 
             default:
@@ -121,5 +125,13 @@ class ProductRailResolver
             ->filter()
             ->values()
             ->all();
+
+        // Enforce minimum product count — callers like autoFeed() use this
+        // to suppress sections that would show with too few products.
+        if ($minCount > 0 && count($result) < $minCount) {
+            return [];
+        }
+
+        return $result;
     }
 }

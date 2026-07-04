@@ -28,6 +28,7 @@ class HomeFeedService
         foreach (['web', 'app'] as $platform) {
             foreach (Locale::SUPPORTED as $locale) {
                 Cache::forget(self::cacheKey($platform, $locale));
+                Cache::forget("home:auto:{$platform}:{$locale}");
             }
         }
     }
@@ -38,11 +39,108 @@ class HomeFeedService
             return $this->build($platform, $locale, true);
         }
 
-        return Cache::remember(
+        $result = Cache::remember(
             self::cacheKey($platform, $locale),
             300,
             fn () => $this->build($platform, $locale, false)
         );
+
+        // If no blocks are configured yet, fall back to the smart auto-feed
+        // so the homepage always shows relevant content from the live catalog.
+        if (empty($result)) {
+            return Cache::remember(
+                "home:auto:{$platform}:{$locale}",
+                300,
+                fn () => $this->autoFeed($platform, $locale)
+            );
+        }
+
+        return $result;
+    }
+
+    /**
+     * Generate a beautiful homepage automatically from live catalog data.
+     * Each section only appears when it has at least 3 products, so no
+     * empty section headers are ever shown to customers.
+     */
+    public function autoFeed(string $platform, string $locale): array
+    {
+        $out = [];
+        $id  = 1000; // synthetic IDs that won't clash with real home_blocks
+
+        // ── Recently Added ───────────────────────────────────────────────
+        $newestProducts = $this->rails->resolve(
+            ['rule' => 'newest', 'limit' => 12],
+            minCount: 3
+        );
+        if (!empty($newestProducts)) {
+            $out[] = [
+                'id'      => $id++,
+                'type'    => 'product_rail',
+                'content' => [
+                    'title'    => $locale === 'ar' ? 'تمت إضافة مؤخرًا' : ($locale === 'de' ? 'Neueste Produkte' : 'Recently Added'),
+                    'rule'     => 'newest',
+                    'products' => $newestProducts,
+                ],
+            ];
+        }
+
+        // ── Best Sellers ─────────────────────────────────────────────────
+        $bestSellers = $this->rails->resolve(
+            ['rule' => 'best_sellers', 'limit' => 12],
+            minCount: 3
+        );
+        if (!empty($bestSellers)) {
+            $out[] = [
+                'id'      => $id++,
+                'type'    => 'product_rail',
+                'content' => [
+                    'title'    => $locale === 'ar' ? 'الأكثر مبيعًا' : ($locale === 'de' ? 'Bestseller' : 'Best Sellers'),
+                    'rule'     => 'best_sellers',
+                    'products' => $bestSellers,
+                ],
+            ];
+        }
+
+        // ── Top Categories ───────────────────────────────────────────────
+        $categories = Category::withoutGlobalScope('image_url')
+            ->whereHas('products', fn ($q) => $q->where('is_active', true))
+            ->limit(8)
+            ->get();
+        if ($categories->count() >= 2) {
+            $out[] = [
+                'id'   => $id++,
+                'type' => 'category_grid',
+                'content' => [
+                    'categories' => $categories->map(fn ($cat) => [
+                        'id'    => $cat->id,
+                        'name'  => $locale === 'ar'
+                            ? ($cat->name_arabic ?: $cat->name_german)
+                            : ($cat->name_german ?: $cat->name_arabic),
+                        'image' => ImageUrl::make($cat->image),
+                    ])->all(),
+                ],
+            ];
+        }
+
+        // ── Discover More (random) ────────────────────────────────────────
+        $discoverProducts = $this->rails->resolve(
+            ['rule' => 'random', 'limit' => 12],
+            minCount: 3
+        );
+        if (!empty($discoverProducts)) {
+            $out[] = [
+                'id'      => $id++,
+                'type'    => 'product_rail',
+                'content' => [
+                    'title'    => $locale === 'ar' ? 'اكتشف المزيد' : ($locale === 'de' ? 'Entdecke mehr' : 'Discover More'),
+                    'rule'     => 'random',
+                    'products' => $discoverProducts,
+                ],
+            ];
+        }
+
+        return $out;
     }
 
     private function build(string $platform, string $locale, bool $preview): array
