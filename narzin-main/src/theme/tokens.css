@@ -1,0 +1,37 @@
+/*
+ * Narzin global design tokens — the single source of truth for the storefront look.
+ *
+ * Colors are stored as space-separated RGB triples so Tailwind can apply opacity
+ * modifiers (e.g. bg-narzin-navy/50) via the `rgb(var(--x) / <alpha-value>)` pattern
+ * wired up in tailwind.config.js.
+ *
+ * To re-theme the whole site later (or add a dark / seasonal theme), change the
+ * values here — no component edits required. A future theme can be added as a
+ * `:root[data-theme="..."] { ... }` block that overrides these variables.
+ */
+:root {
+  /* Brand palette (Liquid Glass: gold-on-navy) */
+  --nz-navy: 20 25 35;        /* #141923 ink / primary dark */
+  --nz-sand: 197 168 128;     /* #C5A880 soft gold          */
+  --nz-gold: 212 175 55;      /* #D4AF37 strong gold accent  */
+
+  /* Surfaces & text */
+  --nz-bg: 247 249 251;       /* #F7F9FB page background     */
+  --nz-surface: 255 255 255;  /* cards / panels              */
+  --nz-ink: 27 36 48;         /* primary text                */
+  --nz-muted: 107 114 128;    /* secondary text              */
+  --nz-border: 230 233 239;   /* hairline borders            */
+  --nz-danger: 220 38 38;     /* remove / error              */
+
+  /* Shape */
+  --nz-radius: 14px;
+  --nz-radius-lg: 22px;
+  --nz-radius-pill: 999px;
+
+  /* Liquid Glass material */
+  --nz-glass-tint: 255 255 255;   /* base tint for frosted panels */
+  --nz-glass-alpha: 0.65;         /* translucency                 */
+  --nz-glass-blur: 14px;          /* backdrop blur amount         */
+  --nz-glass-highlight: 255 255 255; /* specular top-border        */
+  --nz-shadow: 0 10px 30px -12px rgb(var(--nz-navy) / 0.35);
+}
