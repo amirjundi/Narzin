@@ -16,6 +16,9 @@ cd "$APP_DIR"
 git fetch --all --quiet
 git reset --hard origin/main
 
+echo "==> Ensuring Docker stack is up (build if images/config changed)"
+docker compose -f "$COMPOSE_DIR/docker-compose.yml" up -d --build
+
 echo "==> Backing up PostgreSQL database (best effort)"
 if [ -f "$API_DIR/.env" ]; then
   set -a

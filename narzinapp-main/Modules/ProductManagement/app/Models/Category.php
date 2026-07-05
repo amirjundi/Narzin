@@ -37,6 +37,14 @@ class Category extends Model
         return $this->hasMany(Category::class, 'parent_id');
     }
 
+    /**
+     * Products that belong directly to this category.
+     */
+    public function products()
+    {
+        return $this->hasMany(\Modules\ProductManagement\Models\Product::class, 'category_id');
+    }
+
 
 
     /**
