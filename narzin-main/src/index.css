@@ -20,5 +20,14 @@
       background: rgb(var(--nz-surface) / 0.96);
     }
   }
+
+  /* Slim, themed scrollbar for filter panels. */
+  .nz-scroll::-webkit-scrollbar { width: 5px; }
+  .nz-scroll::-webkit-scrollbar-track { background: transparent; }
+  .nz-scroll::-webkit-scrollbar-thumb {
+    background: rgb(var(--nz-muted) / 0.35);
+    border-radius: 999px;
+  }
+  .nz-scroll::-webkit-scrollbar-thumb:hover { background: rgb(var(--nz-muted) / 0.6); }
 }
 

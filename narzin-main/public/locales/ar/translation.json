@@ -81,7 +81,22 @@
     "apply": "تطبيق",
     "clear_filters": "مسح الفلاتر",
     "next": "التالي",
-    "previous": "السابق"
+    "previous": "السابق",
+    "filters": "الفلاتر",
+    "active_filters": "الفلاتر النشطة",
+    "no_products": "لا توجد منتجات مطابقة",
+    "category": "الفئة",
+    "color": "اللون",
+    "size": "المقاس",
+    "min": "الأدنى",
+    "max": "الأعلى",
+    "all": "الكل",
+    "loading": "جارٍ تحميل المنتجات...",
+    "showing": "عرض",
+    "of": "من",
+    "results": "نتيجة",
+    "search": "بحث",
+    "search_placeholder": "ابحث عن المنتجات"
   },
   "auth": {
     "email": "البريد الالكتروني",

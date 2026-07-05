@@ -80,7 +80,22 @@
     "apply": "Anwenden",
     "clear_filters": "Filter löschen",
     "next": "Nächster",
-    "previous": "Vorheriger"
+    "previous": "Vorheriger",
+    "filters": "Filter",
+    "active_filters": "Aktive Filter",
+    "no_products": "Keine passenden Produkte gefunden",
+    "category": "Kategorie",
+    "color": "Farbe",
+    "size": "Größe",
+    "min": "Min",
+    "max": "Max",
+    "all": "Alle",
+    "loading": "Produkte werden geladen...",
+    "showing": "Zeige",
+    "of": "von",
+    "results": "Ergebnisse",
+    "search": "Suche",
+    "search_placeholder": "Produkte suchen"
   },
   "auth": {
     "email": "E-Mail",
