@@ -7,11 +7,12 @@ import {
   User,
   Globe,
   LogOut,
+  Search,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Logo from "../Logo";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { logout } from "../../Store/slices/Auth/AuthSlice";
 import AnnouncementBar from "../pages/home/blocks/AnnouncementBar";
@@ -26,7 +27,16 @@ const NavBar = ({ data }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const { items: cartItems, totalItems } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
-  console.log("language", i18n.language);
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Submit search → storefront listing (which reads ?search= via the API).
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    navigate(q ? `/store?search=${encodeURIComponent(q)}` : "/store");
+    setIsMenuOpen(false);
+  };
 
   // Language switcher
   const changeLanguage = (lng) => {
@@ -210,6 +220,25 @@ const NavBar = ({ data }) => {
 
             {/* Desktop Auth & Actions */}
             <div className="hidden lg:flex items-center space-x-3 flex-shrink-0">
+              {/* Search bar (clean & compact, SHEIN-style) */}
+              <form onSubmit={handleSearch} className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t("shop.search_placeholder", isRTL ? "ابحث عن المنتجات" : "Produkte suchen")}
+                  aria-label={t("shop.search", isRTL ? "بحث" : "Suche")}
+                  className="w-44 xl:w-56 rounded-full bg-nz-surface/70 border border-nz-border py-2 ps-4 pe-9 text-sm text-nz-ink placeholder:text-nz-muted focus:outline-none focus:ring-2 focus:ring-narzin-gold/60 focus:border-narzin-gold transition-all duration-200"
+                />
+                <button
+                  type="submit"
+                  aria-label={t("shop.search", isRTL ? "بحث" : "Suche")}
+                  className="absolute inset-y-0 end-1.5 flex items-center justify-center w-7 text-nz-muted hover:text-narzin-gold transition-colors"
+                >
+                  <Search className="w-4 h-4" />
+                </button>
+              </form>
+
               {/* Language Switcher */}
               <div className="flex items-center">
                 <button
@@ -306,6 +335,27 @@ const NavBar = ({ data }) => {
               </button>
             </div>
           </div>
+
+          {/* Mobile search bar (full width) */}
+          <form onSubmit={handleSearch} className="lg:hidden pb-3">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t("shop.search_placeholder", isRTL ? "ابحث عن المنتجات" : "Produkte suchen")}
+                aria-label={t("shop.search", isRTL ? "بحث" : "Suche")}
+                className="w-full rounded-full bg-nz-surface/80 border border-nz-border py-2.5 ps-4 pe-11 text-sm text-nz-ink placeholder:text-nz-muted focus:outline-none focus:ring-2 focus:ring-narzin-gold/60 focus:border-narzin-gold transition-all duration-200"
+              />
+              <button
+                type="submit"
+                aria-label={t("shop.search", isRTL ? "بحث" : "Suche")}
+                className="absolute inset-y-0 end-2 flex items-center justify-center w-8 text-nz-muted hover:text-narzin-gold transition-colors"
+              >
+                <Search className="w-5 h-5" />
+              </button>
+            </div>
+          </form>
         </div>
 
         {/* Mobile Menu */}
