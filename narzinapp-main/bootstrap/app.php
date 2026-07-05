@@ -21,6 +21,17 @@ return Application::configure(basePath: dirname(__DIR__))
     )
 
     ->withMiddleware(function (Middleware $middleware) {
+        // Behind the Caddy/nginx reverse proxy, trust forwarded headers so
+        // Laravel detects HTTPS correctly and generates https:// asset URLs
+        // (otherwise CSS/JS load over http:// and browsers block them as
+        // mixed content, breaking the admin panel styling).
+        $middleware->trustProxies(at: '*', headers:
+            Request::HEADER_X_FORWARDED_FOR |
+            Request::HEADER_X_FORWARDED_HOST |
+            Request::HEADER_X_FORWARDED_PORT |
+            Request::HEADER_X_FORWARDED_PROTO
+        );
+
         $middleware->group('api', [
             \Illuminate\Http\Middleware\HandleCors::class,
             EnsureFrontendRequestsAreStateful::class,
