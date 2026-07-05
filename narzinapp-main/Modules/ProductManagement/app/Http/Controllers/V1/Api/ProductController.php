@@ -851,9 +851,16 @@ class ProductController extends Controller
                 });
             }
 
-            // Category Filter
+            // Category Filter — match either the top-level category or the
+            // sub-category. Products keep their parent in category_id and their
+            // subcategory in child_category_id, so selecting a subcategory must
+            // look at child_category_id too (otherwise the result is empty).
             if ($request->has('category_id')) {
-                $query->where('category_id', $request->category_id);
+                $catId = $request->category_id;
+                $query->where(function ($q) use ($catId) {
+                    $q->where('category_id', $catId)
+                        ->orWhere('child_category_id', $catId);
+                });
             }
 
             if ($request->has('child_category_id')) {
@@ -960,8 +967,32 @@ class ProductController extends Controller
     private function getAvailableFilters()
     {
         try {
-            // Get all categories
-            $categories = Category::select('id', 'name_arabic', 'name_german')->with('subcategories')->where('parent_id', null)->get();
+            // Only surface categories that actually have sellable stock, so the
+            // storefront menu reflects what a visitor can really buy. A product
+            // counts if it is active and has at least one active, in-stock variant.
+            // It contributes both its parent (category_id) and its subcategory
+            // (child_category_id) to the set of "non-empty" categories.
+            $stockCategoryIds = Product::query()
+                ->where('is_active', true)
+                ->whereHas('variants', function ($q) {
+                    $q->where('is_active', true)->where('is_out_of_stock', false);
+                })
+                ->get(['category_id', 'child_category_id'])
+                ->flatMap(fn ($p) => [$p->category_id, $p->child_category_id])
+                ->filter()
+                ->unique()
+                ->values();
+
+            // Top-level categories that have stock, each with only its non-empty
+            // subcategories attached.
+            $categories = Category::select('id', 'name_arabic', 'name_german')
+                ->whereNull('parent_id')
+                ->whereIn('id', $stockCategoryIds)
+                ->with(['subcategories' => function ($q) use ($stockCategoryIds) {
+                    $q->select('id', 'parent_id', 'name_arabic', 'name_german')
+                        ->whereIn('id', $stockCategoryIds);
+                }])
+                ->get();
 
             // Get available colors
             $colors = DB::table('variant_values')
