@@ -34,6 +34,10 @@ export function getInitialTab(param) {
 const MyAccountLayout = () => {
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(getInitialTab(searchParams.get("tab")));
+  const tabParam = searchParams.get("tab");
+  useEffect(() => {
+    setActiveTab(getInitialTab(tabParam));
+  }, [tabParam]);
   const {t}  = useTranslation();
   
   
