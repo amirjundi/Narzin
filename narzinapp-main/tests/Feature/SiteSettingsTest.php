@@ -49,4 +49,33 @@ class SiteSettingsTest extends TestCase
             ->assertJsonPath('data.whatsapp_number', '+964770123')
             ->assertJsonMissingPath('data.secret');
     }
+
+    private function admin(): \App\Models\User
+    {
+        $user = \App\Models\User::create([
+            'name' => 'A', 'email' => 'a' . uniqid() . '@t.test',
+            'password' => 'x', 'email_verified_at' => now(),
+        ]);
+        \Modules\Admin\Models\UserAdmin::create(['user_id' => $user->id, 'is_active' => 1]);
+
+        return $user;
+    }
+
+    public function test_guests_cannot_reach_settings_page(): void
+    {
+        $this->get(route('settings.edit'))->assertRedirect();
+    }
+
+    public function test_admin_can_save_whatsapp_number(): void
+    {
+        $this->actingAs($this->admin())
+            ->post(route('settings.update'), [
+                'whatsapp_number' => '+964 770-123-4567',
+                'support_hours' => 'Sun-Thu 9-18',
+            ])
+            ->assertRedirect(route('settings.edit'));
+
+        $this->assertSame('+964 770-123-4567', SiteSetting::get('whatsapp_number'));
+        $this->assertSame('Sun-Thu 9-18', SiteSetting::get('support_hours'));
+    }
 }

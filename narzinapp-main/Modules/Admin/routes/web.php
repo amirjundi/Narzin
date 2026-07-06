@@ -146,6 +146,9 @@ Route::middleware(['admin.auth'])->group(function () {
         Route::post('/', [PlatformMarkupController::class, 'store'])->name('store');
     });
 
+    Route::get('settings', [\Modules\Admin\Http\Controllers\SiteSettingController::class, 'edit'])->name('settings.edit');
+    Route::post('settings', [\Modules\Admin\Http\Controllers\SiteSettingController::class, 'update'])->name('settings.update');
+
     Route::get('vendor-payouts', [\Modules\Admin\Http\Controllers\VendorPayoutController::class, 'index'])->name('vendor-payouts.index');
     Route::get('vendor-payouts/settings', [\Modules\Admin\Http\Controllers\VendorPayoutController::class, 'settings'])->name('vendor-payouts.settings');
     Route::post('vendor-payouts/settings', [\Modules\Admin\Http\Controllers\VendorPayoutController::class, 'saveSettings'])->name('vendor-payouts.settings.save');

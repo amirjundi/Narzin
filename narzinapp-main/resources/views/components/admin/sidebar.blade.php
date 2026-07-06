@@ -493,6 +493,21 @@
                             <span x-show="sidebarOpen" class="font-medium">Global Markup</span>
                         </a>
                     </li>
+
+                    <!-- Site Settings -->
+                    <li>
+                        <a href="{{ route('settings.edit') }}"
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
+                                  {{ request()->routeIs('settings.*')
+                                     ? 'bg-gradient-to-r from-slate-600 to-slate-500 text-white shadow-lg shadow-slate-500/30'
+                                     : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }}">
+                            <div class="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg
+                                        {{ request()->routeIs('settings.*') ? 'bg-white/20' : 'bg-slate-700/50' }}">
+                                <span class="inline-flex items-center justify-center w-5 h-5"><i class="fa-solid fa-gear"></i></span>
+                            </div>
+                            <span x-show="sidebarOpen" class="font-medium">Settings</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </nav>
