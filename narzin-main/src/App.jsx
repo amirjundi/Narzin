@@ -20,6 +20,7 @@ import { fetchCategories } from "./Store/slices/CategorySlice";
 import ShowToast from "./components/ShowToast";
 import { fetchProducts } from "./Store/slices/ProductSlice";
 import { verifyToken } from "./Store/slices/Auth/AuthSlice";
+import { fetchPublicSettings } from "./Store/slices/SettingsSlice";
 import Return from "./pages/Return";
 import Privacy from "./pages/Privacy";
 import PaymentCallback from "./pages/PaymentCallback";
@@ -51,6 +52,7 @@ function App() {
     dispatch(verifyToken());
     dispatch(fetchCategories());
     dispatch(fetchProducts());
+    dispatch(fetchPublicSettings());
   }, [dispatch]);
 
   useEffect(() => {
