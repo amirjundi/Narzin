@@ -25,6 +25,7 @@ import Return from "./pages/Return";
 import Privacy from "./pages/Privacy";
 import PaymentCallback from "./pages/PaymentCallback";
 import { fetchHome } from "./Store/slices/HomeSlice";
+import RecentlyViewed from "./pages/RecentlyViewed";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -102,6 +103,7 @@ function App() {
             <Route path="signup" element={<SignUp />} />
             <Route path="return-policy" element={<Return />} />
             <Route path="privacy-policy" element={<Privacy />} />
+            <Route path="recently-viewed" element={<RecentlyViewed />} />
           </Route>
         </Routes>
       </Router>
