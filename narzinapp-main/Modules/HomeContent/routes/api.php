@@ -5,4 +5,5 @@ use Modules\HomeContent\Http\Controllers\HomeController;
 
 Route::prefix('v1')->group(function () {
     Route::get('/home', [HomeController::class, 'index']);
+    Route::get('/home/for-you', [HomeController::class, 'forYou']);
 });

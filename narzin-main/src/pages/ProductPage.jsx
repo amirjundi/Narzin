@@ -24,11 +24,48 @@ import { addToWishlist, fetchWishlist } from "../Store/slices/WishlistSlice";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify"; // Assuming you use react-toastify for notifications
+import api, { getCsrfCookie } from "../api/axios";
+import { getSessionId } from "../helpers/session";
 
 const ProductPage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
+
+  // Behavior tracking: record this product view (+ dwell time on leave) so the
+  // "For You" personalization has data. Fire-and-forget; never blocks the UI.
+  useEffect(() => {
+    if (!id) return;
+    const sessionId = getSessionId();
+    const startedAt = Date.now();
+
+    const track = async (dwell) => {
+      const body = {
+        product_id: Number(id),
+        session_id: sessionId,
+        dwell_time_seconds: dwell,
+      };
+      try {
+        await api.post("/v1/telemetry/view", body);
+      } catch (e) {
+        if (e?.response?.status === 419) {
+          try {
+            await getCsrfCookie();
+            await api.post("/v1/telemetry/view", body);
+          } catch {
+            /* ignore */
+          }
+        }
+      }
+    };
+
+    track(0); // record the view immediately
+
+    return () => {
+      const dwell = Math.min(Math.round((Date.now() - startedAt) / 1000), 3600);
+      if (dwell > 0) track(dwell);
+    };
+  }, [id]);
 
   const {
     items: productData,
