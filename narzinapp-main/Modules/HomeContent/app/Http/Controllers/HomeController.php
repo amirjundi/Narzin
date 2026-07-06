@@ -71,6 +71,7 @@ class HomeController extends Controller
         $recent = $rails->resolve(['rule' => 'manual', 'product_ids' => $viewedIds->take(12)->all()]);
         if (! empty($recent)) {
             $out[] = ['id' => $id++, 'type' => 'product_rail', 'content' => [
+                'key'      => 'recently_viewed',
                 'title'    => $locale === 'ar' ? 'شاهدت مؤخرًا' : ($locale === 'de' ? 'Kürzlich angesehen' : 'Recently Viewed'),
                 'rule'     => 'manual',
                 'products' => $recent,
@@ -93,6 +94,7 @@ class HomeController extends Controller
                 $rec = $rails->resolve(['rule' => 'manual', 'product_ids' => $recIds]);
                 if (! empty($rec)) {
                     $out[] = ['id' => $id++, 'type' => 'product_rail', 'content' => [
+                        'key'      => 'recommended',
                         'title'    => $locale === 'ar' ? 'مختار لك' : ($locale === 'de' ? 'Für dich' : 'Recommended for You'),
                         'rule'     => 'manual',
                         'products' => $rec,
