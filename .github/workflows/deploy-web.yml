@@ -35,6 +35,27 @@ jobs:
           npm ci
           npm run build
 
+      # dist/assets or dist/locales can end up root-owned (e.g. a root container
+      # touching the mounted app dir). The rsync below runs as the (non-root)
+      # deploy user, so root-owned files make it fail with "Permission denied",
+      # leaving index.html pointing at a bundle that never landed — a blank site.
+      # Self-heal ownership first: the deploy user is in the docker group, so it
+      # can chown via a throwaway root container without sudo.
+      - name: Ensure dist is writable by the deploy user
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          script: |
+            set -e
+            DIST=/var/www/Narzin/narzin-main/dist
+            DUID=$(id -u)
+            WGID=$(getent group www-data | cut -d: -f3 || echo "$(id -g)")
+            docker run --rm -v "$DIST":/mnt alpine chown -R "${DUID}:${WGID}" /mnt
+
       - name: Rsync build to server
         uses: burnett01/rsync-deployments@7.0.2
         with:
