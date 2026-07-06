@@ -38,4 +38,15 @@ class SiteSettingsTest extends TestCase
 
         $this->assertSame('new', SiteSetting::get('whatsapp_number'));
     }
+
+    public function test_public_api_returns_only_public_settings(): void
+    {
+        SiteSetting::create(['key' => 'whatsapp_number', 'value' => '+964770123', 'is_public' => true]);
+        SiteSetting::create(['key' => 'secret', 'value' => 'shh', 'is_public' => false]);
+
+        $this->getJson('/api/v1/settings/public')
+            ->assertOk()
+            ->assertJsonPath('data.whatsapp_number', '+964770123')
+            ->assertJsonMissingPath('data.secret');
+    }
 }

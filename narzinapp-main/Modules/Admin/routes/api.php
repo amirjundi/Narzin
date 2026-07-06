@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Admin\Http\Controllers\AdminController;
 use Modules\Admin\Http\Controllers\CouponController;
+use Modules\Admin\Http\Controllers\SiteSettingController;
 use Modules\Admin\Http\Controllers\TagController;
 use Modules\ProductManagement\Models\Product;
 
@@ -51,3 +52,5 @@ Route::get('v1/products/{product}/variants', function (Product $product) {
         ];
     }));
 });
+
+Route::get('v1/settings/public', [SiteSettingController::class, 'publicIndex']);
