@@ -5,3 +5,15 @@ import "@testing-library/jest-dom/vitest";
 if (!Element.prototype.scrollIntoView) {
   Element.prototype.scrollIntoView = () => {};
 }
+
+// ResizeObserver polyfill for jsdom (required by Headless UI)
+if (!global.ResizeObserver) {
+  global.ResizeObserver = class ResizeObserver {
+    constructor(callback) {
+      this.callback = callback;
+    }
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
