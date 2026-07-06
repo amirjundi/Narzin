@@ -880,13 +880,11 @@ class ProductController extends Controller
                 });
             }
 
-            // Color Filter
+            // Color Filter — colors live on the product images (texture-based
+            // color system), so match products that have an image of that color.
             if ($request->has('color')) {
-                $query->whereHas('variants.variantValues', function ($q) use ($request) {
-                    $q->whereHas('variantAttribute', function ($qa) {
-                        $qa->where('name_arabic', 'اللون')
-                            ->orWhere('name_german', 'Farbe');
-                    })->where('value', $request->color);
+                $query->whereHas('images', function ($q) use ($request) {
+                    $q->where('color', $request->color);
                 });
             }
 
@@ -994,16 +992,14 @@ class ProductController extends Controller
                 }])
                 ->get();
 
-            // Get available colors
-            $colors = DB::table('variant_values')
-                ->join('variant_attributes', 'variant_values.variant_attribute_id', '=', 'variant_attributes.id')
-                ->where(function ($q) {
-                    $q->where('variant_attributes.name_arabic', 'اللون')
-                        ->orWhere('variant_attributes.name_german', 'Farbe');
-                })
-                ->select('variant_values.value')
+            // Available colors come from the product images (texture-based color
+            // system), matching how the storefront renders + filters colors.
+            $colors = DB::table('products_images')
+                ->whereNotNull('color')
+                ->where('color', '!=', '')
                 ->distinct()
-                ->pluck('value');
+                ->orderBy('color')
+                ->pluck('color');
 
             // Get available sizes
             $sizes = DB::table('variant_values')

@@ -3,12 +3,15 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Modules\ProductManagement\Models\Category;
 use Modules\ProductManagement\Models\Product;
 use Modules\ProductManagement\Models\ProductImage;
 use Modules\ProductManagement\Models\ProductVariant;
+use Modules\ProductManagement\Models\VariantAttribute;
+use Modules\ProductManagement\Models\VariantValue;
 
 /**
  * Seeds a comprehensive bilingual (Arabic / German) e-commerce category tree
@@ -91,7 +94,69 @@ class DemoCatalogSeeder extends Seeder
             }
         }
 
+        $this->seedImageColors();
+        $this->seedVariantSizes();
+
         $this->command?->info("Done. Categories ensured: {$catCount}, products created: {$prodCount}.");
+    }
+
+    /**
+     * Tag each product's images with a color (the storefront's texture-based
+     * color system: a colored image IS the swatch). Gives each product a couple
+     * of distinct colors so the color selector + filter have data. Idempotent —
+     * skips images that already carry a color, so it never overwrites real data.
+     */
+    private function seedImageColors(): void
+    {
+        $palette = [
+            "#1F2937", "#C5A880", "#D4AF37", "#7C3AED", "#DC2626",
+            "#059669", "#2563EB", "#DB2777", "#F59E0B", "#0EA5E9",
+        ];
+
+        Product::select("id")->orderBy("id")->chunk(100, function ($products) use ($palette) {
+            foreach ($products as $p) {
+                $imgs = DB::table("products_images")
+                    ->where("product_id", $p->id)
+                    ->orderBy("id")
+                    ->get();
+                foreach ($imgs as $i => $img) {
+                    if (empty($img->color)) {
+                        DB::table("products_images")
+                            ->where("id", $img->id)
+                            ->update(["color" => $palette[($p->id + $i) % count($palette)]]);
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Give every variant a size (variant_values against the size attribute), so
+     * the size filter populates. Idempotent — skips variants that already have a
+     * size value.
+     */
+    private function seedVariantSizes(): void
+    {
+        $sizeAttr = VariantAttribute::firstOrCreate(
+            ["name_arabic" => "المقاس"],
+            ["name_german" => "Größe"]
+        );
+        $sizes = ["S", "M", "L", "XL"];
+
+        ProductVariant::select("id")->orderBy("id")->chunk(200, function ($variants) use ($sizeAttr, $sizes) {
+            foreach ($variants as $v) {
+                $exists = VariantValue::where("product_variants_id", $v->id)
+                    ->where("variant_attribute_id", $sizeAttr->id)
+                    ->exists();
+                if (! $exists) {
+                    VariantValue::create([
+                        "product_variants_id" => $v->id,
+                        "variant_attribute_id" => $sizeAttr->id,
+                        "value" => $sizes[$v->id % count($sizes)],
+                    ]);
+                }
+            }
+        });
     }
 
     /** Download a reusable pool of images to the public disk once. Returns relative paths. */
