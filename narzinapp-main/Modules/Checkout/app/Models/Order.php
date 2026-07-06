@@ -42,6 +42,10 @@ class Order extends Model
         'payment_id',
         'promotion_id',
         'free_shipping_promotion_id',
+        // Idempotency markers — must be mass-assignable so the "already applied"
+        // guards in applyWalletDeduction()/applyCouponUsage() actually persist.
+        'coupon_applied_at',
+        'wallet_deducted_at',
     ];
 
     protected $casts = [

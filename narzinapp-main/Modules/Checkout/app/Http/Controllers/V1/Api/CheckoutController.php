@@ -1069,24 +1069,50 @@ class CheckoutController extends Controller
      */
     private function applyWalletDeduction(Order $order): float
     {
-        if ($order->wallet_usage > 0 && !$order->wallet_deducted_at) {
+        // Idempotency: never debit the same order's wallet usage twice.
+        if ($order->wallet_usage <= 0 || $order->wallet_deducted_at) {
+            return 0;
+        }
+
+        // Race-safe debit: a single conditional UPDATE that only deducts when the
+        // balance actually covers it. The database row-locks the UPDATE, so two
+        // concurrent confirmations can never both pass the `balance >= usage`
+        // guard — the balance can never go negative and the same credit can never
+        // be spent twice. (Previously this read the balance and decremented in two
+        // steps without a lock, which allowed concurrent/duplicate over-spend.)
+        $affected = UserWallet::where('user_id', $order->user_id)
+            ->where('balance', '>=', $order->wallet_usage)
+            ->decrement('balance', $order->wallet_usage);
+
+        if ($affected > 0) {
             $wallet = UserWallet::where('user_id', $order->user_id)->first();
 
-            if ($wallet && $wallet->balance >= $order->wallet_usage) {
-                $wallet->decrement('balance', $order->wallet_usage);
+            WalletTransaction::create([
+                'user_id' => $order->user_id,
+                'wallet_id' => $wallet->id,
+                'type' => 'order',
+                'amount' => $order->wallet_usage,
+                'order_id' => $order->id
+            ]);
 
-                WalletTransaction::create([
-                    'user_id' => $order->user_id,
-                    'wallet_id' => $wallet->id,
-                    'type' => 'order',
-                    'amount' => $order->wallet_usage,
-                    'order_id' => $order->id
-                ]);
-
-                $order->update(['wallet_deducted_at' => now()]);
-                return $order->wallet_usage;
-            }
+            $order->update(['wallet_deducted_at' => now()]);
+            return (float) $order->wallet_usage;
         }
+
+        // Insufficient balance at confirmation time. Previously the order was
+        // silently confirmed as if the wallet discount had applied — letting a
+        // user spend wallet credit they no longer held. Record the shortfall for
+        // admin review instead of absorbing it silently.
+        Log::warning('Wallet deduction shortfall: balance did not cover reserved wallet_usage', [
+            'order_id' => $order->id,
+            'user_id' => $order->user_id,
+            'wallet_usage' => $order->wallet_usage,
+        ]);
+        $this->logAudit($order, 'wallet_deduction_shortfall', [
+            'triggered_by' => 'system',
+            'data' => ['wallet_usage' => $order->wallet_usage],
+            'notes' => 'Reserved wallet credit exceeded the available balance at confirmation; flagged for review.',
+        ]);
         return 0;
     }
 

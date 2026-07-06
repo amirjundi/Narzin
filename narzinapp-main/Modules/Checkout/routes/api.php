@@ -17,8 +17,8 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::get('clear/cart', [CartController::class, 'clearCart'])->name('cart.clear');
 
     // Checkout Routes
-    Route::post('/place-order', [CheckoutController::class, 'placeOrder']);
-        // ->middleware('throttle:10,1'); // 10 requests per minute per user
+    Route::post('/place-order', [CheckoutController::class, 'placeOrder'])
+        ->middleware('throttle:10,1'); // 10 requests per minute per user
     
     // Payment verification - called by frontend after redirect from Nass
     Route::post('/verify-payment', [CheckoutController::class, 'verifyPayment'])
