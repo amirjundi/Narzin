@@ -21,12 +21,19 @@ import Wishlist from '../components/pages/MyAccount/Wishlist';
 import WalletComponent from '../components/pages/MyAccount/WalletComponent'; 
 import About from '../components/pages/MyAccount/About';
 import VendorSignup from '../components/pages/MyAccount/VendorSignup';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
+export const ACCOUNT_TABS = ["my-account", "orders", "addresses", "wishlist", "wallet", "about", "vendor"];
+
+export function getInitialTab(param) {
+  return ACCOUNT_TABS.includes(param) ? param : "my-account";
+}
+
 const MyAccountLayout = () => {
-  const [activeTab, setActiveTab] = useState('my-account');
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(getInitialTab(searchParams.get("tab")));
   const {t}  = useTranslation();
   
   
