@@ -45,9 +45,9 @@ echo "==> Installing PHP dependencies inside container"
 docker compose -f "$COMPOSE_DIR/docker-compose.yml" exec -T backend \
   composer install --no-dev --optimize-autoloader --no-interaction
 
-echo "==> Clearing nwidart module cache (prevents 500 on stale cache)"
+echo "==> Clearing nwidart module cache (prevents 500 + stale module routes)"
 docker compose -f "$COMPOSE_DIR/docker-compose.yml" exec -T backend \
-  bash -c "rm -f bootstrap/cache/*_module.php"
+  bash -c "rm -f bootstrap/cache/*_module.php bootstrap/cache/modules.php"
 
 echo "==> Running database migrations"
 docker compose -f "$COMPOSE_DIR/docker-compose.yml" exec -T backend \
