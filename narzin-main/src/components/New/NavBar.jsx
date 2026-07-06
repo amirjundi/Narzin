@@ -16,6 +16,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { logout } from "../../Store/slices/Auth/AuthSlice";
 import AnnouncementBar from "../pages/home/blocks/AnnouncementBar";
+import AccountMenu from "./navbar/AccountMenu";
+import SupportMenu from "./navbar/SupportMenu";
+import LanguageMenu from "./navbar/LanguageMenu";
 
 const NavBar = ({ data }) => {
   const { t, i18n } = useTranslation();
@@ -218,9 +221,9 @@ const NavBar = ({ data }) => {
               ))}
             </nav>
 
-            {/* Desktop Auth & Actions */}
-            <div className="hidden lg:flex items-center space-x-3 flex-shrink-0">
-              {/* Search bar (clean & compact, SHEIN-style) */}
+            {/* Desktop Actions */}
+            <div className="hidden lg:flex items-center space-x-2 flex-shrink-0">
+              {/* Search bar (unchanged) */}
               <form onSubmit={handleSearch} className="relative">
                 <input
                   type="text"
@@ -228,7 +231,7 @@ const NavBar = ({ data }) => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t("shop.search_placeholder", isRTL ? "ابحث عن المنتجات" : "Produkte suchen")}
                   aria-label={t("shop.search", isRTL ? "بحث" : "Suche")}
-                  className="w-44 xl:w-56 rounded-full bg-nz-surface/70 border border-nz-border py-2 ps-4 pe-9 text-sm text-nz-ink placeholder:text-nz-muted focus:outline-none focus:ring-2 focus:ring-narzin-gold/60 focus:border-narzin-gold transition-all duration-200"
+                  className="w-40 xl:w-52 rounded-full bg-nz-surface/70 border border-nz-border py-2 ps-4 pe-9 text-sm text-nz-ink placeholder:text-nz-muted focus:outline-none focus:ring-2 focus:ring-narzin-gold/60 focus:border-narzin-gold transition-all duration-200"
                 />
                 <button
                   type="submit"
@@ -239,62 +242,12 @@ const NavBar = ({ data }) => {
                 </button>
               </form>
 
-              {/* Language Switcher */}
-              <div className="flex items-center">
-                <button
-                  onClick={() =>
-                    changeLanguage(i18n.language === "ar" ? "du" : "ar")
-                  }
-                  className="flex items-center space-x-1.5 px-2 py-1.5 rounded-lg hover:bg-gray-100 transition-all duration-200"
-                >
-                  <span className="text-lg">
-                    {i18n.language === "ar" ? "🇩🇪" : "🇸🇦"}
-                  </span>
-                  <span className="text-xs font-medium text-gray-700 hidden xl:block">
-                    {i18n.language === "ar" ? "DE" : "عربي"}
-                  </span>
-                </button>
-              </div>
-
-              {/* Auth Links */}
-              {!isAuthenticated ? (
-                <div className="flex items-center space-x-2">
-                  <Link
-                    to="/signin"
-                    className="text-sm font-medium text-gray-700 hover:text-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-all duration-200"
-                  >
-                    {t("auth.login")}
-                  </Link>
-                  <Link
-                    to="/signup"
-                    className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-4 py-1.5 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
-                  >
-                    {t("auth.register")}
-                  </Link>
-                </div>
-              ) : (
-                <div className="flex items-center space-x-2">
-                  <Link
-                    to="/my-account"
-                    className="flex items-center space-x-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 px-2 py-1.5 rounded-lg hover:bg-blue-50 transition-all duration-200"
-                  >
-                    <User className="w-4 h-4" />
-                    <span className="hidden xl:block">
-                      {t("auth.my_account")}
-                    </span>
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="text-sm font-medium text-red-600 hover:text-red-700 px-2 py-1.5 rounded-lg hover:bg-red-50 transition-all duration-200"
-                  >
-                    <LogOut className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-
-              {/* Shopping Cart */}
+              {/* Icon cluster (SHEIN-style) */}
+              <AccountMenu />
+              <SupportMenu />
               <Link
                 to="/cart"
+                aria-label="Cart"
                 className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 group"
               >
                 <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
@@ -304,6 +257,7 @@ const NavBar = ({ data }) => {
                   </span>
                 )}
               </Link>
+              <LanguageMenu />
             </div>
 
             {/* Mobile Actions */}
@@ -387,6 +341,14 @@ const NavBar = ({ data }) => {
                     <span>{t("auth.register")}</span>
                     <ArrowRight className="w-4 h-4" />
                   </Link>
+                  <Link
+                    to="/recently-viewed"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center space-x-3 w-full text-left py-3 px-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                  >
+                    <User className="w-5 h-5" />
+                    <span className="font-medium">{t("topbar.recently_viewed", "Recently Viewed")}</span>
+                  </Link>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -397,6 +359,22 @@ const NavBar = ({ data }) => {
                   >
                     <User className="w-5 h-5" />
                     <span className="font-medium">{t("auth.my_account")}</span>
+                  </Link>
+                  <Link
+                    to="/my-account?tab=orders"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center space-x-3 w-full text-left py-3 px-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                  >
+                    <User className="w-5 h-5" />
+                    <span className="font-medium">{t("topbar.my_orders", "My Orders")}</span>
+                  </Link>
+                  <Link
+                    to="/recently-viewed"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center space-x-3 w-full text-left py-3 px-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                  >
+                    <User className="w-5 h-5" />
+                    <span className="font-medium">{t("topbar.recently_viewed", "Recently Viewed")}</span>
                   </Link>
                   <button
                     onClick={handleLogout}
