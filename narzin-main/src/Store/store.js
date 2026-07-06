@@ -32,7 +32,7 @@ import VendorSlice from "./slices/VendorSlice";
 
 import homeReducer from "./slices/HomeSlice";
 import forYouReducer from "./slices/ForYouSlice";
-
+import settingsReducer from "./slices/SettingsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -57,5 +57,6 @@ export const store = configureStore({
     vendor: VendorSlice,
     home: homeReducer,
     forYou: forYouReducer,
+    settings: settingsReducer,
   },
 });
