@@ -68,6 +68,44 @@ class HomeFeedService
         $out = [];
         $id  = 1000; // synthetic IDs that won't clash with real home_blocks
 
+        // ── Hero (auto-built from newest products, SHEIN-style) ───────────
+        $heroItems = $this->rails->resolve(['rule' => 'newest', 'limit' => 6], minCount: 1);
+        $heroSlides = collect($heroItems)
+            ->filter(fn ($p) => !empty($p['image']))
+            ->take(5)
+            ->map(fn ($p) => [
+                'image'    => $p['image'],
+                'title'    => $locale === 'ar' ? 'وصل حديثًا' : ($locale === 'de' ? 'Neu eingetroffen' : 'New Arrivals'),
+                'subtitle' => $locale === 'ar' ? ($p['name_arabic'] ?? '') : ($p['name_german'] ?? ''),
+                'link'     => ['type' => 'product', 'value' => $p['id']],
+            ])
+            ->values()
+            ->all();
+        if (! empty($heroSlides)) {
+            $out[] = ['id' => $id++, 'type' => 'hero_slider', 'content' => ['slides' => $heroSlides]];
+        }
+
+        // ── Top Categories (circles, right under the hero) ───────────────
+        $topCats = Category::withoutGlobalScope('image_url')
+            ->whereHas('products', fn ($q) => $q->where('is_active', true))
+            ->limit(10)
+            ->get();
+        if ($topCats->count() >= 2) {
+            $out[] = [
+                'id'   => $id++,
+                'type' => 'category_grid',
+                'content' => [
+                    'categories' => $topCats->map(fn ($cat) => [
+                        'id'    => $cat->id,
+                        'name'  => $locale === 'ar'
+                            ? ($cat->name_arabic ?: $cat->name_german)
+                            : ($cat->name_german ?: $cat->name_arabic),
+                        'image' => ImageUrl::make($cat->image),
+                    ])->all(),
+                ],
+            ];
+        }
+
         // ── Recently Added ───────────────────────────────────────────────
         $newestProducts = $this->rails->resolve(
             ['rule' => 'newest', 'limit' => 12],
@@ -98,27 +136,6 @@ class HomeFeedService
                     'title'    => $locale === 'ar' ? 'الأكثر مبيعًا' : ($locale === 'de' ? 'Bestseller' : 'Best Sellers'),
                     'rule'     => 'best_sellers',
                     'products' => $bestSellers,
-                ],
-            ];
-        }
-
-        // ── Top Categories ───────────────────────────────────────────────
-        $categories = Category::withoutGlobalScope('image_url')
-            ->whereHas('products', fn ($q) => $q->where('is_active', true))
-            ->limit(8)
-            ->get();
-        if ($categories->count() >= 2) {
-            $out[] = [
-                'id'   => $id++,
-                'type' => 'category_grid',
-                'content' => [
-                    'categories' => $categories->map(fn ($cat) => [
-                        'id'    => $cat->id,
-                        'name'  => $locale === 'ar'
-                            ? ($cat->name_arabic ?: $cat->name_german)
-                            : ($cat->name_german ?: $cat->name_arabic),
-                        'image' => ImageUrl::make($cat->image),
-                    ])->all(),
                 ],
             ];
         }
