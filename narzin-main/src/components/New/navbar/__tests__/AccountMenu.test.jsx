@@ -11,8 +11,8 @@ describe("AccountMenu", () => {
       preloadedState: { auth: { isAuthenticated: false } },
     });
     fireEvent.click(screen.getByRole("button", { name: /account/i }));
-    expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /register/i })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: /sign in/i })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: /register/i })).toBeInTheDocument();
   });
 
   it("shows orders and recently viewed when logged in", () => {
@@ -21,8 +21,8 @@ describe("AccountMenu", () => {
       preloadedState: { auth: { isAuthenticated: true } },
     });
     fireEvent.click(screen.getByRole("button", { name: /account/i }));
-    const orders = screen.getByRole("link", { name: /orders/i });
+    const orders = screen.getByRole("menuitem", { name: /orders/i });
     expect(orders).toHaveAttribute("href", "/my-account?tab=orders");
-    expect(screen.getByRole("link", { name: /recently viewed/i })).toHaveAttribute("href", "/recently-viewed");
+    expect(screen.getByRole("menuitem", { name: /recently viewed/i })).toHaveAttribute("href", "/recently-viewed");
   });
 });

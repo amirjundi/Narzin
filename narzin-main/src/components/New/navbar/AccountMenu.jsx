@@ -17,14 +17,19 @@ const AccountMenu = () => {
   };
 
   const item = (to, Icon, label) => (
-    <Link
-      to={to}
-      role="link"
-      className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700`}
-    >
-      <Icon className="w-4 h-4" />
-      {label}
-    </Link>
+    <Menu.Item>
+      {({ active }) => (
+        <Link
+          to={to}
+          className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm ${
+            active ? "bg-blue-50 text-blue-700" : "text-gray-700"
+          }`}
+        >
+          <Icon className="w-4 h-4" />
+          {label}
+        </Link>
+      )}
+    </Menu.Item>
   );
 
   return (
@@ -37,21 +42,27 @@ const AccountMenu = () => {
       </Menu.Button>
       <Menu.Items className="absolute end-0 mt-2 w-60 origin-top-end rounded-xl bg-white shadow-lg ring-1 ring-gray-200/70 focus:outline-none z-50 p-1.5">
         {!isAuthenticated && (
-          <div className="space-y-2 p-1.5">
-            <Link
-              to="/signin"
-              role="link"
-              className="flex text-center text-sm font-medium text-gray-700 border border-gray-200 rounded-lg py-2 px-3 hover:bg-gray-50 justify-center"
-            >
-              {t("auth.login", "Sign In")}
-            </Link>
-            <Link
-              to="/signup"
-              role="link"
-              className="flex text-center text-sm font-medium text-white bg-blue-600 rounded-lg py-2 px-3 hover:bg-blue-700 justify-center"
-            >
-              {t("auth.register", "Register")}
-            </Link>
+          <div className="flex gap-2 p-1.5">
+            <Menu.Item>
+              {() => (
+                <Link
+                  to="/signin"
+                  className="flex-1 text-center text-sm font-medium text-gray-700 border border-gray-200 rounded-lg py-2 hover:bg-gray-50"
+                >
+                  {t("auth.login", "Sign In")}
+                </Link>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {() => (
+                <Link
+                  to="/signup"
+                  className="flex-1 text-center text-sm font-medium text-white bg-blue-600 rounded-lg py-2 hover:bg-blue-700"
+                >
+                  {t("auth.register", "Register")}
+                </Link>
+              )}
+            </Menu.Item>
           </div>
         )}
 
@@ -65,13 +76,21 @@ const AccountMenu = () => {
         </>
 
         {isAuthenticated && (
-          <button
-            onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-red-600 mt-1 border-t border-gray-100 pt-1 hover:bg-red-50"
-          >
-            <LogOut className="w-4 h-4" />
-            {t("auth.logout", "Logout")}
-          </button>
+          <div className="mt-1 border-t border-gray-100 pt-1">
+            <Menu.Item>
+              {({ active }) => (
+                <button
+                  onClick={handleLogout}
+                  className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-red-600 ${
+                    active ? "bg-red-50" : ""
+                  }`}
+                >
+                  <LogOut className="w-4 h-4" />
+                  {t("auth.logout", "Logout")}
+                </button>
+              )}
+            </Menu.Item>
+          </div>
         )}
       </Menu.Items>
     </Menu>
