@@ -8,6 +8,7 @@ import {
   Wallet,
   Info,
   Store,
+  Monitor,
   ChevronRight,
   LogOut
 } from 'lucide-react';
@@ -21,11 +22,12 @@ import Wishlist from '../components/pages/MyAccount/Wishlist';
 import WalletComponent from '../components/pages/MyAccount/WalletComponent'; 
 import About from '../components/pages/MyAccount/About';
 import VendorSignup from '../components/pages/MyAccount/VendorSignup';
+import DevicesSection from '../components/pages/MyAccount/DevicesSection';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
-export const ACCOUNT_TABS = ["my-account", "orders", "addresses", "wishlist", "wallet", "about", "vendor"];
+export const ACCOUNT_TABS = ["my-account", "orders", "returns", "addresses", "wishlist", "wallet", "devices", "about", "vendor"];
 
 export function getInitialTab(param) {
   return ACCOUNT_TABS.includes(param) ? param : "my-account";
@@ -56,16 +58,20 @@ const MyAccountLayout = () => {
 
   const tabs = [
     { id: 'my-account', label: t('accountPage.myAccount') , icon: User },
-    { id: 'orders', label: t('accountPage.orders') 
+    { id: 'orders', label: t('accountPage.orders')
       , icon: Package },
-    { id: 'addresses', label: t('accountPage.addresses') 
+    { id: 'returns', label: t('accountPage.returns', 'Returns')
+      , icon: RefreshCcw },
+    { id: 'addresses', label: t('accountPage.addresses')
       , icon: MapPin },
     { id: 'wishlist', label: t('accountPage.wishlist') 
       
       , icon: Heart },
-    { id: 'wallet', label: t('accountPage.wallet') 
+    { id: 'wallet', label: t('accountPage.wallet')
       , icon: Wallet },
-    { id: 'about', label: t('accountPage.about') 
+    { id: 'devices', label: t('accountPage.devices', 'Active Sessions')
+      , icon: Monitor },
+    { id: 'about', label: t('accountPage.about')
       , icon: Info },
     { id: 'vendor', label: t('accountPage.vendor') 
       , icon: Store },
@@ -77,12 +83,16 @@ const MyAccountLayout = () => {
         return <MyAccount   />;
       case 'orders':
         return <Orders />;
+      case 'returns':
+        return <Returns />;
       case 'addresses':
         return <Addresses />;
       case 'wishlist':
         return <Wishlist />;
       case 'wallet':
         return <WalletComponent />;
+      case 'devices':
+        return <DevicesSection />;
       case 'about':
         return <About />;
       case 'vendor':
