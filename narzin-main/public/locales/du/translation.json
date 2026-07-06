@@ -785,5 +785,19 @@
       "iraq": "Wir halten uns an das irakische Verbraucherschutzgesetz und Handelsvorschriften.",
       "rights": "Diese Richtlinie beeinträchtigt nicht Ihre gesetzlichen Rechte als Verbraucher."
     }
+  },
+  "topbar": {
+    "account": "Konto",
+    "support": "Support",
+    "customer_support": "Kundenservice",
+    "chat_whatsapp": "Per WhatsApp chatten",
+    "my_orders": "Meine Bestellungen",
+    "recently_viewed": "Kürzlich angesehen",
+    "recently_viewed_empty": "Sie haben noch keine Produkte angesehen.",
+    "browse_store": "Zum Shop",
+    "wishlist": "Merkliste",
+    "wallet": "Meine Brieftasche",
+    "addresses": "Adressen",
+    "my_account": "Mein Konto"
   }
 }
