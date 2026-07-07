@@ -52,6 +52,42 @@ class Product extends Model
         return $this->belongsTo(Category::class , 'child_category_id');
     }
 
+    /**
+     * Keyword product search.
+     *
+     * Splits the query into whitespace-separated keywords and requires EVERY
+     * keyword to appear (in any order) in the product name, description, or its
+     * category name — in Arabic or German. Matching is case-insensitive and
+     * portable: LOWER(col) LIKE lower(term) behaves the same on Postgres (whose
+     * plain LIKE is case-sensitive) and on the SQLite test database.
+     */
+    public function scopeSearch($query, ?string $term)
+    {
+        $term = trim((string) $term);
+        if ($term === '') {
+            return $query;
+        }
+
+        $keywords = preg_split('/\s+/', $term, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+        foreach ($keywords as $keyword) {
+            $like = '%' . mb_strtolower($keyword) . '%';
+
+            $query->where(function ($q) use ($like) {
+                $q->whereRaw('LOWER(name_arabic) LIKE ?', [$like])
+                    ->orWhereRaw('LOWER(name_german) LIKE ?', [$like])
+                    ->orWhereRaw('LOWER(description_arabic) LIKE ?', [$like])
+                    ->orWhereRaw('LOWER(description_german) LIKE ?', [$like])
+                    ->orWhereHas('category', function ($c) use ($like) {
+                        $c->whereRaw('LOWER(name_arabic) LIKE ?', [$like])
+                            ->orWhereRaw('LOWER(name_german) LIKE ?', [$like]);
+                    });
+            });
+        }
+
+        return $query;
+    }
+
     public function variants(): HasMany
     {
         return $this->hasMany(ProductVariant::class);

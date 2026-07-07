@@ -80,15 +80,10 @@ class ProductController extends Controller
                         ->limit(1)
                 ]);
 
-            // Add search functionality
-            if ($request->has('search')) {
-                $search = $request->search;
-                $query->where(function ($q) use ($search) {
-                    $q->where('name_arabic', 'like', "%{$search}%")
-                        ->orWhere('name_german', 'like', "%{$search}%")
-                        ->orWhere('description_arabic', 'like', "%{$search}%")
-                        ->orWhere('description_german', 'like', "%{$search}%");
-                });
+            // Keyword search: case-insensitive, every keyword must match the
+            // name/description/category (any order). See Product::scopeSearch.
+            if ($request->filled('search')) {
+                $query->search($request->search);
             }
 
             // Add category filter
@@ -840,15 +835,10 @@ class ProductController extends Controller
                         ->orderBy('price', 'desc')
                         ->limit(1)
                 ]);
-            // Text Search (name and description)
-            if ($request->has('search')) {
-                $searchTerm = $request->search;
-                $query->where(function ($q) use ($searchTerm) {
-                    $q->where('name_arabic', 'like', "%{$searchTerm}%")
-                        ->orWhere('name_german', 'like', "%{$searchTerm}%")
-                        ->orWhere('description_arabic', 'like', "%{$searchTerm}%")
-                        ->orWhere('description_german', 'like', "%{$searchTerm}%");
-                });
+            // Keyword search: case-insensitive, every keyword must match the
+            // name/description/category (any order). See Product::scopeSearch.
+            if ($request->filled('search')) {
+                $query->search($request->search);
             }
 
             // Category Filter — match either the top-level category or the
