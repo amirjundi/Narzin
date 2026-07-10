@@ -17,13 +17,15 @@ class CaptureService
     public static function recordSession(string $sessionId, ?int $userId, array $attribution): void
     {
         try {
+            $cap = static fn (?string $v): ?string => $v === null ? null : mb_substr($v, 0, 255);
+
             $session = VisitSession::firstOrNew(['session_id' => $sessionId]);
             if (!$session->exists) {
-                $session->utm_source   = $attribution['utm_source']   ?? null;
-                $session->utm_medium   = $attribution['utm_medium']   ?? null;
-                $session->utm_campaign = $attribution['utm_campaign'] ?? null;
-                $session->utm_term     = $attribution['utm_term']     ?? null;
-                $session->utm_content  = $attribution['utm_content']  ?? null;
+                $session->utm_source   = $cap($attribution['utm_source']   ?? null);
+                $session->utm_medium   = $cap($attribution['utm_medium']   ?? null);
+                $session->utm_campaign = $cap($attribution['utm_campaign'] ?? null);
+                $session->utm_term     = $cap($attribution['utm_term']     ?? null);
+                $session->utm_content  = $cap($attribution['utm_content']  ?? null);
                 $session->referrer     = $attribution['referrer']     ?? null;
                 $session->landing_url  = $attribution['landing_url']  ?? null;
                 $session->first_seen_at = now();

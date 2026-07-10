@@ -76,4 +76,21 @@ class CaptureServiceTest extends TestCase
 
         $this->assertDatabaseHas('visit_sessions', ['session_id' => 'sess-1', 'user_id' => 77]);
     }
+
+    public function test_record_session_stores_long_referrer_and_caps_utm_source(): void
+    {
+        $longReferrer = str_repeat('a', 300);
+        $longUtmSource = str_repeat('b', 300);
+
+        CaptureService::recordSession('sess-1', null, [
+            'referrer' => $longReferrer,
+            'utm_source' => $longUtmSource,
+        ]);
+
+        $this->assertDatabaseHas('visit_sessions', ['session_id' => 'sess-1']);
+        $session = VisitSession::where('session_id', 'sess-1')->first();
+        $this->assertNotNull($session);
+        $this->assertSame($longReferrer, $session->referrer); // text column, not truncated
+        $this->assertSame(str_repeat('b', 255), $session->utm_source); // capped to 255
+    }
 }
