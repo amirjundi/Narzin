@@ -341,6 +341,7 @@ const ProductPage = () => {
           product_id: singleProduct.id,
           product_variant_id: selectedVariant.id,
           quantity,
+          unit_price: parseFloat(selectedVariant.price),
         })
       ).unwrap();
 

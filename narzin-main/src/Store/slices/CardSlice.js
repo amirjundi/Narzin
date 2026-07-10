@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../api/axios';
+import { trackCartEvent } from '../../helpers/tracking';
 
 // Fetch cart items
 export const fetchCart = createAsyncThunk(
@@ -17,13 +18,23 @@ export const fetchCart = createAsyncThunk(
 // Add item to cart
 export const addToCart = createAsyncThunk(
   'cart/addToCart',
-  async ({ product_id, product_variant_id, quantity }, { rejectWithValue }) => {
+  async ({ product_id, product_variant_id, quantity, unit_price }, { rejectWithValue }) => {
     try {
       const response = await api.post('/v1/cart', {
         product_id,
         product_variant_id,
         quantity
       });
+      // Best-effort analytics — must never break the cart.
+      try {
+        trackCartEvent({
+          action: 'add',
+          product_id,
+          variant_id: product_variant_id ?? null,
+          quantity,
+          unit_price,
+        });
+      } catch { /* ignore */ }
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
