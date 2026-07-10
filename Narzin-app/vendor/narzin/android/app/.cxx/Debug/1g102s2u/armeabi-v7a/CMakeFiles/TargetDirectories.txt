@@ -1,2 +1,0 @@
-C:/Users/moham/StudioProjects/narzin_vendor/android/app/.cxx/Debug/1g102s2u/armeabi-v7a/CMakeFiles/edit_cache.dir
-C:/Users/moham/StudioProjects/narzin_vendor/android/app/.cxx/Debug/1g102s2u/armeabi-v7a/CMakeFiles/rebuild_cache.dir

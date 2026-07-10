@@ -3,6 +3,9 @@
 **/.env.*
 !**/.env.example
 
+# ── Tooling output ────────────────────────────────────
+graphify-out/
+
 # ── PHP / Laravel ─────────────────────────────────────
 # NOTE: anchored to Composer's vendor dir only. A bare "**/vendor/" also
 # matches Modules/Vendor and Narzin-app/vendor on case-insensitive systems
@@ -23,6 +26,7 @@ narzinapp-main/resources/views/vendor/
 # ── Flutter / mobile build artifacts ──────────────────
 **/build/
 **/.dart_tool/
+**/.cxx/
 **/.flutter-plugins
 **/.flutter-plugins-dependencies
 **/*.apk
