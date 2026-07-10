@@ -75,7 +75,14 @@ class LoginController extends Controller
                 ]);
     
                 $token = $user->createToken($tokenName)->plainTextToken;
-    
+
+                if ($request->filled('session_id')) {
+                    \Modules\Telemetry\Services\CaptureService::backfillUser(
+                        $request->input('session_id'),
+                        $user->id,
+                    );
+                }
+
                 return response()->json([
                     'status' => true,
                     'message' => 'Login successful',
@@ -86,7 +93,7 @@ class LoginController extends Controller
                         'token_type' => 'Bearer'
                     ]
                 ]);
-            
+
             }
 
             // Delete existing tokens with the same user agent
@@ -101,6 +108,13 @@ class LoginController extends Controller
             ]);
 
             $token = $user->createToken($tokenName)->plainTextToken;
+
+            if ($request->filled('session_id')) {
+                \Modules\Telemetry\Services\CaptureService::backfillUser(
+                    $request->input('session_id'),
+                    $user->id,
+                );
+            }
 
             return response()->json([
                 'status' => true,
