@@ -13,6 +13,9 @@ use Modules\ProductManagement\Models\Category;
 use Modules\ProductManagement\Models\Product;
 use Modules\ProductManagement\Models\ProductVariant;
 use Modules\Vendor\Models\Vendor;
+use Modules\Admin\Services\FunnelService;
+use Modules\Admin\Services\AbandonedCartService;
+use Modules\Admin\Support\DateRange;
 
 class StatisticsController extends Controller
 {
@@ -463,5 +466,19 @@ class StatisticsController extends Controller
             'topProducts',
             'stockStatus'
         ));
+    }
+
+    public function funnelStatistics(Request $request)
+    {
+        $range = DateRange::fromRequest($request);
+        $funnel = (new FunnelService())->funnel($range);
+        $abandoned = (new AbandonedCartService())->abandoned($range);
+
+        return view('admin::statistics.funnel', [
+            'funnel' => $funnel,
+            'abandoned' => $abandoned,
+            'from' => $range->from->toDateString(),
+            'to' => $range->to->toDateString(),
+        ]);
     }
 }

@@ -129,6 +129,7 @@ Route::middleware(['admin.auth'])->group(function () {
     Route::get('statistics/vendors', [StatisticsController::class, 'vendorStatistics'])->name('statistics.vendors');
     Route::get('statistics/products', [StatisticsController::class, 'productStatistics'])->name('statistics.products');
     Route::get('statistics/orders', [StatisticsController::class, 'orderStatistics'])->name('statistics.orders');
+    Route::get('statistics/funnel', [StatisticsController::class, 'funnelStatistics'])->name('statistics.funnel');
 
     Route::get('order/{order}/print', [OrderController::class, 'printOrder'])->name('order.print');
 

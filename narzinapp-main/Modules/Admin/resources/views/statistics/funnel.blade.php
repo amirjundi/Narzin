@@ -1,0 +1,85 @@
+<x-admin-layout>
+    <div class="space-y-8 px-4">
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h1 class="text-2xl font-bold mb-1">Conversion Funnel</h1>
+            <p class="text-sm text-gray-500">
+                Some stages (Sessions, Add to Cart) populate once the mobile/web
+                cart &amp; session tracking hooks are live. Server-captured stages
+                (Product View, Checkout, Order Placed) are live now.
+            </p>
+
+            <form method="GET" class="mt-4 flex flex-wrap items-end gap-3">
+                <label class="text-sm">From
+                    <input type="date" name="from" value="{{ $from }}" class="block border rounded px-2 py-1" />
+                </label>
+                <label class="text-sm">To
+                    <input type="date" name="to" value="{{ $to }}" class="block border rounded px-2 py-1" />
+                </label>
+                <button type="submit" class="bg-gray-800 text-white rounded px-4 py-1.5 text-sm">Apply</button>
+            </form>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold">Funnel</h2>
+                <span class="text-sm text-gray-600">
+                    Overall conversion: {{ number_format(($funnel['overall_conversion'] ?? 0) * 100, 2) }}%
+                </span>
+            </div>
+
+            @php $maxCount = max(1, collect($funnel['stages'])->max('count')); @endphp
+            <div class="space-y-3">
+                @foreach ($funnel['stages'] as $stage)
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="font-medium">{{ $stage['label'] }}</span>
+                            <span class="text-gray-600">
+                                {{ number_format($stage['count']) }}
+                                @if (!is_null($stage['conversion_from_prev']))
+                                    <span class="text-gray-400">({{ number_format($stage['conversion_from_prev'] * 100, 1) }}%)</span>
+                                @endif
+                            </span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded h-3">
+                            <div class="bg-indigo-500 h-3 rounded" style="width: {{ ($stage['count'] / $maxCount) * 100 }}%"></div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h2 class="text-lg font-semibold mb-4">Abandoned Carts</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm">
+                    <thead>
+                        <tr class="text-left text-gray-500 border-b">
+                            <th class="py-2 pr-4">Customer</th>
+                            <th class="py-2 pr-4">Session</th>
+                            <th class="py-2 pr-4">Cart value</th>
+                            <th class="py-2 pr-4">Items</th>
+                            <th class="py-2 pr-4">Age (h)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($abandoned as $row)
+                            <tr class="border-b">
+                                <td class="py-2 pr-4">{{ $row['user_name'] ?? 'Guest' }}</td>
+                                <td class="py-2 pr-4 font-mono text-xs">{{ \Illuminate\Support\Str::limit($row['session_id'], 12) }}</td>
+                                <td class="py-2 pr-4">{{ number_format($row['cart_value'], 2) }}</td>
+                                <td class="py-2 pr-4">{{ $row['item_count'] }}</td>
+                                <td class="py-2 pr-4">{{ $row['age_hours'] }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="py-4 text-center text-gray-400">
+                                    No abandoned carts yet — cart tracking (/track/cart) is not wired into the apps yet.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</x-admin-layout>
