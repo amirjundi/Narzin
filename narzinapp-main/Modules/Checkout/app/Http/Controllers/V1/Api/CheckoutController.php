@@ -58,6 +58,13 @@ class CheckoutController extends Controller
         }
 
         try {
+            \Modules\Telemetry\Services\CaptureService::recordCheckoutEvent(
+                $request->input('session_id'),
+                auth('sanctum')->id(),
+                'checkout_start',
+                null,
+            );
+
             // Check for existing pending order
             $pendingOrder = Order::where('user_id', Auth::id())
                 ->where('payment_status', 'not_paid')
@@ -355,6 +362,13 @@ class CheckoutController extends Controller
                 ]);
 
                 DB::commit();
+
+                \Modules\Telemetry\Services\CaptureService::recordCheckoutEvent(
+                    $request->input('session_id'),
+                    auth('sanctum')->id(),
+                    'placed',
+                    $order->id,
+                );
 
                 Log::info('Order created, stock reserved', [
                     'order_id' => $order->id,
