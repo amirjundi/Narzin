@@ -66,7 +66,7 @@ class AbandonedCartService
             }
 
             $lastActivity = $events->max('occurred_at');
-            if ($lastActivity === null || $lastActivity->greaterThan($cutoff)) {
+            if ($lastActivity === null || $lastActivity->greaterThanOrEqualTo($cutoff)) {
                 continue; // still active within the window
             }
 

@@ -68,4 +68,25 @@ class AbandonedCartServiceTest extends TestCase
         $this->assertCount(1, (new AbandonedCartService())->abandoned($this->range(), 3));
         $this->assertCount(0, (new AbandonedCartService())->abandoned($this->range(), 24));
     }
+
+    public function test_session_placed_by_user_id_is_excluded(): void
+    {
+        // cart added under a session that carries user_id 7...
+        CartEvent::create(['session_id' => 'u1', 'user_id' => 7, 'product_id' => 1, 'action' => 'add', 'quantity' => 1, 'unit_price' => 10.00, 'occurred_at' => now()->subHours(48)]);
+        // ...and that user placed an order via an authenticated checkout (null session_id).
+        CheckoutEvent::create(['session_id' => null, 'user_id' => 7, 'step' => 'placed', 'order_id' => 1, 'occurred_at' => now()->subHours(47)]);
+
+        $rows = (new AbandonedCartService())->abandoned($this->range(), 24);
+        $this->assertCount(0, $rows);
+    }
+
+    public function test_config_default_window_governs_when_null(): void
+    {
+        config(['telemetry.abandoned_cart_hours' => 3]);
+        CartEvent::create(['session_id' => 'c1', 'product_id' => 1, 'action' => 'add', 'quantity' => 1, 'unit_price' => 10.00, 'occurred_at' => now()->subHours(5)]);
+
+        // No window arg -> uses config (3h); a 5h-old cart is abandoned.
+        $rows = (new AbandonedCartService())->abandoned($this->range());
+        $this->assertCount(1, $rows);
+    }
 }
