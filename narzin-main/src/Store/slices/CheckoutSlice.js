@@ -1,12 +1,16 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../api/axios';
+import { getSessionId } from '../../helpers/session';
 
 // Initiate payment - creates order and gets payment URL
 export const initiatePayment = createAsyncThunk(
   'checkout/initiatePayment',
   async (checkoutData, { rejectWithValue }) => {
     try {
-      const response = await api.post('/v1/place-order', checkoutData);
+      const response = await api.post('/v1/place-order', {
+        ...checkoutData,
+        session_id: getSessionId(),
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: 'Failed to initiate payment' });
