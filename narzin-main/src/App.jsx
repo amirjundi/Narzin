@@ -10,6 +10,7 @@ import ProductPage from "./pages/ProductPage";
 import Checkout from "./pages/Checkout";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
+import { trackSession } from "./helpers/tracking";
 import Card from "./pages/Card";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import MyAccountLayout from "./pages/MyAccountLayout";
@@ -59,6 +60,10 @@ function App() {
   useEffect(() => {
     dispatch(fetchHome(i18n.language));
   }, [dispatch, i18n.language]);
+
+  useEffect(() => {
+    trackSession();
+  }, []);
 
   useEffect(() => {
     if (CategoryStatus === "failed") {
