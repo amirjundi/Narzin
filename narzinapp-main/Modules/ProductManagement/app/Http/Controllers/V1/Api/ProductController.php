@@ -104,6 +104,15 @@ class ProductController extends Controller
 
             $products = $query->paginate($request->get('per_page', 15));
 
+            if ($request->filled('search')) {
+                \Modules\Telemetry\Services\CaptureService::recordSearch(
+                    $request->query('session_id'),
+                    auth('sanctum')->id(),
+                    (string) $request->search,
+                    $products->total(),
+                );
+            }
+
             // Apply markup to min_price
             $products->getCollection()->transform(function ($product) use ($globalMarkup) {
                 $vendor = $product->vendor;
@@ -917,13 +926,22 @@ class ProductController extends Controller
 
             $products = $query->paginate($request->get('per_page', 15));
 
+            if ($request->filled('search')) {
+                \Modules\Telemetry\Services\CaptureService::recordSearch(
+                    $request->query('session_id'),
+                    auth('sanctum')->id(),
+                    (string) $request->search,
+                    $products->total(),
+                );
+            }
+
             // Apply markup to min_price and max_price
             $products->getCollection()->transform(function ($product) use ($globalMarkup) {
                 $vendor = $product->vendor;
                 $markup = ($vendor && $vendor->markup_percentage !== null)
                     ? (float) $vendor->markup_percentage
                     : (float) $globalMarkup;
-                
+
                 if ($product->min_price) {
                     $product->min_price = round($product->min_price * (1 + $markup / 100), 2);
                 }
