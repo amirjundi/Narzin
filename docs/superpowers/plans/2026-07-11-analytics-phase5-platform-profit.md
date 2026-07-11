@@ -16,6 +16,7 @@
 - placed set = all orders in range; paid set = orders in range with `payment_status = 'completed'`. (from spec — verified value)
 - total_owed_to_vendors = `SUM(vendor_transactions.amount)` (all vendors, all-time balance; NOT range-bound). (from spec)
 - Run commands from `C:\xampp\htdocs\Narzin\narzinapp-main`.
+- Test fixtures: `order_items.{product_id,product_variant_id,vendor_id}` are enforced non-nullable FKs and `order_items.final_price` is NOT NULL; `vendor_transactions.vendor_id` is an enforced FK. The test's `catalog()`/`vendor()` helpers seed real vendor/category/product/variant rows — use them, don't pass literal ids. (corrected after a BLOCKED attempt)
 
 ---
 
@@ -76,11 +77,55 @@ class ProfitServiceTest extends TestCase
         ], $attrs));
     }
 
-    private function item(Order $order, float $vendorEarning, ?int $vendorId = 1, float $commission = 0): void
+    private array $catalog = [];
+
+    // order_items.{product_id,product_variant_id,vendor_id} are enforced,
+    // non-nullable FKs; order_items.final_price is NOT NULL. Seed one
+    // vendor+category+product+variant once and reuse (mirrors PlaceOrderTest).
+    private function catalog(): array
     {
+        if ($this->catalog) return $this->catalog;
+        $vendorId = DB::table('vendors')->insertGetId([
+            'store_name_in_arabic' => 'متجر', 'store_name_in_german' => 'Laden',
+            'user_id' => User::factory()->create()->id,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $categoryId = DB::table('categories')->insertGetId([
+            'name_arabic' => 'فئة', 'name_german' => 'Kat',
+            'slug_arabic' => 'c-' . uniqid(), 'slug_german' => 'c-' . uniqid(),
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $productId = DB::table('products')->insertGetId([
+            'name_arabic' => 'م', 'name_german' => 'P',
+            'slug_arabic' => 'p-' . uniqid(), 'slug_german' => 'p-' . uniqid(),
+            'category_id' => $categoryId, 'vendor_id' => $vendorId,
+            'is_active' => true, 'weight' => 1, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $variantId = DB::table('product_variants')->insertGetId([
+            'product_id' => $productId, 'price' => 100, 'stock' => 10,
+            'sku' => 'SKU-' . uniqid(), 'is_active' => true, 'is_out_of_stock' => false,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        return $this->catalog = ['vendor_id' => $vendorId, 'product_id' => $productId, 'variant_id' => $variantId];
+    }
+
+    private function vendor(): int
+    {
+        return DB::table('vendors')->insertGetId([
+            'store_name_in_arabic' => 'م', 'store_name_in_german' => 'L',
+            'user_id' => User::factory()->create()->id,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+    }
+
+    private function item(Order $order, float $vendorEarning, float $commission = 0): void
+    {
+        $c = $this->catalog();
         OrderItem::create([
-            'order_id' => $order->id, 'product_id' => 1, 'product_variant_id' => 1,
-            'quantity' => 1, 'vendor_id' => $vendorId, 'unit_price' => 100, 'subtotal' => 100,
+            'order_id' => $order->id, 'product_id' => $c['product_id'],
+            'product_variant_id' => $c['variant_id'], 'quantity' => 1,
+            'vendor_id' => $c['vendor_id'], 'unit_price' => 100, 'subtotal' => 100,
+            'final_price' => 100,
             'vendor_earning' => $vendorEarning, 'vendor_commission_amount' => $commission,
         ]);
     }
@@ -124,9 +169,12 @@ class ProfitServiceTest extends TestCase
 
     public function test_total_owed_sums_vendor_transactions(): void
     {
-        VendorTransaction::create(['vendor_id' => 1, 'type' => 'earning', 'amount' => 70]);
-        VendorTransaction::create(['vendor_id' => 1, 'type' => 'payout', 'amount' => -20]);
-        VendorTransaction::create(['vendor_id' => 2, 'type' => 'earning', 'amount' => 50]);
+        // vendor_transactions.vendor_id is an enforced FK — seed real vendors.
+        $v1 = $this->vendor();
+        $v2 = $this->vendor();
+        VendorTransaction::create(['vendor_id' => $v1, 'type' => 'earning', 'amount' => 70]);
+        VendorTransaction::create(['vendor_id' => $v1, 'type' => 'payout', 'amount' => -20]);
+        VendorTransaction::create(['vendor_id' => $v2, 'type' => 'earning', 'amount' => 50]);
 
         $s = (new ProfitService())->summary($this->range());
         $this->assertEquals(100.00, $s['total_owed_to_vendors']); // 70 - 20 + 50
