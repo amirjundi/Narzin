@@ -15,6 +15,7 @@ use Modules\ProductManagement\Models\ProductVariant;
 use Modules\Vendor\Models\Vendor;
 use Modules\Admin\Services\FunnelService;
 use Modules\Admin\Services\AbandonedCartService;
+use Modules\Admin\Services\AttributionService;
 use Modules\Admin\Support\DateRange;
 
 class StatisticsController extends Controller
@@ -473,10 +474,15 @@ class StatisticsController extends Controller
         $range = DateRange::fromRequest($request);
         $funnel = (new FunnelService())->funnel($range);
         $abandoned = (new AbandonedCartService())->abandoned($range);
+        $attribution = [
+            'byChannel' => (new AttributionService())->byChannel($range),
+            'byCampaign' => (new AttributionService())->byCampaign($range),
+        ];
 
         return view('admin::statistics.funnel', [
             'funnel' => $funnel,
             'abandoned' => $abandoned,
+            'attribution' => $attribution,
             'from' => $range->from->toDateString(),
             'to' => $range->to->toDateString(),
         ]);

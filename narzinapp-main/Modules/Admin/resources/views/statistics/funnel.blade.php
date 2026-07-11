@@ -81,5 +81,69 @@
                 </table>
             </div>
         </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h2 class="text-lg font-semibold mb-1">Attribution</h2>
+            <p class="text-sm text-gray-500 mb-4">
+                Revenue by traffic source. Fills in as UTM-tagged visitors place
+                orders; untagged/direct traffic shows as “(none)”.
+            </p>
+
+            <div class="grid gap-6 md:grid-cols-2">
+                <div class="overflow-x-auto">
+                    <h3 class="text-sm font-medium mb-2 text-gray-700">By Channel</h3>
+                    <table class="min-w-full text-sm">
+                        <thead>
+                            <tr class="text-left text-gray-500 border-b">
+                                <th class="py-2 pr-4">Source</th>
+                                <th class="py-2 pr-4">Medium</th>
+                                <th class="py-2 pr-4">Orders</th>
+                                <th class="py-2 pr-4">Revenue</th>
+                                <th class="py-2 pr-4">AOV</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($attribution['byChannel'] as $row)
+                                <tr class="border-b">
+                                    <td class="py-2 pr-4">{{ $row['source'] }}</td>
+                                    <td class="py-2 pr-4">{{ $row['medium'] }}</td>
+                                    <td class="py-2 pr-4">{{ number_format($row['orders']) }}</td>
+                                    <td class="py-2 pr-4">{{ number_format($row['revenue'], 2) }}</td>
+                                    <td class="py-2 pr-4">{{ number_format($row['aov'], 2) }}</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="5" class="py-4 text-center text-gray-400">No attributed orders yet.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <h3 class="text-sm font-medium mb-2 text-gray-700">By Campaign</h3>
+                    <table class="min-w-full text-sm">
+                        <thead>
+                            <tr class="text-left text-gray-500 border-b">
+                                <th class="py-2 pr-4">Campaign</th>
+                                <th class="py-2 pr-4">Orders</th>
+                                <th class="py-2 pr-4">Revenue</th>
+                                <th class="py-2 pr-4">AOV</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($attribution['byCampaign'] as $row)
+                                <tr class="border-b">
+                                    <td class="py-2 pr-4">{{ $row['campaign'] }}</td>
+                                    <td class="py-2 pr-4">{{ number_format($row['orders']) }}</td>
+                                    <td class="py-2 pr-4">{{ number_format($row['revenue'], 2) }}</td>
+                                    <td class="py-2 pr-4">{{ number_format($row['aov'], 2) }}</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="4" class="py-4 text-center text-gray-400">No attributed orders yet.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </x-admin-layout>
