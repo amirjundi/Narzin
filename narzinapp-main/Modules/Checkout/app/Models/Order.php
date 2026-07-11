@@ -46,6 +46,12 @@ class Order extends Model
         // guards in applyWalletDeduction()/applyCouponUsage() actually persist.
         'coupon_applied_at',
         'wallet_deducted_at',
+        'attributed_session_id',
+        'utm_source',
+        'utm_medium',
+        'utm_campaign',
+        'utm_term',
+        'utm_content',
     ];
 
     protected $casts = [
