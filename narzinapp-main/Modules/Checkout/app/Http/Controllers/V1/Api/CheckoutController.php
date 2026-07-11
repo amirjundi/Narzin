@@ -370,6 +370,26 @@ class CheckoutController extends Controller
                     $order->id,
                 );
 
+                // Snapshot the session's UTM attribution onto the order (best-effort).
+                try {
+                    $attrSessionId = $request->input('session_id');
+                    if ($attrSessionId) {
+                        $visitSession = \Modules\Telemetry\Models\VisitSession::where('session_id', $attrSessionId)->first();
+                        if ($visitSession) {
+                            $order->update([
+                                'attributed_session_id' => $attrSessionId,
+                                'utm_source' => $visitSession->utm_source,
+                                'utm_medium' => $visitSession->utm_medium,
+                                'utm_campaign' => $visitSession->utm_campaign,
+                                'utm_term' => $visitSession->utm_term,
+                                'utm_content' => $visitSession->utm_content,
+                            ]);
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('order attribution snapshot failed', ['error' => $e->getMessage()]);
+                }
+
                 Log::info('Order created, stock reserved', [
                     'order_id' => $order->id,
                     'order_number' => $orderNumber,
