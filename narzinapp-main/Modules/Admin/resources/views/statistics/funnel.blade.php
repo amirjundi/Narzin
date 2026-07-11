@@ -85,7 +85,9 @@
         <div class="bg-white rounded-xl shadow-sm p-6">
             <h2 class="text-lg font-semibold mb-1">Attribution</h2>
             <p class="text-sm text-gray-500 mb-4">
-                Revenue by traffic source. Fills in as UTM-tagged visitors place
+                Placed-order value by traffic source (gross — counts all placed
+                orders including unpaid/cancelled, same basis as the order stats,
+                not settled revenue). Fills in as UTM-tagged visitors place
                 orders; untagged/direct traffic shows as “(none)”.
             </p>
 
@@ -98,7 +100,7 @@
                                 <th class="py-2 pr-4">Source</th>
                                 <th class="py-2 pr-4">Medium</th>
                                 <th class="py-2 pr-4">Orders</th>
-                                <th class="py-2 pr-4">Revenue</th>
+                                <th class="py-2 pr-4">Placed value</th>
                                 <th class="py-2 pr-4">AOV</th>
                             </tr>
                         </thead>
@@ -125,7 +127,7 @@
                             <tr class="text-left text-gray-500 border-b">
                                 <th class="py-2 pr-4">Campaign</th>
                                 <th class="py-2 pr-4">Orders</th>
-                                <th class="py-2 pr-4">Revenue</th>
+                                <th class="py-2 pr-4">Placed value</th>
                                 <th class="py-2 pr-4">AOV</th>
                             </tr>
                         </thead>
