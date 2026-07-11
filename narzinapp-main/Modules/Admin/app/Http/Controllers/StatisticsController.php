@@ -17,6 +17,7 @@ use Modules\Admin\Services\FunnelService;
 use Modules\Admin\Services\AbandonedCartService;
 use Modules\Admin\Services\AttributionService;
 use Modules\Admin\Services\DiscountService;
+use Modules\Admin\Services\ProfitService;
 use Modules\Admin\Support\DateRange;
 
 class StatisticsController extends Controller
@@ -498,6 +499,17 @@ class StatisticsController extends Controller
             'coupons' => $service->byCoupon($range),
             'promotions' => $service->byPromotion($range),
             'summary' => $service->summary($range),
+            'from' => $range->from->toDateString(),
+            'to' => $range->to->toDateString(),
+        ]);
+    }
+
+    public function profitStatistics(Request $request)
+    {
+        $range = DateRange::fromRequest($request);
+
+        return view('admin::statistics.profit', [
+            'profit' => (new ProfitService())->summary($range),
             'from' => $range->from->toDateString(),
             'to' => $range->to->toDateString(),
         ]);

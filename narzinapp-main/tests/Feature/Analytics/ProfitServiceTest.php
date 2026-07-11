@@ -115,6 +115,7 @@ class ProfitServiceTest extends TestCase
         $this->assertEquals(30.00, $s['paid']['platform_profit']);
         $this->assertSame(1, $s['paid']['orders']);
         $this->assertEquals(0.3, $s['paid']['margin']); // 30/100
+        $this->assertEquals(10.00, $s['commission_collected']); // only paid o1's commission; o2 (not_paid) excluded
     }
 
     public function test_null_vendor_earning_coalesces_to_zero(): void
