@@ -11,6 +11,14 @@ use Modules\Checkout\Models\Order;
  * Read-only coupon/promotion performance over existing orders.
  * Discount per order = total_amount - price_after_discount (exact).
  * No new table; groups on the order's own coupon_id/promotion_id.
+ *
+ * Assumes checkout's invariant: whenever coupon_id/promotion_id is set,
+ * price_after_discount is non-null (CheckoutController::placeOrder always sets
+ * it). If a future path sets coupon_id/promotion_id without it, SQL SUM would
+ * silently drop that row from discount_given while COUNT still counts it, making
+ * redemptions inconsistent with discount_given — add whereNotNull if that ever
+ * becomes reachable. ponytail: documented not guarded — the null case is
+ * currently impossible, and a guard would hide the data problem rather than surface it.
  */
 class DiscountService
 {
