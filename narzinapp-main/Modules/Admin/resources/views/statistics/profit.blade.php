@@ -4,9 +4,11 @@
             <h1 class="text-2xl font-bold mb-1">Platform Profit</h1>
             <p class="text-sm text-gray-500">
                 Platform profit = product revenue (after discount) minus what we
-                owe vendors. Orders before the vendor-earning system (Jun 2026)
-                lack recorded vendor earnings and will overstate profit for
-                historical ranges.
+                owe vendors. “Placed” counts all placed orders including
+                unpaid/cancelled/expired; “Paid” counts only completed-payment
+                orders and reconciles with the vendor payout ledger. Orders
+                before the vendor-earning system (Jun 2026) lack recorded vendor
+                earnings and will overstate profit for historical ranges.
             </p>
 
             <form method="GET" class="mt-4 flex flex-wrap items-end gap-3">
