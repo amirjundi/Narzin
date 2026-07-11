@@ -45,7 +45,7 @@ class CouponController extends Controller
         try{
             $validatedData = Validator::make($request->all(), [
                 'code' => 'required|unique:coupons',
-                'discount_amount' => 'required|numeric',
+                'discount_amount' => $request->input('discount_type') === 'percentage' ? 'required|numeric|min:0|max:100' : 'required|numeric|min:0',
                 'discount_type' => 'required|in:percentage,fixed',
                 'start_date' => 'required|date',
                 'end_date' => 'required|date',
@@ -155,7 +155,7 @@ class CouponController extends Controller
         try {
             $validatedData = Validator::make($request->all(), [
                 'code' => 'required|unique:coupons,code,' . $id,
-                'discount_amount' => 'required|numeric',
+                'discount_amount' => $request->input('discount_type') === 'percentage' ? 'required|numeric|min:0|max:100' : 'required|numeric|min:0',
                 'discount_type' => 'required|in:percentage,fixed',
                 'start_date' => 'required|date',
                 'end_date' => 'required|date',
