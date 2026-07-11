@@ -14,7 +14,7 @@
 - Discount per order = `total_amount − price_after_discount` (exact; `discount_breakdown` is dead — ignore). (from spec)
 - "Placed value" = `SUM(orders.total_amount)` — gross, same basis as existing stats + attribution; money rounded to 2. (from spec)
 - Each order has at most one of `coupon_id` / `promotion_id` (best-one-wins). (from spec)
-- Missing joined coupon/promotion name → `'(deleted)'` (coalesce in PHP). (from spec)
+- Missing joined name → `'(deleted)'` (coalesce in PHP). NOTE: `orders.coupon_id` has an FK with `onDelete('set null')`, so a dangling coupon_id is impossible — the coupon `(deleted)` path is defensive/unreachable (keep the `?? '(deleted)'` anyway, harmless). `orders.promotion_id` has NO FK, so a dangling promotion_id IS possible — that `(deleted)` path is real and tested. (corrected from FK inspection)
 - Range-bound on `orders.created_at`; reuse `Modules\Admin\Support\DateRange`. Rows sorted by `discount_given` desc. (from spec)
 - Run commands from `C:\xampp\htdocs\Narzin\narzinapp-main`.
 
@@ -123,14 +123,17 @@ class DiscountServiceTest extends TestCase
         $this->assertEquals(30.00, $row['discount_given']);
     }
 
-    public function test_deleted_coupon_labelled(): void
+    public function test_deleted_promotion_labelled(): void
     {
-        // order references a coupon id that has no coupons row
-        $this->order(['coupon_id' => 9999, 'total_amount' => 100, 'price_after_discount' => 95]);
+        // orders.promotion_id has NO foreign key (unlike coupon_id, which has
+        // onDelete('set null') — so a dangling coupon_id is impossible and the
+        // coupon '(deleted)' path is unreachable). A dangling promotion_id CAN
+        // exist, so the '(deleted)' label is testable here.
+        $this->order(['promotion_id' => 9999, 'total_amount' => 100, 'price_after_discount' => 95]);
 
-        $rows = (new DiscountService())->byCoupon($this->range());
-        $row = $rows->firstWhere('coupon_id', 9999);
-        $this->assertSame('(deleted)', $row['code']);
+        $rows = (new DiscountService())->byPromotion($this->range());
+        $row = $rows->firstWhere('promotion_id', 9999);
+        $this->assertSame('(deleted)', $row['name']);
         $this->assertEquals(5.00, $row['discount_given']);
     }
 
