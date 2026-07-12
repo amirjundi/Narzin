@@ -22,6 +22,7 @@ use Modules\Admin\Models\PriceExchange;
 use Modules\Checkout\Models\WalletTransaction;
 use Modules\ProductManagement\Models\Product;
 use Modules\ProductManagement\Models\ProductVariant;
+use Modules\Checkout\Services\PaymentAttemptRecorder;
 use Modules\Checkout\Services\PromotionEvaluator;
 use Modules\Vendor\Services\VendorEarningCalculator;
 use Modules\Vendor\Services\VendorRateResolver;
@@ -415,6 +416,8 @@ class CheckoutController extends Controller
                 ]);
 
                 if ($nassResponse['success'] ?? false) {
+                    PaymentAttemptRecorder::record($order->id, $order->user_id, 'nass', 'initiated', null, (float) $finalAmount);
+
                     // AUDIT: Payment initiated
                     $this->logAudit($order, 'payment_initiated', [
                         'triggered_by' => 'system',
@@ -533,6 +536,9 @@ class CheckoutController extends Controller
 
             // Check with Nass
             $nassStatus = $this->nassPaymentService->checkTransactionStatus($paymentId);
+
+            $rc = $nassStatus['data']['responseCode'] ?? null;
+            PaymentAttemptRecorder::record($order->id, $order->user_id, 'nass', $rc === '00' ? 'success' : 'failed', $rc, (float) $order->final_price);
 
             // AUDIT: Payment verification attempted
             $this->logAudit($order, 'payment_verification_attempted', [
@@ -737,6 +743,9 @@ class CheckoutController extends Controller
             if (!$order) {
                 return response()->json(['status' => 'ok', 'message' => 'Order not found']);
             }
+
+            $rc = $nassStatus['data']['responseCode'] ?? null;
+            PaymentAttemptRecorder::record($order->id, $order->user_id, 'nass', $rc === '00' ? 'success' : 'failed', $rc, (float) $order->final_price);
 
             // AUDIT: Webhook received
             $this->logAudit($order, 'webhook_received', [
