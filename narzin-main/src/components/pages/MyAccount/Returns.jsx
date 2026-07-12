@@ -86,13 +86,11 @@ const Returns = () => {
       .then(() => {
         ShowToast('Return requested', 'success');
         resetForm();
+        // Refetch so the new return comes back with its eager-loaded `order`
+        // relation (the POST response doesn't include it).
+        dispatch(fetchReturns());
       })
       .catch(() => {});
-  };
-
-  const findOrderNumber = (order_id) => {
-    const order = Array.isArray(orders) ? orders.find((o) => o.id === order_id) : null;
-    return order?.order_number || order_id;
   };
 
   return (
@@ -119,14 +117,14 @@ const Returns = () => {
                   <div className="flex items-center gap-4">
                     <RefreshCcw className="w-8 h-8 text-[#3084C2]" />
                     <div>
-                      <h4 className="font-medium">Order {findOrderNumber(r.order_id)}</h4>
+                      <h4 className="font-medium">Order {r.order?.order_number || r.order_id}</h4>
                       <p className="text-sm text-gray-600">
                         {REASON_LABELS[r.reason] || r.reason}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="text-sm text-gray-600">{formatDate(r.created_at)}</span>
+                    <span className="text-sm text-gray-600">{formatDate(r.requested_at || r.created_at)}</span>
                     <span
                       className={`px-3 py-1 rounded-full text-sm capitalize ${getStatusBadgeClass(
                         r.status
@@ -155,6 +153,7 @@ const Returns = () => {
             <label className="block text-sm text-gray-600 mb-1" htmlFor="return-order">
               Order
             </label>
+            <p className="text-xs text-gray-400 mb-1">Showing your recent eligible orders.</p>
             <select
               id="return-order"
               value={orderId}
