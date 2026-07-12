@@ -18,6 +18,7 @@
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Order</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Reason</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer Note</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Requested</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
@@ -34,6 +35,9 @@
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600">
                                 {{ $return->reason }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                {{ $return->customer_note ?? '—' }}
                             </td>
                             <td class="px-6 py-4">
                                 @php
@@ -90,7 +94,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                            <td colspan="7" class="px-6 py-12 text-center text-gray-500">
                                 No returns found.
                             </td>
                         </tr>

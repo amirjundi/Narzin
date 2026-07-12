@@ -31,6 +31,10 @@ class OrderRefundService
                 DB::commit(); // nothing to do — release the lock
                 return 0.0;   // already refunded / missing — never double-credit
             }
+            if (!in_array($locked->payment_status, ['completed', 'processing'])) {
+                DB::commit(); // nothing to do — release the lock
+                return 0.0;   // never paid — never credit
+            }
             $order = $locked; // operate on the locked, fresh instance
 
             $wallet = UserWallet::firstOrCreate(['user_id' => $order->user_id], ['balance' => 0]);

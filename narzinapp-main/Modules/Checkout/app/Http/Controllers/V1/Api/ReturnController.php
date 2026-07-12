@@ -45,7 +45,7 @@ class ReturnController extends Controller
                 'user_id' => Auth::id(),
                 'reason' => $request->reason,
                 'status' => 'requested',
-                'admin_note' => $request->note,
+                'customer_note' => $request->note,
                 'requested_at' => now(),
             ]);
         });

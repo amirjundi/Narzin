@@ -22,7 +22,7 @@ class AdminReturnApiTest extends TestCase
         return $u;
     }
 
-    private function returnFor(string $status = 'requested'): OrderReturn
+    private function returnFor(string $status = 'requested', array $attrs = []): OrderReturn
     {
         $user = User::factory()->create();
         $addressId = DB::table('user_address')->insertGetId(['user_id' => $user->id, 'address' => '1 St', 'created_at' => now(), 'updated_at' => now()]);
@@ -32,7 +32,7 @@ class AdminReturnApiTest extends TestCase
         $variantId = DB::table('product_variants')->insertGetId(['product_id' => $productId, 'price' => 50, 'stock' => 5, 'sku' => 'SKU-' . uniqid(), 'is_active' => true, 'is_out_of_stock' => false, 'created_at' => now(), 'updated_at' => now()]);
         $order = Order::create(['user_id' => $user->id, 'address_id' => $addressId, 'order_number' => 'T-' . uniqid(), 'order_status' => 'pending', 'payment_status' => 'completed', 'total_amount' => 100, 'final_price' => 100]);
         OrderItem::create(['order_id' => $order->id, 'product_id' => $productId, 'product_variant_id' => $variantId, 'quantity' => 2, 'vendor_id' => $vendorId, 'unit_price' => 50, 'subtotal' => 100, 'final_price' => 100, 'vendor_earning' => 40]);
-        return OrderReturn::create(['order_id' => $order->id, 'user_id' => $user->id, 'reason' => 'damaged', 'status' => $status, 'requested_at' => now()]);
+        return OrderReturn::create(array_merge(['order_id' => $order->id, 'user_id' => $user->id, 'reason' => 'damaged', 'status' => $status, 'requested_at' => now()], $attrs));
     }
 
     public function test_approve_moves_requested_to_approved(): void
@@ -40,6 +40,16 @@ class AdminReturnApiTest extends TestCase
         $r = $this->returnFor('requested');
         $this->actingAs($this->admin())->post(route('returns.approve', $r->id))->assertRedirect();
         $this->assertDatabaseHas('order_returns', ['id' => $r->id, 'status' => 'approved']);
+    }
+
+    public function test_approve_does_not_wipe_customer_note(): void
+    {
+        $r = $this->returnFor('requested', ['customer_note' => 'Box arrived crushed']);
+        $this->actingAs($this->admin())->post(route('returns.approve', $r->id))->assertRedirect();
+
+        $r->refresh();
+        $this->assertSame('approved', $r->status);
+        $this->assertSame('Box arrived crushed', $r->customer_note);
     }
 
     public function test_reject_moves_requested_to_rejected(): void

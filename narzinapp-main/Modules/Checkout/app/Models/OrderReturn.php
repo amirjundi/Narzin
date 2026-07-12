@@ -12,7 +12,7 @@ class OrderReturn extends Model
 
     protected $fillable = [
         'order_id', 'order_item_id', 'user_id', 'reason', 'status',
-        'refund_amount', 'admin_note', 'requested_at', 'resolved_at',
+        'refund_amount', 'admin_note', 'customer_note', 'requested_at', 'resolved_at',
     ];
 
     protected $casts = [

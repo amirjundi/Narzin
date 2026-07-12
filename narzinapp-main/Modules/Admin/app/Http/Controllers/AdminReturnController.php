@@ -5,6 +5,7 @@ namespace Modules\Admin\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Modules\Checkout\Models\OrderReturn;
 use Modules\Checkout\Services\OrderRefundService;
 
@@ -47,11 +48,33 @@ class AdminReturnController extends Controller
             return response()->json(['message' => 'Only approved returns can be refunded'], 422);
         }
 
-        $amount = (new OrderRefundService())->refundWholeOrder(
-            $return->order, 'Return: ' . $return->reason, Auth::id()
-        );
+        $notApproved = false;
+        $amount = 0.0;
 
-        $return->update(['status' => 'refunded', 'refund_amount' => $amount, 'resolved_at' => now()]);
+        DB::transaction(function () use ($id, $request, &$notApproved, &$amount, &$return) {
+            $locked = OrderReturn::with('order')->where('id', $id)->lockForUpdate()->first();
+
+            if ($locked->status !== 'approved') {
+                $notApproved = true;
+                return;
+            }
+
+            $amount = (new OrderRefundService())->refundWholeOrder(
+                $locked->order, 'Return: ' . $locked->reason, Auth::id()
+            );
+
+            $locked->update([
+                'status' => 'refunded',
+                'refund_amount' => $amount > 0 ? $amount : $locked->refund_amount,
+                'resolved_at' => now(),
+            ]);
+
+            $return = $locked;
+        });
+
+        if ($notApproved) {
+            return response()->json(['message' => 'Only approved returns can be refunded'], 422);
+        }
 
         return redirect()->back()->with('success', "Return refunded. IQD{$amount} to wallet.");
     }
