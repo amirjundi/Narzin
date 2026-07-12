@@ -159,4 +159,10 @@ Route::middleware(['admin.auth'])->group(function () {
     Route::get('vendor-payouts/{vendor}', [\Modules\Admin\Http\Controllers\VendorPayoutController::class, 'show'])->name('vendor-payouts.show');
     Route::post('vendor-payouts/{vendor}/payout', [\Modules\Admin\Http\Controllers\VendorPayoutController::class, 'payout'])->name('vendor-payouts.payout');
     Route::post('vendor-payouts/{vendor}/adjust', [\Modules\Admin\Http\Controllers\VendorPayoutController::class, 'adjust'])->name('vendor-payouts.adjust');
+
+    // Returns
+    Route::get('returns', [\Modules\Admin\Http\Controllers\AdminReturnController::class, 'index'])->name('returns.index');
+    Route::post('returns/{id}/approve', [\Modules\Admin\Http\Controllers\AdminReturnController::class, 'approve'])->name('returns.approve');
+    Route::post('returns/{id}/reject', [\Modules\Admin\Http\Controllers\AdminReturnController::class, 'reject'])->name('returns.reject');
+    Route::post('returns/{id}/refund', [\Modules\Admin\Http\Controllers\AdminReturnController::class, 'refund'])->name('returns.refund');
 });
