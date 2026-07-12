@@ -20,6 +20,7 @@ import 'package:narzin/bussiness_logic/order_cubits/order_cubit.dart';
 import 'package:narzin/bussiness_logic/product_cubits/search_cubit.dart';
 import 'package:narzin/bussiness_logic/profile_cubits/profile_cubit.dart';
 import 'package:narzin/bussiness_logic/register_cubits/register_cubit.dart';
+import 'package:narzin/bussiness_logic/returns_cubits/returns_cubit.dart';
 import 'package:narzin/bussiness_logic/wallet_cubits/wallet_cubit.dart';
 import 'package:narzin/core/constants.dart';
 import 'package:narzin/generated/assets.dart';
@@ -71,6 +72,7 @@ Future<void> main() async {
             BlocProvider(
               create: (context) => OrderCubit(),
             ),
+            BlocProvider(create: (context) => ReturnsCubit()),
             BlocProvider(
               create: (context) => MerchantAuthCubit(),
             ),
