@@ -132,6 +132,7 @@ Route::middleware(['admin.auth'])->group(function () {
     Route::get('statistics/funnel', [StatisticsController::class, 'funnelStatistics'])->name('statistics.funnel');
     Route::get('statistics/promotions', [StatisticsController::class, 'promotionStatistics'])->name('statistics.promotions');
     Route::get('statistics/profit', [StatisticsController::class, 'profitStatistics'])->name('statistics.profit');
+    Route::get('statistics/payments', [StatisticsController::class, 'paymentStatistics'])->name('statistics.payments');
 
     Route::get('order/{order}/print', [OrderController::class, 'printOrder'])->name('order.print');
 

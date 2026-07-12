@@ -430,6 +430,24 @@
                         </a>
                     </li>
 
+                    <!-- Payments -->
+                    <li>
+                        <a href="{{ route('statistics.payments') }}"
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
+                                  {{ request()->routeIs('statistics.payments')
+                                     ? 'bg-gradient-to-r from-rose-600 to-rose-500 text-white shadow-lg shadow-rose-500/30'
+                                     : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }}">
+                            <div class="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg
+                                        {{ request()->routeIs('statistics.payments') ? 'bg-white/20' : 'bg-slate-700/50' }}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 12v-2" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 22a10 10 0 100-20 10 10 0 000 20z" />
+                                </svg>
+                            </div>
+                            <span x-show="sidebarOpen" class="font-medium">Payments</span>
+                        </a>
+                    </li>
+
                     <!-- Best Sellers -->
                     <li>
                         <a href="#" 

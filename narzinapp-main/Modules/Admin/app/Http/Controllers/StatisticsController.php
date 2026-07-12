@@ -18,6 +18,7 @@ use Modules\Admin\Services\AbandonedCartService;
 use Modules\Admin\Services\AttributionService;
 use Modules\Admin\Services\DiscountService;
 use Modules\Admin\Services\ProfitService;
+use Modules\Admin\Services\PaymentAnalyticsService;
 use Modules\Admin\Support\DateRange;
 
 class StatisticsController extends Controller
@@ -510,6 +511,21 @@ class StatisticsController extends Controller
 
         return view('admin::statistics.profit', [
             'profit' => (new ProfitService())->summary($range),
+            'from' => $range->from->toDateString(),
+            'to' => $range->to->toDateString(),
+        ]);
+    }
+
+    public function paymentStatistics(Request $request)
+    {
+        $range = DateRange::fromRequest($request);
+        $service = new PaymentAnalyticsService();
+
+        return view('admin::statistics.payments', [
+            'orderSummary' => $service->orderPaymentSummary($range),
+            'methodMix' => $service->methodMix($range),
+            'attempts' => $service->attemptSummary($range),
+            'failureReasons' => $service->failureReasons($range),
             'from' => $range->from->toDateString(),
             'to' => $range->to->toDateString(),
         ]);
