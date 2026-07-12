@@ -435,65 +435,11 @@ class OrderController extends Controller
             return redirect()->back()->with('error', 'Only paid orders can be refunded');
         }
 
-        DB::beginTransaction();
-
         try {
-            $wallet = \Modules\Checkout\Models\UserWallet::firstOrCreate(
-                ['user_id' => $order->user_id],
-                ['balance' => 0]
-            );
-
-            $refundAmount = $order->final_price;
-            $wallet->increment('balance', $refundAmount);
-
-            \Modules\Checkout\Models\WalletTransaction::create([
-                'user_id' => $order->user_id,
-                'wallet_id' => $wallet->id,
-                'type' => 'order',
-                'amount' => $refundAmount,
-                'order_id' => $order->id
-            ]);
-
-            // Refill stock
-            $this->refillOrderStock($order);
-
-            $order->update([
-                'payment_status' => 'refunded',
-                'order_status' => 'cancelled',
-                'notes' => ($order->notes ?? '') . ' | Refunded by admin: ' . ($request->reason ?? 'No reason provided')
-            ]);
-
-            $order->load('items');
-            $ledger = new \Modules\Vendor\Services\VendorLedgerService();
-            foreach ($order->items as $orderItem) {
-                $ledger->reverseEarning($orderItem);
-            }
-
-            // Log audit
-            OrderAudit::create([
-                'order_id' => $order->id,
-                'action' => 'refunded_by_admin',
-                'old_payment_status' => $order->payment_status,
-                'new_payment_status' => 'refunded',
-                'old_order_status' => $order->order_status,
-                'new_order_status' => 'cancelled',
-                'triggered_by' => 'admin',
-                'user_id' => Auth::id(),
-                'ip_address' => $request->ip(),
-                'data' => [
-                    'refund_amount' => $refundAmount,
-                    'reason' => $request->reason ?? 'No reason provided'
-                ],
-                'notes' => 'Order refunded to wallet by admin',
-                'created_at' => now()
-            ]);
-
-            DB::commit();
-
-            return redirect()->back()->with('success', "Order refunded. IQD{$refundAmount} added to customer wallet.");
-
-        } catch (\Exception $e) {
-            DB::rollBack();
+            $amount = (new \Modules\Checkout\Services\OrderRefundService())
+                ->refundWholeOrder($order, $request->reason ?? 'No reason provided', Auth::id());
+            return redirect()->back()->with('success', "Order refunded. IQD{$amount} added to customer wallet.");
+        } catch (\Throwable $e) {
             Log::error('Refund failed', ['order_id' => $id, 'error' => $e->getMessage()]);
             return redirect()->back()->with('error', 'Refund failed: ' . $e->getMessage());
         }
