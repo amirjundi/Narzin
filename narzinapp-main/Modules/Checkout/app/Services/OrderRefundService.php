@@ -21,12 +21,18 @@ class OrderRefundService
 {
     public function refundWholeOrder(Order $order, string $reason, ?int $adminId): float
     {
-        if ($order->payment_status === 'refunded') {
-            return 0.0; // already refunded — never double-credit
-        }
-
         DB::beginTransaction();
         try {
+            // Lock the order row and re-read status under the lock so two
+            // concurrent refunds (e.g. an admin double-clicking) can't both
+            // pass the idempotency check and double-credit the wallet.
+            $locked = Order::where('id', $order->id)->lockForUpdate()->first();
+            if (!$locked || $locked->payment_status === 'refunded') {
+                DB::commit(); // nothing to do — release the lock
+                return 0.0;   // already refunded / missing — never double-credit
+            }
+            $order = $locked; // operate on the locked, fresh instance
+
             $wallet = UserWallet::firstOrCreate(['user_id' => $order->user_id], ['balance' => 0]);
             $refundAmount = (float) $order->final_price;
             $wallet->increment('balance', $refundAmount);
