@@ -34,6 +34,8 @@ import homeReducer from "./slices/HomeSlice";
 import forYouReducer from "./slices/ForYouSlice";
 import settingsReducer from "./slices/SettingsSlice";
 
+import returnsReducer from "./slices/ReturnsSlice";
+
 export const store = configureStore({
   reducer: {
     categories: CategorySlice,
@@ -58,5 +60,6 @@ export const store = configureStore({
     home: homeReducer,
     forYou: forYouReducer,
     settings: settingsReducer,
+    returns: returnsReducer,
   },
 });
