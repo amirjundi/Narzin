@@ -537,9 +537,6 @@ class CheckoutController extends Controller
             // Check with Nass
             $nassStatus = $this->nassPaymentService->checkTransactionStatus($paymentId);
 
-            $rc = $nassStatus['data']['responseCode'] ?? null;
-            PaymentAttemptRecorder::record($order->id, $order->user_id, 'nass', $rc === '00' ? 'success' : 'failed', $rc, (float) $order->final_price);
-
             // AUDIT: Payment verification attempted
             $this->logAudit($order, 'payment_verification_attempted', [
                 'triggered_by' => 'user',
@@ -562,6 +559,13 @@ class CheckoutController extends Controller
                     ]
                 ], 503);
             }
+
+            // Record the resolved gateway attempt only now that Nass returned
+            // verified data (mirrors nassWebhook) — an inconclusive/dataless
+            // check above short-circuits to 503 and records nothing, so a
+            // transient verification failure doesn't pollute the failure metrics.
+            $rc = $nassStatus['data']['responseCode'] ?? null;
+            PaymentAttemptRecorder::record($order->id, $order->user_id, 'nass', $rc === '00' ? 'success' : 'failed', $rc, (float) $order->final_price);
 
             // Payment successful
             if (($nassStatus['data']['responseCode'] ?? '') === '00') {
