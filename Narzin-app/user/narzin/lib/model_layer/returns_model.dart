@@ -7,9 +7,12 @@ class ReturnsModel {
   factory ReturnsModel.fromJson(Map<String, dynamic> json) {
     final rawList = json['data'];
     final list = (rawList is List)
-        ? rawList.map((e) => ReturnItem.fromJson(e as Map<String, dynamic>)).toList()
+        // Skip any malformed (non-object) row rather than throwing on the whole
+        // list, mirroring HomeBlocksModel's defensive parsing.
+        ? rawList.whereType<Map>().map((e) => ReturnItem.fromJson(Map<String, dynamic>.from(e))).toList()
         : <ReturnItem>[];
-    return ReturnsModel(status: json['status'] as bool?, data: list);
+    // `== true` never throws even if the backend sends "true"/1 for status.
+    return ReturnsModel(status: json['status'] == true, data: list);
   }
 }
 

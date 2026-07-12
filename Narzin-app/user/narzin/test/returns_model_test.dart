@@ -43,4 +43,23 @@ void main() {
     final model = ReturnsModel.fromJson({'status': true});
     expect(model.data, isEmpty);
   });
+
+  test('drops a malformed row instead of throwing on the whole list', () {
+    final model = ReturnsModel.fromJson({
+      'status': true,
+      'data': [
+        null,
+        'not an object',
+        {'id': 9, 'order_id': 1, 'reason': 'damaged', 'status': 'requested'},
+      ],
+    });
+    // Only the one valid row survives; the null and string are dropped.
+    expect(model.data.length, 1);
+    expect(model.data[0].id, 9);
+  });
+
+  test('does not throw when status is a non-bool (e.g. 1 or "true")', () {
+    expect(ReturnsModel.fromJson({'status': 1, 'data': []}).status, false);
+    expect(ReturnsModel.fromJson({'status': 'true', 'data': []}).status, false);
+  });
 }
