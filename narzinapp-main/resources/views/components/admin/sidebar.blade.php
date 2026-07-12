@@ -447,6 +447,23 @@
                         </a>
                     </li>
 
+                    <!-- Returns -->
+                    <li>
+                        <a href="{{ route('returns.index') }}"
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
+                                  {{ request()->routeIs('returns.index')
+                                     ? 'bg-gradient-to-r from-rose-600 to-rose-500 text-white shadow-lg shadow-rose-500/30'
+                                     : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }}">
+                            <div class="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg
+                                        {{ request()->routeIs('returns.index') ? 'bg-white/20' : 'bg-slate-700/50' }}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l-4-4m0 0l4-4m-4 4h11a4 4 0 010 8h-1" />
+                                </svg>
+                            </div>
+                            <span x-show="sidebarOpen" class="font-medium">Returns</span>
+                        </a>
+                    </li>
+
                     <!-- Best Sellers -->
                     <li>
                         <a href="#" 
