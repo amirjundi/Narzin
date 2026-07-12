@@ -15,12 +15,12 @@
 
         <div class="grid gap-6 md:grid-cols-3">
             <div class="bg-white rounded-xl shadow-sm p-6">
-                <div class="text-gray-500 text-sm">Order Success rate</div>
+                <div class="text-gray-500 text-sm">Order success rate</div>
                 <div class="text-3xl font-bold">{{ number_format($orderSummary['success_rate'] * 100, 1) }}%</div>
                 <div class="text-xs text-gray-400 mt-1">{{ number_format($orderSummary['completed']) }} completed · {{ number_format($orderSummary['failed'] + $orderSummary['expired']) }} failed</div>
             </div>
             <div class="bg-white rounded-xl shadow-sm p-6">
-                <div class="text-gray-500 text-sm">Gateway attempt Success rate</div>
+                <div class="text-gray-500 text-sm">Gateway success rate</div>
                 <div class="text-3xl font-bold">{{ number_format($attempts['gateway_success_rate'] * 100, 1) }}%</div>
                 <div class="text-xs text-gray-400 mt-1">{{ number_format($attempts['total']) }} attempts</div>
             </div>

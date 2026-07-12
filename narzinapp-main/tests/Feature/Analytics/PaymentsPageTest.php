@@ -27,7 +27,7 @@ class PaymentsPageTest extends TestCase
             ->get(route('statistics.payments'))
             ->assertOk()
             ->assertSee('Payment')
-            ->assertSee('Success rate', false);
+            ->assertSee('success rate', false);
     }
 
     public function test_guest_cannot_reach_payments_page(): void
