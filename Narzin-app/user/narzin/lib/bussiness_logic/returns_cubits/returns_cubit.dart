@@ -52,10 +52,10 @@ class ReturnsCubit extends Cubit<ReturnsState> {
       isLoading = false;
       emit(ReturnsInitial());
 
+      if (_isHtml(response.body)) return 'Something went wrong. Please try again.';
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return null;
       }
-      if (_isHtml(response.body)) return 'Something went wrong. Please try again.';
       final decoded = json.decode(response.body);
       return (decoded is Map && decoded['message'] != null)
           ? decoded['message'].toString()

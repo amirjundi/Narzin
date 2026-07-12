@@ -53,6 +53,7 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
     super.initState();
     final token = BlocProvider.of<LoginCubit>(context).loginModel?.data?.token ?? '';
     context.read<ReturnsCubit>().fetchReturns(token: token);
+    context.read<OrderCubit>().getMyOrder(token: token);
   }
 
   Future<void> _openRequestReturnSheet(MyOrder order) async {
@@ -142,7 +143,14 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
     String? note,
   }) async {
     final token = BlocProvider.of<LoginCubit>(context).loginModel?.data?.token ?? '';
-    final orderId = int.tryParse(order.id ?? '') ?? 0;
+    final orderId = int.tryParse(order.id ?? '');
+    if (orderId == null || orderId == 0) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Couldn't identify the order.")),
+      );
+      return;
+    }
     final err = await context.read<ReturnsCubit>().requestReturn(
           token: token,
           orderId: orderId,
@@ -343,7 +351,9 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                _buildRequestReturn(context),
+                BlocBuilder<OrderCubit, OrderState>(
+                  builder: (context, orderState) => _buildRequestReturn(context),
+                ),
               ],
             ),
           );
