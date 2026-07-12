@@ -68,6 +68,28 @@ class CustomerReturnApiTest extends TestCase
             ->assertStatus(422);
     }
 
+    public function test_duplicate_return_request_leaves_exactly_one_active_return(): void
+    {
+        $user = User::factory()->create();
+        $order = $this->order($user);
+
+        $this->actingAs($user, 'sanctum')
+            ->postJson("/api/v1/orders/{$order->id}/returns", ['reason' => 'damaged'])
+            ->assertStatus(201);
+
+        // A second request for the same order (simulating a racing duplicate submit)
+        // must be rejected by the locked-transaction guard, not create a second row.
+        $this->actingAs($user, 'sanctum')
+            ->postJson("/api/v1/orders/{$order->id}/returns", ['reason' => 'wrong_item'])
+            ->assertStatus(422)
+            ->assertJson(['status' => false, 'message' => 'A return already exists for this order']);
+
+        $this->assertDatabaseCount('order_returns', 1);
+        $this->assertDatabaseHas('order_returns', [
+            'order_id' => $order->id, 'reason' => 'damaged', 'status' => 'requested',
+        ]);
+    }
+
     public function test_invalid_reason_rejected(): void
     {
         $user = User::factory()->create();

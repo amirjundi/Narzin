@@ -5,6 +5,7 @@ namespace Modules\Checkout\Http\Controllers\V1\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Modules\Checkout\Models\Order;
 use Modules\Checkout\Models\OrderReturn;
 
@@ -27,21 +28,31 @@ class ReturnController extends Controller
         if (!in_array($order->payment_status, ['completed', 'processing'])) {
             return response()->json(['status' => false, 'message' => 'Only paid orders can be returned'], 422);
         }
-        $active = OrderReturn::where('order_id', $order->id)
-            ->whereIn('status', ['requested', 'approved', 'refunded'])->exists();
-        if ($active) {
+        $return = DB::transaction(function () use ($request, $order) {
+            // lock the order row so concurrent return-requests for it serialize
+            $locked = Order::where('id', $order->id)->lockForUpdate()->first();
+
+            $active = OrderReturn::where('order_id', $locked->id)
+                ->whereIn('status', ['requested', 'approved', 'refunded'])
+                ->exists();
+            if ($active) {
+                return null; // signal duplicate
+            }
+
+            return OrderReturn::create([
+                'order_id' => $locked->id,
+                'order_item_id' => null,
+                'user_id' => Auth::id(),
+                'reason' => $request->reason,
+                'status' => 'requested',
+                'admin_note' => $request->note,
+                'requested_at' => now(),
+            ]);
+        });
+
+        if ($return === null) {
             return response()->json(['status' => false, 'message' => 'A return already exists for this order'], 422);
         }
-
-        $return = OrderReturn::create([
-            'order_id' => $order->id,
-            'order_item_id' => null,
-            'user_id' => Auth::id(),
-            'reason' => $request->reason,
-            'status' => 'requested',
-            'admin_note' => $request->note,
-            'requested_at' => now(),
-        ]);
 
         return response()->json(['status' => true, 'data' => $return], 201);
     }
