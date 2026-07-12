@@ -46,7 +46,7 @@ const formatDate = (dateString) => {
 const Returns = () => {
   const dispatch = useDispatch();
 
-  const { returns, status, submitting, submitError } = useSelector((state) => state.returns);
+  const { returns, status, error, submitting, submitError } = useSelector((state) => state.returns);
   const { orders } = useSelector((state) => state.myOrders);
 
   const [orderId, setOrderId] = useState('');
@@ -104,6 +104,12 @@ const Returns = () => {
       {/* My Returns */}
       <div className="mb-10">
         <h3 className="text-lg font-semibold mb-4">My Returns</h3>
+
+        {status === 'failed' && (
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error || "Couldn't load your returns. Please try again."}
+          </div>
+        )}
 
         {returns && returns.length > 0 ? (
           <div className="space-y-4">
