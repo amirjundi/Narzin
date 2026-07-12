@@ -33,6 +33,10 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::get('/orders/{id}/invoice', [CheckoutController::class, 'getInvoice']);
     Route::get('/orders/{id}/audit', [CheckoutController::class, 'getOrderAudit']); // NEW
     Route::patch('/orders/{id}/change-status', [CheckoutController::class, 'updateOrderStatus']);
+
+    // Returns
+    Route::post('/orders/{id}/returns', [\Modules\Checkout\Http\Controllers\V1\Api\ReturnController::class, 'store']);
+    Route::get('/returns', [\Modules\Checkout\Http\Controllers\V1\Api\ReturnController::class, 'index']);
 });
 
 // Webhook - No auth required (called by Nass server)
