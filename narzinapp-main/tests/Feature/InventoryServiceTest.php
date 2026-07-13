@@ -163,6 +163,27 @@ class InventoryServiceTest extends TestCase
         $this->assertEqualsWithDelta(40.0, $dead->firstWhere('sku', 'DEAD')['value_at_cost'], 0.01); // 20*2
     }
 
+    public function test_soft_deleted_products_are_excluded(): void
+    {
+        config(['telemetry.low_stock_threshold' => 5]);
+
+        // A live product's variant and a soft-deleted product's variant, both active.
+        $liveId = $this->makeVariant(['stock' => 3, 'cost' => 2, 'price' => 5, 'is_active' => 1, 'sku' => 'LIVE-1']);
+        $deletedVariantId = $this->makeVariant(['stock' => 3, 'cost' => 2, 'price' => 5, 'is_active' => 1, 'sku' => 'DELETED-1']);
+        $deletedProductId = ProductVariant::findOrFail($deletedVariantId)->product_id;
+        Product::findOrFail($deletedProductId)->delete(); // soft delete
+
+        $svc = new InventoryService();
+
+        // Valuation counts only the live product's stock (3 units, not 6).
+        $this->assertSame(3, $svc->valuation()['total_units']);
+
+        // Reorder worklist excludes the soft-deleted product's variant.
+        $skus = $svc->reorderWorklist()->pluck('sku')->all();
+        $this->assertContains('LIVE-1', $skus);
+        $this->assertNotContains('DELETED-1', $skus);
+    }
+
     public function test_reorder_worklist_null_vendor_shows_none(): void
     {
         config(['telemetry.low_stock_threshold' => 5]);

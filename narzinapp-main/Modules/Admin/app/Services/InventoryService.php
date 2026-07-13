@@ -14,16 +14,21 @@ class InventoryService
 
     public function valuation(): array
     {
-        // Single aggregate over active variants.
-        $totals = DB::table('product_variants')
-            ->where('is_active', 1)
-            ->selectRaw('COALESCE(SUM(stock),0) as units, COALESCE(SUM(stock*cost),0) as cost_val, COALESCE(SUM(stock*price),0) as retail_val')
+        // Single aggregate over active variants of non-deleted products.
+        // Join products + whereNull(deleted_at) so soft-deleted catalog items
+        // don't inflate valuation, keeping totals equal to the breakdowns below.
+        $totals = DB::table('product_variants as pv')
+            ->join('products as p', 'pv.product_id', '=', 'p.id')
+            ->where('pv.is_active', 1)
+            ->whereNull('p.deleted_at')
+            ->selectRaw('COALESCE(SUM(pv.stock),0) as units, COALESCE(SUM(pv.stock*pv.cost),0) as cost_val, COALESCE(SUM(pv.stock*pv.price),0) as retail_val')
             ->first();
 
         $byCategory = DB::table('product_variants as pv')
             ->join('products as p', 'pv.product_id', '=', 'p.id')
             ->leftJoin('categories as c', 'p.category_id', '=', 'c.id')
             ->where('pv.is_active', 1)
+            ->whereNull('p.deleted_at')
             ->groupBy('c.id', 'c.name_german', 'c.name_arabic')
             ->selectRaw("COALESCE(c.name_german, c.name_arabic, '(none)') as name, SUM(pv.stock) as units, SUM(pv.stock*pv.cost) as cost_val, SUM(pv.stock*pv.price) as retail_val")
             ->orderByDesc('cost_val')
@@ -34,6 +39,7 @@ class InventoryService
             ->join('products as p', 'pv.product_id', '=', 'p.id')
             ->leftJoin('vendors as v', 'p.vendor_id', '=', 'v.id')
             ->where('pv.is_active', 1)
+            ->whereNull('p.deleted_at')
             ->groupBy('v.id', 'v.store_name_in_german')
             ->selectRaw("COALESCE(v.store_name_in_german, '(none)') as name, SUM(pv.stock) as units, SUM(pv.stock*pv.cost) as cost_val, SUM(pv.stock*pv.price) as retail_val")
             ->orderByDesc('cost_val')
@@ -61,6 +67,7 @@ class InventoryService
             ->join('products as p', 'pv.product_id', '=', 'p.id')
             ->leftJoin('vendors as v', 'p.vendor_id', '=', 'v.id')
             ->where('pv.is_active', 1)
+            ->whereNull('p.deleted_at')
             ->where('pv.stock', '<=', $threshold)
             ->orderBy('pv.stock')
             ->orderBy('p.name_german')
@@ -89,6 +96,7 @@ class InventoryService
             ->join('products as p', 'pv.product_id', '=', 'p.id')
             ->leftJoin('vendors as v', 'p.vendor_id', '=', 'v.id')
             ->where('pv.is_active', 1)
+            ->whereNull('p.deleted_at')
             ->where('pv.stock', '>', 0)
             ->whereNotIn('pv.id', $soldIds)
             ->orderByDesc(DB::raw('pv.stock*pv.cost'))
@@ -112,6 +120,7 @@ class InventoryService
             ->join('products as p', 'pv.product_id', '=', 'p.id')
             ->leftJoin('vendors as v', 'p.vendor_id', '=', 'v.id')
             ->where('pv.is_active', 1)
+            ->whereNull('p.deleted_at')
             ->where('pv.stock', '>', 0)
             ->whereNotNull('pv.expiry_date')
             ->where('pv.expiry_date', '<=', $cutoff)
