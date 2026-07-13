@@ -8,15 +8,7 @@
                 (Product View, Checkout, Order Placed) are live now.
             </p>
 
-            <form method="GET" class="mt-4 flex flex-wrap items-end gap-3">
-                <label class="text-sm">From
-                    <input type="date" name="from" value="{{ $from }}" class="block border rounded px-2 py-1" />
-                </label>
-                <label class="text-sm">To
-                    <input type="date" name="to" value="{{ $to }}" class="block border rounded px-2 py-1" />
-                </label>
-                <button type="submit" class="bg-gray-800 text-white rounded px-4 py-1.5 text-sm">Apply</button>
-            </form>
+            <x-admin.date-range-filter :from="$from" :to="$to" />
         </div>
 
         <div class="bg-white rounded-xl shadow-sm p-6">
@@ -26,6 +18,8 @@
                     Overall conversion: {{ number_format(($funnel['overall_conversion'] ?? 0) * 100, 2) }}%
                 </span>
             </div>
+            <a href="{{ request()->fullUrlWithQuery(['export' => 'funnel']) }}"
+               class="text-xs text-blue-600 hover:underline">Export CSV</a>
 
             @php $maxCount = max(1, collect($funnel['stages'])->max('count')); @endphp
             <div class="space-y-3">
@@ -94,6 +88,8 @@
             <div class="grid gap-6 md:grid-cols-2">
                 <div class="overflow-x-auto">
                     <h3 class="text-sm font-medium mb-2 text-gray-700">By Channel</h3>
+                    <a href="{{ request()->fullUrlWithQuery(['export' => 'attribution_channel']) }}"
+                       class="text-xs text-blue-600 hover:underline">Export CSV</a>
                     <table class="min-w-full text-sm">
                         <thead>
                             <tr class="text-left text-gray-500 border-b">
@@ -122,6 +118,8 @@
 
                 <div class="overflow-x-auto">
                     <h3 class="text-sm font-medium mb-2 text-gray-700">By Campaign</h3>
+                    <a href="{{ request()->fullUrlWithQuery(['export' => 'attribution_campaign']) }}"
+                       class="text-xs text-blue-600 hover:underline">Export CSV</a>
                     <table class="min-w-full text-sm">
                         <thead>
                             <tr class="text-left text-gray-500 border-b">

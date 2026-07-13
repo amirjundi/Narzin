@@ -23,6 +23,7 @@ use Modules\Admin\Services\ReturnAnalyticsService;
 use Modules\Admin\Services\FulfillmentService;
 use Modules\Admin\Services\InventoryService;
 use Modules\Admin\Support\DateRange;
+use Modules\Admin\Support\CsvExporter;
 
 class StatisticsController extends Controller
 {
@@ -485,6 +486,40 @@ class StatisticsController extends Controller
             'byCampaign' => (new AttributionService())->byCampaign($range),
         ];
 
+        if ($export = $request->query('export')) {
+            $timestamp = now()->format('Y-m-d');
+
+            if ($export === 'funnel') {
+                $rows = [];
+                foreach ($funnel['stages'] as $stage) {
+                    $rows[] = [
+                        $stage['label'],
+                        $stage['count'],
+                        is_null($stage['conversion_from_prev']) ? '' : number_format($stage['conversion_from_prev'] * 100, 1) . '%',
+                    ];
+                }
+                return CsvExporter::stream("funnel-{$timestamp}.csv", ['Stage', 'Actors', 'Conversion from previous'], $rows);
+            }
+
+            if ($export === 'attribution_channel') {
+                $rows = [];
+                foreach ($attribution['byChannel'] as $row) {
+                    $rows[] = [$row['source'], $row['medium'], $row['orders'], number_format($row['revenue'], 2), number_format($row['aov'], 2)];
+                }
+                return CsvExporter::stream("attribution-channel-{$timestamp}.csv", ['Source', 'Medium', 'Orders', 'Placed value', 'AOV'], $rows);
+            }
+
+            if ($export === 'attribution_campaign') {
+                $rows = [];
+                foreach ($attribution['byCampaign'] as $row) {
+                    $rows[] = [$row['campaign'], $row['orders'], number_format($row['revenue'], 2), number_format($row['aov'], 2)];
+                }
+                return CsvExporter::stream("attribution-campaign-{$timestamp}.csv", ['Campaign', 'Orders', 'Placed value', 'AOV'], $rows);
+            }
+
+            abort(404);
+        }
+
         return view('admin::statistics.funnel', [
             'funnel' => $funnel,
             'abandoned' => $abandoned,
@@ -498,11 +533,36 @@ class StatisticsController extends Controller
     {
         $range = DateRange::fromRequest($request);
         $service = new DiscountService();
+        $coupons = $service->byCoupon($range);
+        $promotions = $service->byPromotion($range);
+        $summary = $service->summary($range);
+
+        if ($export = $request->query('export')) {
+            $timestamp = now()->format('Y-m-d');
+
+            if ($export === 'coupons') {
+                $rows = [];
+                foreach ($coupons as $row) {
+                    $rows[] = [$row['code'], $row['redemptions'], number_format($row['discount_given'], 2), number_format($row['placed_value'], 2), number_format($row['aov'], 2)];
+                }
+                return CsvExporter::stream("coupons-{$timestamp}.csv", ['Code', 'Redemptions', 'Discount given', 'Placed value', 'AOV'], $rows);
+            }
+
+            if ($export === 'promotions') {
+                $rows = [];
+                foreach ($promotions as $row) {
+                    $rows[] = [$row['name'], $row['redemptions'], number_format($row['discount_given'], 2), number_format($row['placed_value'], 2), number_format($row['aov'], 2)];
+                }
+                return CsvExporter::stream("promotions-{$timestamp}.csv", ['Name', 'Redemptions', 'Discount given', 'Placed value', 'AOV'], $rows);
+            }
+
+            abort(404);
+        }
 
         return view('admin::statistics.promotions', [
-            'coupons' => $service->byCoupon($range),
-            'promotions' => $service->byPromotion($range),
-            'summary' => $service->summary($range),
+            'coupons' => $coupons,
+            'promotions' => $promotions,
+            'summary' => $summary,
             'from' => $range->from->toDateString(),
             'to' => $range->to->toDateString(),
         ]);
@@ -511,9 +571,28 @@ class StatisticsController extends Controller
     public function profitStatistics(Request $request)
     {
         $range = DateRange::fromRequest($request);
+        $profit = (new ProfitService())->summary($range);
+
+        if ($export = $request->query('export')) {
+            if ($export !== 'profit') {
+                abort(404);
+            }
+            $rows = [];
+            foreach ($profit as $key => $value) {
+                if (is_array($value)) {
+                    foreach ($value as $subKey => $subValue) {
+                        $label = ucfirst(str_replace('_', ' ', $key)) . ' - ' . ucfirst(str_replace('_', ' ', $subKey));
+                        $rows[] = [$label, is_numeric($subValue) ? number_format((float) $subValue, 2) : $subValue];
+                    }
+                    continue;
+                }
+                $rows[] = [ucfirst(str_replace('_', ' ', $key)), is_numeric($value) ? number_format((float) $value, 2) : $value];
+            }
+            return CsvExporter::stream('profit-' . now()->format('Y-m-d') . '.csv', ['Metric', 'Value'], $rows);
+        }
 
         return view('admin::statistics.profit', [
-            'profit' => (new ProfitService())->summary($range),
+            'profit' => $profit,
             'from' => $range->from->toDateString(),
             'to' => $range->to->toDateString(),
         ]);
@@ -523,12 +602,47 @@ class StatisticsController extends Controller
     {
         $range = DateRange::fromRequest($request);
         $service = new PaymentAnalyticsService();
+        $orderSummary = $service->orderPaymentSummary($range);
+        $methodMix = $service->methodMix($range);
+        $attempts = $service->attemptSummary($range);
+        $failureReasons = $service->failureReasons($range);
+
+        if ($export = $request->query('export')) {
+            $timestamp = now()->format('Y-m-d');
+
+            if ($export === 'status_breakdown') {
+                $labels = ['completed' => 'Completed', 'failed' => 'Failed', 'expired' => 'Expired', 'processing' => 'Processing', 'not_paid' => 'Not paid'];
+                $rows = [];
+                foreach ($labels as $key => $label) {
+                    $rows[] = [$label, $orderSummary[$key]];
+                }
+                return CsvExporter::stream("payment-status-breakdown-{$timestamp}.csv", ['Status', 'Count'], $rows);
+            }
+
+            if ($export === 'methods') {
+                $rows = [
+                    ['Wallet involved', $methodMix['wallet_involved']],
+                    ['Gateway only', $methodMix['gateway_only']],
+                ];
+                return CsvExporter::stream("payment-methods-{$timestamp}.csv", ['Method', 'Count'], $rows);
+            }
+
+            if ($export === 'failure_reasons') {
+                $rows = [];
+                foreach ($failureReasons as $row) {
+                    $rows[] = [$row['response_code'], $row['count']];
+                }
+                return CsvExporter::stream("payment-failure-reasons-{$timestamp}.csv", ['Response code', 'Failed attempts'], $rows);
+            }
+
+            abort(404);
+        }
 
         return view('admin::statistics.payments', [
-            'orderSummary' => $service->orderPaymentSummary($range),
-            'methodMix' => $service->methodMix($range),
-            'attempts' => $service->attemptSummary($range),
-            'failureReasons' => $service->failureReasons($range),
+            'orderSummary' => $orderSummary,
+            'methodMix' => $methodMix,
+            'attempts' => $attempts,
+            'failureReasons' => $failureReasons,
             'from' => $range->from->toDateString(),
             'to' => $range->to->toDateString(),
         ]);
