@@ -21,6 +21,7 @@ use Modules\Admin\Services\ProfitService;
 use Modules\Admin\Services\PaymentAnalyticsService;
 use Modules\Admin\Services\ReturnAnalyticsService;
 use Modules\Admin\Services\FulfillmentService;
+use Modules\Admin\Services\InventoryService;
 use Modules\Admin\Support\DateRange;
 
 class StatisticsController extends Controller
@@ -554,6 +555,23 @@ class StatisticsController extends Controller
         return view('admin::statistics.fulfillment', [
             'sla' => $service->slaSummary($range),
             'cancellations' => $service->cancellations($range),
+            'from' => $range->from->toDateString(),
+            'to' => $range->to->toDateString(),
+        ]);
+    }
+
+    public function inventoryStatistics(Request $request)
+    {
+        $range = DateRange::fromRequest($request);
+        $service = new InventoryService();
+
+        return view('admin::statistics.inventory', [
+            'valuation' => $service->valuation(),
+            'reorder' => $service->reorderWorklist(),
+            'deadStock' => $service->deadStock($range),
+            'expiring' => $service->expiringStock(),
+            'lowStockThreshold' => (int) config('telemetry.low_stock_threshold', 5),
+            'expiryDaysAhead' => (int) config('telemetry.expiry_days_ahead', 30),
             'from' => $range->from->toDateString(),
             'to' => $range->to->toDateString(),
         ]);
