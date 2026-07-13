@@ -732,7 +732,12 @@ class StatisticsController extends Controller
                 if (is_array($value)) {
                     foreach ($value as $subKey => $subValue) {
                         $label = ucfirst(str_replace('_', ' ', $key)) . ' - ' . ucfirst(str_replace('_', ' ', $subKey));
-                        $rows[] = [$label, is_numeric($subValue) ? number_format((float) $subValue, 2) : $subValue];
+                        // margin is a raw fraction (0.15); render as % to match the on-screen table.
+                        if ($subKey === 'margin') {
+                            $rows[] = [$label, number_format((float) $subValue * 100, 1) . '%'];
+                        } else {
+                            $rows[] = [$label, is_numeric($subValue) ? number_format((float) $subValue, 2) : $subValue];
+                        }
                     }
                     continue;
                 }
