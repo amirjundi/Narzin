@@ -652,10 +652,39 @@ class StatisticsController extends Controller
     {
         $range = DateRange::fromRequest($request);
         $service = new ReturnAnalyticsService();
+        $summary = $service->summary($range);
+        $byReason = $service->byReason($range);
+
+        if ($export = $request->query('export')) {
+            $timestamp = now()->format('Y-m-d');
+
+            if ($export === 'by_reason') {
+                $rows = [];
+                foreach ($byReason as $row) {
+                    $rows[] = [$row['reason'], $row['count']];
+                }
+                return CsvExporter::stream("returns-by-reason-{$timestamp}.csv", ['Reason', 'Count'], $rows);
+            }
+
+            if ($export === 'summary') {
+                $rows = [
+                    ['Requested', $summary['requested']],
+                    ['Approved', $summary['approved']],
+                    ['Rejected', $summary['rejected']],
+                    ['Refunded', $summary['refunded']],
+                    ['Total returns', $summary['total_returns']],
+                    ['Return rate', number_format($summary['return_rate'] * 100, 1) . '%'],
+                    ['Total refunded', number_format($summary['total_refunded'], 2)],
+                ];
+                return CsvExporter::stream("returns-summary-{$timestamp}.csv", ['Metric', 'Value'], $rows);
+            }
+
+            abort(404);
+        }
 
         return view('admin::statistics.returns', [
-            'summary' => $service->summary($range),
-            'byReason' => $service->byReason($range),
+            'summary' => $summary,
+            'byReason' => $byReason,
             'from' => $range->from->toDateString(),
             'to' => $range->to->toDateString(),
         ]);
@@ -665,10 +694,46 @@ class StatisticsController extends Controller
     {
         $range = DateRange::fromRequest($request);
         $service = new FulfillmentService();
+        $sla = $service->slaSummary($range);
+        $cancellations = $service->cancellations($range);
+
+        if ($export = $request->query('export')) {
+            $timestamp = now()->format('Y-m-d');
+
+            if ($export === 'sla') {
+                $stageLabels = [
+                    'confirm_to_ship' => 'Confirm to ship',
+                    'ship_to_deliver' => 'Ship to deliver',
+                    'placed_to_ship' => 'Placed to ship',
+                ];
+                $rows = [];
+                foreach ($stageLabels as $key => $label) {
+                    $stage = $sla['stages'][$key];
+                    $rows[] = [
+                        $label,
+                        $stage['count'],
+                        number_format($stage['avg_hours'], 2),
+                        number_format($stage['median_hours'], 2),
+                        number_format($stage['p90_hours'], 2),
+                    ];
+                }
+                return CsvExporter::stream("fulfillment-sla-{$timestamp}.csv", ['Stage', 'Count', 'Avg hours', 'Median hours', 'P90 hours'], $rows);
+            }
+
+            if ($export === 'cancellations') {
+                $rows = [];
+                foreach ($cancellations['by_reason'] as $row) {
+                    $rows[] = [ucfirst(str_replace('_', ' ', $row['reason'])), $row['count']];
+                }
+                return CsvExporter::stream("fulfillment-cancellations-{$timestamp}.csv", ['Reason', 'Count'], $rows);
+            }
+
+            abort(404);
+        }
 
         return view('admin::statistics.fulfillment', [
-            'sla' => $service->slaSummary($range),
-            'cancellations' => $service->cancellations($range),
+            'sla' => $sla,
+            'cancellations' => $cancellations,
             'from' => $range->from->toDateString(),
             'to' => $range->to->toDateString(),
         ]);
@@ -678,12 +743,81 @@ class StatisticsController extends Controller
     {
         $range = DateRange::fromRequest($request);
         $service = new InventoryService();
+        $valuation = $service->valuation();
+        $reorder = $service->reorderWorklist();
+        $deadStock = $service->deadStock($range);
+        $expiring = $service->expiringStock();
+
+        if ($export = $request->query('export')) {
+            $timestamp = now()->format('Y-m-d');
+
+            if ($export === 'valuation_by_category') {
+                $rows = [];
+                foreach ($valuation['by_category'] as $row) {
+                    $rows[] = [$row['name'], $row['units'], number_format($row['value_at_cost'], 2), number_format($row['value_at_retail'], 2)];
+                }
+                return CsvExporter::stream("inventory-valuation-by-category-{$timestamp}.csv", ['Category', 'Units', 'Value at cost', 'Value at retail'], $rows);
+            }
+
+            if ($export === 'valuation_by_vendor') {
+                $rows = [];
+                foreach ($valuation['by_vendor'] as $row) {
+                    $rows[] = [$row['name'], $row['units'], number_format($row['value_at_cost'], 2), number_format($row['value_at_retail'], 2)];
+                }
+                return CsvExporter::stream("inventory-valuation-by-vendor-{$timestamp}.csv", ['Vendor', 'Units', 'Value at cost', 'Value at retail'], $rows);
+            }
+
+            if ($export === 'reorder') {
+                $rows = [];
+                foreach ($reorder as $row) {
+                    $rows[] = [
+                        $row['sku'],
+                        $row['product_name_german'] ?: $row['product_name_arabic'],
+                        $row['stock'],
+                        $row['vendor_name'],
+                        $row['is_out'] ? 'Yes' : 'No',
+                    ];
+                }
+                return CsvExporter::stream("inventory-reorder-{$timestamp}.csv", ['SKU', 'Product', 'Stock', 'Vendor', 'Out of stock'], $rows);
+            }
+
+            if ($export === 'dead_stock') {
+                $rows = [];
+                foreach ($deadStock as $row) {
+                    $rows[] = [
+                        $row['sku'],
+                        $row['product_name_german'] ?: $row['product_name_arabic'],
+                        $row['stock'],
+                        number_format($row['value_at_cost'], 2),
+                        $row['vendor_name'],
+                    ];
+                }
+                return CsvExporter::stream("inventory-dead-stock-{$timestamp}.csv", ['SKU', 'Product', 'Stock', 'Value at cost', 'Vendor'], $rows);
+            }
+
+            if ($export === 'expiring') {
+                $rows = [];
+                foreach ($expiring as $row) {
+                    $rows[] = [
+                        $row['sku'],
+                        $row['product_name_german'] ?: $row['product_name_arabic'],
+                        $row['expiry_date'],
+                        $row['stock'],
+                        number_format($row['value_at_cost'], 2),
+                        $row['vendor_name'],
+                    ];
+                }
+                return CsvExporter::stream("inventory-expiring-{$timestamp}.csv", ['SKU', 'Product', 'Expiry date', 'Stock', 'Value at cost', 'Vendor'], $rows);
+            }
+
+            abort(404);
+        }
 
         return view('admin::statistics.inventory', [
-            'valuation' => $service->valuation(),
-            'reorder' => $service->reorderWorklist(),
-            'deadStock' => $service->deadStock($range),
-            'expiring' => $service->expiringStock(),
+            'valuation' => $valuation,
+            'reorder' => $reorder,
+            'deadStock' => $deadStock,
+            'expiring' => $expiring,
             'lowStockThreshold' => (int) config('telemetry.low_stock_threshold', 5),
             'expiryDaysAhead' => (int) config('telemetry.expiry_days_ahead', 30),
             'from' => $range->from->toDateString(),

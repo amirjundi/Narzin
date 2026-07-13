@@ -28,7 +28,11 @@
 
         <div class="grid gap-6 md:grid-cols-2">
             <div class="bg-white rounded-xl shadow-sm p-6">
-                <h2 class="text-lg font-semibold mb-4">Valuation by category</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold">Valuation by category</h2>
+                    <a href="{{ request()->fullUrlWithQuery(['export' => 'valuation_by_category']) }}"
+                       class="text-xs text-blue-600 hover:underline">Export CSV</a>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-sm">
                         <thead>
@@ -56,7 +60,11 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-sm p-6">
-                <h2 class="text-lg font-semibold mb-4">Valuation by vendor</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold">Valuation by vendor</h2>
+                    <a href="{{ request()->fullUrlWithQuery(['export' => 'valuation_by_vendor']) }}"
+                       class="text-xs text-blue-600 hover:underline">Export CSV</a>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-sm">
                         <thead>
@@ -85,7 +93,11 @@
         </div>
 
         <div class="bg-white rounded-xl shadow-sm p-6">
-            <h2 class="text-lg font-semibold mb-1">Reorder worklist</h2>
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-semibold mb-1">Reorder worklist</h2>
+                <a href="{{ request()->fullUrlWithQuery(['export' => 'reorder']) }}"
+                   class="text-xs text-blue-600 hover:underline">Export CSV</a>
+            </div>
             <p class="text-xs text-gray-400 mb-4">threshold = {{ $lowStockThreshold }}</p>
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm">
@@ -122,16 +134,18 @@
         </div>
 
         <div class="bg-white rounded-xl shadow-sm p-6">
-            <h2 class="text-lg font-semibold mb-1">Dead stock</h2>
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-semibold mb-1">Dead stock</h2>
+                <a href="{{ request()->fullUrlWithQuery(['export' => 'dead_stock']) }}"
+                   class="text-xs text-blue-600 hover:underline">Export CSV</a>
+            </div>
             <p class="text-xs text-gray-400 mb-4">
                 Dead stock reflects the selected date range; the other three views are point-in-time (current stock).
             </p>
-            <form method="GET" class="mb-4 flex flex-wrap items-end gap-3">
-                <label class="text-sm">From <input type="date" name="from" value="{{ $from }}" class="block border rounded px-2 py-1" /></label>
-                <label class="text-sm">To <input type="date" name="to" value="{{ $to }}" class="block border rounded px-2 py-1" /></label>
-                <button type="submit" class="bg-gray-800 text-white rounded px-4 py-1.5 text-sm">Apply</button>
-            </form>
-            <div class="overflow-x-auto">
+
+            <x-admin.date-range-filter :from="$from" :to="$to" />
+
+            <div class="overflow-x-auto mt-4">
                 <table class="min-w-full text-sm">
                     <thead>
                         <tr class="text-left text-gray-500 border-b">
@@ -160,7 +174,11 @@
         </div>
 
         <div class="bg-white rounded-xl shadow-sm p-6">
-            <h2 class="text-lg font-semibold mb-1">Expiring stock</h2>
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-semibold mb-1">Expiring stock</h2>
+                <a href="{{ request()->fullUrlWithQuery(['export' => 'expiring']) }}"
+                   class="text-xs text-blue-600 hover:underline">Export CSV</a>
+            </div>
             <p class="text-xs text-gray-400 mb-4">within {{ $expiryDaysAhead }} days</p>
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm">
