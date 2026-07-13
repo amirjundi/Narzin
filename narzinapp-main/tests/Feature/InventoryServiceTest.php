@@ -163,6 +163,33 @@ class InventoryServiceTest extends TestCase
         $this->assertEqualsWithDelta(40.0, $dead->firstWhere('sku', 'DEAD')['value_at_cost'], 0.01); // 20*2
     }
 
+    public function test_reorder_worklist_null_vendor_shows_none(): void
+    {
+        config(['telemetry.low_stock_threshold' => 5]);
+
+        // A product with NO vendor (vendor_id is nullable) — vendor_name must
+        // fall back to the '(none)' sentinel, not null.
+        $categoryId = DB::table('categories')->insertGetId([
+            'name_arabic' => 'nv-ar', 'name_german' => 'nv-de',
+            'slug_arabic' => 'nv-ar-' . uniqid(), 'slug_german' => 'nv-de-' . uniqid(),
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $product = Product::create([
+            'name_arabic' => 'no-vendor-ar', 'name_german' => 'no-vendor-de',
+            'slug_arabic' => 'nv-p-ar-' . uniqid(), 'slug_german' => 'nv-p-de-' . uniqid(),
+            'category_id' => $categoryId, 'vendor_id' => null, 'is_active' => true,
+        ]);
+        ProductVariant::create([
+            'product_id' => $product->id, 'price' => 2, 'cost' => 1, 'stock' => 1,
+            'sku' => 'NOVENDOR-1', 'is_active' => true, 'is_out_of_stock' => false,
+        ]);
+
+        $row = (new InventoryService())->reorderWorklist()->firstWhere('sku', 'NOVENDOR-1');
+
+        $this->assertNotNull($row);
+        $this->assertSame('(none)', $row['vendor_name']);
+    }
+
     public function test_expiring_stock_window_and_null_expiry(): void
     {
         config(['telemetry.expiry_days_ahead' => 30]);

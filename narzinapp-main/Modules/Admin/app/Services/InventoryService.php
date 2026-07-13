@@ -65,7 +65,7 @@ class InventoryService
             ->orderBy('pv.stock')
             ->orderBy('p.name_german')
             ->limit(self::CAP)
-            ->get(['pv.sku', 'pv.stock', 'p.name_arabic', 'p.name_german', 'v.store_name_in_german as vendor_name'])
+            ->get(['pv.sku', 'pv.stock', 'p.name_arabic', 'p.name_german', DB::raw("COALESCE(v.store_name_in_german, '(none)') as vendor_name")])
             ->map(fn ($r) => [
                 'sku' => $r->sku,
                 'product_name_arabic' => $r->name_arabic,
@@ -93,13 +93,13 @@ class InventoryService
             ->whereNotIn('pv.id', $soldIds)
             ->orderByDesc(DB::raw('pv.stock*pv.cost'))
             ->limit(self::CAP)
-            ->get(['pv.sku', 'pv.stock', 'pv.cost', 'p.name_arabic', 'p.name_german', 'v.store_name_in_german as vendor_name'])
+            ->get(['pv.sku', 'pv.stock', 'pv.cost', 'p.name_arabic', 'p.name_german', DB::raw("COALESCE(v.store_name_in_german, '(none)') as vendor_name")])
             ->map(fn ($r) => [
                 'sku' => $r->sku,
                 'product_name_arabic' => $r->name_arabic,
                 'product_name_german' => $r->name_german,
                 'stock' => (int) $r->stock,
-                'value_at_cost' => round((float) $r->stock * (float) $r->cost, 2),
+                'value_at_cost' => round((float) $r->stock * (float) ($r->cost ?? 0), 2),
                 'vendor_name' => $r->vendor_name,
             ]);
     }
@@ -117,14 +117,14 @@ class InventoryService
             ->where('pv.expiry_date', '<=', $cutoff)
             ->orderBy('pv.expiry_date')
             ->limit(self::CAP)
-            ->get(['pv.sku', 'pv.stock', 'pv.cost', 'pv.expiry_date', 'p.name_arabic', 'p.name_german', 'v.store_name_in_german as vendor_name'])
+            ->get(['pv.sku', 'pv.stock', 'pv.cost', 'pv.expiry_date', 'p.name_arabic', 'p.name_german', DB::raw("COALESCE(v.store_name_in_german, '(none)') as vendor_name")])
             ->map(fn ($r) => [
                 'sku' => $r->sku,
                 'product_name_arabic' => $r->name_arabic,
                 'product_name_german' => $r->name_german,
                 'stock' => (int) $r->stock,
                 'expiry_date' => $r->expiry_date,
-                'value_at_cost' => round((float) $r->stock * (float) $r->cost, 2),
+                'value_at_cost' => round((float) $r->stock * (float) ($r->cost ?? 0), 2),
                 'vendor_name' => $r->vendor_name,
             ]);
     }
