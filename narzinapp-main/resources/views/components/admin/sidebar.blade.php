@@ -464,6 +464,23 @@
                         </a>
                     </li>
 
+                    <!-- Inventory -->
+                    <li>
+                        <a href="{{ route('statistics.inventory') }}"
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
+                                  {{ request()->routeIs('statistics.inventory')
+                                     ? 'bg-gradient-to-r from-rose-600 to-rose-500 text-white shadow-lg shadow-rose-500/30'
+                                     : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }}">
+                            <div class="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg
+                                        {{ request()->routeIs('statistics.inventory') ? 'bg-white/20' : 'bg-slate-700/50' }}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                </svg>
+                            </div>
+                            <span x-show="sidebarOpen" class="font-medium">Inventory</span>
+                        </a>
+                    </li>
+
                     <!-- Returns -->
                     <li>
                         <a href="{{ route('returns.index') }}"
