@@ -20,6 +20,7 @@ use Modules\Admin\Services\DiscountService;
 use Modules\Admin\Services\ProfitService;
 use Modules\Admin\Services\PaymentAnalyticsService;
 use Modules\Admin\Services\ReturnAnalyticsService;
+use Modules\Admin\Services\FulfillmentService;
 use Modules\Admin\Support\DateRange;
 
 class StatisticsController extends Controller
@@ -540,6 +541,19 @@ class StatisticsController extends Controller
         return view('admin::statistics.returns', [
             'summary' => $service->summary($range),
             'byReason' => $service->byReason($range),
+            'from' => $range->from->toDateString(),
+            'to' => $range->to->toDateString(),
+        ]);
+    }
+
+    public function fulfillmentStatistics(Request $request)
+    {
+        $range = DateRange::fromRequest($request);
+        $service = new FulfillmentService();
+
+        return view('admin::statistics.fulfillment', [
+            'sla' => $service->slaSummary($range),
+            'cancellations' => $service->cancellations($range),
             'from' => $range->from->toDateString(),
             'to' => $range->to->toDateString(),
         ]);
