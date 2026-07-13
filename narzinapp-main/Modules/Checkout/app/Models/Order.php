@@ -30,6 +30,7 @@ class Order extends Model
         'shipping_type',
         'shipping_cost',
         'notes',
+        'cancellation_reason',
         'coupon_id',
         'price_after_discount',
         'wallet_usage',
