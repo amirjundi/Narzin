@@ -179,7 +179,8 @@ class OrderController extends Controller
     {
         $request->validate([
             'order_status' => 'required|in:pending_payment,confirmed,processing,shipped,delivered,cancelled',
-            'notes' => 'nullable|string|max:500'
+            'notes' => 'nullable|string|max:500',
+            'cancellation_reason' => 'nullable|in:out_of_stock,customer_request,fraud_suspected,pricing_error,other',
         ]);
 
         $order = Order::findOrFail($id);
@@ -195,10 +196,14 @@ class OrderController extends Controller
             }
         }
 
-        $order->update([
+        $updates = [
             'order_status' => $request->order_status,
             'notes' => $request->notes ? ($order->notes . ' | Admin: ' . $request->notes) : $order->notes
-        ]);
+        ];
+        if ($request->order_status === 'cancelled') {
+            $updates['cancellation_reason'] = $request->cancellation_reason;
+        }
+        $order->update($updates);
 
         // Log audit
         OrderAudit::create([
@@ -210,6 +215,9 @@ class OrderController extends Controller
             'user_id' => Auth::id(),
             'ip_address' => $request->ip(),
             'notes' => $request->notes ?? 'Order status updated by admin',
+            'data' => $request->order_status === 'cancelled'
+                ? ['cancellation_reason' => $request->cancellation_reason]
+                : null,
             'created_at' => now()
         ]);
 
