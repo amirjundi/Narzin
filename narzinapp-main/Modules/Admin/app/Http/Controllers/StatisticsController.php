@@ -48,14 +48,18 @@ class StatisticsController extends Controller
         // Average order value
         $avgOrderValue = Order::avg('total_amount');
 
-        // Calculate average lifetime value
-        // Uses the query builder (not the Order Eloquent model) to avoid the SoftDeletes
-        // global scope injecting an invalid "orders"."deleted_at" filter against the
-        // derived "user_orders" subquery alias (the orders table has no deleted_at column).
+        // Calculate average lifetime value.
+        // Uses the query builder (not the Order Eloquent model) because Eloquent's
+        // SoftDeletes global scope qualifies its filter as "orders"."deleted_at" is null,
+        // and that qualifier survives ->fromSub() even though the outer FROM becomes the
+        // derived "user_orders" alias — SQLite then reports "no such column: orders.deleted_at".
+        // orders DOES have deleted_at (add_soft_deletes_to_tables migration), so we replicate
+        // the soft-delete filter by hand (whereNull) to stay consistent with the scoped queries.
         $avgLifetimeValue = DB::table('orders')
             ->select(DB::raw('AVG(total_spent) as avg_lifetime_value'))
             ->fromSub(
                 DB::table('orders')
+                    ->whereNull('deleted_at')
                     ->select('user_id', DB::raw('SUM(total_amount) as total_spent'))
                     ->groupBy('user_id'),
                 'user_orders'
