@@ -2,7 +2,7 @@
 
 namespace Modules\Admin\Services;
 
-use Illuminate\Support\Collection;
+use Carbon\CarbonInterface;
 use Modules\Admin\Support\DateRange;
 use Modules\Checkout\Models\Order;
 use Modules\Checkout\Models\OrderAudit;
@@ -99,7 +99,7 @@ class FulfillmentService
     }
 
     /** Duration in hours between two datetimes (float, 2dp). */
-    private function hours($from, $to): float
+    private function hours(CarbonInterface $from, CarbonInterface $to): float
     {
         // diffInSeconds is order-independent (abs) on older Carbon; these are always from<=to.
         return round($from->diffInSeconds($to) / 3600, 2);
