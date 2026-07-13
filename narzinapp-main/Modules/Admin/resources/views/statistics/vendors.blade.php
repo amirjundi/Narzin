@@ -142,7 +142,7 @@
             <div class="px-6 py-4 border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <h3 class="text-lg font-semibold text-gray-900">Top Performing Vendors</h3>
-                    <div class="flex gap-2">
+                    <div class="flex items-center gap-2">
                         <select class="rounded-lg border-gray-300 text-sm focus:ring-primary-500">
                             <option>By Revenue</option>
                             <option>By Orders</option>
@@ -151,6 +151,8 @@
                         <button class="px-3 py-2 text-sm font-medium text-gray-600 rounded-lg bg-gray-100 hover:bg-gray-200">
                             View All
                         </button>
+                        <a href="{{ request()->fullUrlWithQuery(['export' => 'top_vendors']) }}"
+                           class="text-xs text-blue-600 hover:underline">Export CSV</a>
                     </div>
                 </div>
             </div>
@@ -226,7 +228,11 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Category Performance -->
             <div class="bg-white rounded-xl shadow-sm p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Top Categories by Vendor</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Top Categories by Vendor</h3>
+                    <a href="{{ request()->fullUrlWithQuery(['export' => 'top_categories']) }}"
+                       class="text-xs text-blue-600 hover:underline">Export CSV</a>
+                </div>
                 <div class="space-y-4">
                     @foreach($topCategories as $category)
                     <div class="flex items-center">

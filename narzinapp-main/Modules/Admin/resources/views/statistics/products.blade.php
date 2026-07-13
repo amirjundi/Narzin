@@ -1,6 +1,10 @@
 <x-admin-layout>
     <div class="space-y-6">
         <!-- Overview Cards -->
+        <div class="flex items-center justify-end px-1">
+            <a href="{{ request()->fullUrlWithQuery(['export' => 'stock_status']) }}"
+               class="text-xs text-blue-600 hover:underline">Export Stock Status CSV</a>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             @foreach($stockStatus as $status)
             <div class="bg-white overflow-hidden shadow rounded-lg">
@@ -35,13 +39,21 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Products by Category -->
             <div class="bg-white shadow rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Products by Category</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Products by Category</h3>
+                    <a href="{{ request()->fullUrlWithQuery(['export' => 'products_by_category']) }}"
+                       class="text-xs text-blue-600 hover:underline">Export CSV</a>
+                </div>
                 <canvas id="categoryChart" class="w-full" height="300"></canvas>
             </div>
-    
+
             <!-- Top Selling Products -->
             <div class="bg-white shadow rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Top Selling Products</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Top Selling Products</h3>
+                    <a href="{{ request()->fullUrlWithQuery(['export' => 'top_products']) }}"
+                       class="text-xs text-blue-600 hover:underline">Export CSV</a>
+                </div>
                 <div class="overflow-hidden">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>

@@ -187,4 +187,108 @@ class StatisticsExportTest extends TestCase
     {
         $this->actingAsAdmin()->get(route('statistics.inventory', ['export' => 'nope']))->assertNotFound();
     }
+
+    public function test_users_top_customers_export_streams_csv(): void
+    {
+        $res = $this->actingAsAdmin()->get(route('statistics.users', ['export' => 'top_customers']));
+        $res->assertOk();
+        $this->assertStringStartsWith('text/csv', $res->headers->get('Content-Type'));
+    }
+
+    public function test_users_popular_categories_export_streams_csv(): void
+    {
+        $res = $this->actingAsAdmin()->get(route('statistics.users', ['export' => 'popular_categories']));
+        $res->assertOk();
+        $this->assertStringStartsWith('text/csv', $res->headers->get('Content-Type'));
+    }
+
+    public function test_users_unknown_export_key_404s(): void
+    {
+        $this->actingAsAdmin()->get(route('statistics.users', ['export' => 'nope']))->assertNotFound();
+    }
+
+    public function test_vendors_top_vendors_export_streams_csv(): void
+    {
+        $res = $this->actingAsAdmin()->get(route('statistics.vendors', ['export' => 'top_vendors']));
+        $res->assertOk();
+        $this->assertStringStartsWith('text/csv', $res->headers->get('Content-Type'));
+    }
+
+    public function test_vendors_top_categories_export_streams_csv(): void
+    {
+        $res = $this->actingAsAdmin()->get(route('statistics.vendors', ['export' => 'top_categories']));
+        $res->assertOk();
+        $this->assertStringStartsWith('text/csv', $res->headers->get('Content-Type'));
+    }
+
+    public function test_vendors_unknown_export_key_404s(): void
+    {
+        $this->actingAsAdmin()->get(route('statistics.vendors', ['export' => 'nope']))->assertNotFound();
+    }
+
+    public function test_products_export_streams_csv(): void
+    {
+        $res = $this->actingAsAdmin()->get(route('statistics.products', ['export' => 'top_products']));
+        $res->assertOk();
+        $this->assertStringStartsWith('text/csv', $res->headers->get('Content-Type'));
+    }
+
+    public function test_products_stock_status_export_streams_csv(): void
+    {
+        $res = $this->actingAsAdmin()->get(route('statistics.products', ['export' => 'stock_status']));
+        $res->assertOk();
+        $this->assertStringStartsWith('text/csv', $res->headers->get('Content-Type'));
+    }
+
+    public function test_products_by_category_export_streams_csv(): void
+    {
+        $res = $this->actingAsAdmin()->get(route('statistics.products', ['export' => 'products_by_category']));
+        $res->assertOk();
+        $this->assertStringStartsWith('text/csv', $res->headers->get('Content-Type'));
+    }
+
+    public function test_products_unknown_export_key_404s(): void
+    {
+        $this->actingAsAdmin()->get(route('statistics.products', ['export' => 'nope']))->assertNotFound();
+    }
+
+    public function test_orders_by_status_export_streams_csv(): void
+    {
+        $res = $this->actingAsAdmin()->get(route('statistics.orders', ['export' => 'orders_by_status']));
+        $res->assertOk();
+        $this->assertStringStartsWith('text/csv', $res->headers->get('Content-Type'));
+    }
+
+    public function test_orders_shipping_types_export_streams_csv(): void
+    {
+        $res = $this->actingAsAdmin()->get(route('statistics.orders', ['export' => 'shipping_types']));
+        $res->assertOk();
+        $this->assertStringStartsWith('text/csv', $res->headers->get('Content-Type'));
+    }
+
+    public function test_orders_trends_export_streams_csv(): void
+    {
+        $res = $this->actingAsAdmin()->get(route('statistics.orders', ['export' => 'order_trends']));
+        $res->assertOk();
+        $this->assertStringStartsWith('text/csv', $res->headers->get('Content-Type'));
+    }
+
+    public function test_orders_recent_orders_export_streams_csv(): void
+    {
+        $res = $this->actingAsAdmin()->get(route('statistics.orders', ['export' => 'recent_orders']));
+        $res->assertOk();
+        $this->assertStringStartsWith('text/csv', $res->headers->get('Content-Type'));
+    }
+
+    public function test_orders_popular_products_export_streams_csv(): void
+    {
+        $res = $this->actingAsAdmin()->get(route('statistics.orders', ['export' => 'popular_products']));
+        $res->assertOk();
+        $this->assertStringStartsWith('text/csv', $res->headers->get('Content-Type'));
+    }
+
+    public function test_orders_unknown_export_key_404s(): void
+    {
+        $this->actingAsAdmin()->get(route('statistics.orders', ['export' => 'nope']))->assertNotFound();
+    }
 }
