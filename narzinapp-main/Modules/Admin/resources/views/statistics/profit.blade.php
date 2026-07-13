@@ -11,15 +11,7 @@
                 earnings and will overstate profit for historical ranges.
             </p>
 
-            <form method="GET" class="mt-4 flex flex-wrap items-end gap-3">
-                <label class="text-sm">From
-                    <input type="date" name="from" value="{{ $from }}" class="block border rounded px-2 py-1" />
-                </label>
-                <label class="text-sm">To
-                    <input type="date" name="to" value="{{ $to }}" class="block border rounded px-2 py-1" />
-                </label>
-                <button type="submit" class="bg-gray-800 text-white rounded px-4 py-1.5 text-sm">Apply</button>
-            </form>
+            <x-admin.date-range-filter :from="$from" :to="$to" />
         </div>
 
         <div class="grid gap-6 md:grid-cols-3">
@@ -40,7 +32,11 @@
         </div>
 
         <div class="bg-white rounded-xl shadow-sm p-6">
-            <h2 class="text-lg font-semibold mb-4">Placed vs Paid</h2>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold">Placed vs Paid</h2>
+                <a href="{{ request()->fullUrlWithQuery(['export' => 'profit']) }}"
+                   class="text-xs text-blue-600 hover:underline">Export CSV</a>
+            </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm">
                     <thead>

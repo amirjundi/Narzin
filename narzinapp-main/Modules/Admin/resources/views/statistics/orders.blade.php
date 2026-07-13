@@ -103,7 +103,11 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Status Distribution -->
             <div class="bg-white rounded-xl shadow-sm p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-6">Order Status Distribution</h3>
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Order Status Distribution</h3>
+                    <a href="{{ request()->fullUrlWithQuery(['export' => 'orders_by_status']) }}"
+                       class="text-xs text-blue-600 hover:underline">Export CSV</a>
+                </div>
                 <div class="space-y-4">
                     @foreach($ordersByStatus as $status)
                     <div>
@@ -125,7 +129,11 @@
     
             <!-- Shipping Methods -->
             <div class="bg-white rounded-xl shadow-sm p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-6">Shipping Methods</h3>
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Shipping Methods</h3>
+                    <a href="{{ request()->fullUrlWithQuery(['export' => 'shipping_types']) }}"
+                       class="text-xs text-blue-600 hover:underline">Export CSV</a>
+                </div>
                 <canvas id="shippingTypesChart" height="250"></canvas>
             </div>
         </div>
@@ -134,7 +142,7 @@
         <div class="bg-white rounded-xl shadow-sm p-6">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-semibold text-gray-900">Revenue & Orders Timeline</h3>
-                <div class="flex gap-2">
+                <div class="flex items-center gap-2">
                     <button class="px-3 py-1 text-sm font-medium text-gray-600 rounded-lg bg-gray-100 hover:bg-gray-200">
                         Daily
                     </button>
@@ -144,6 +152,8 @@
                     <button class="px-3 py-1 text-sm font-medium text-gray-600 rounded-lg bg-gray-100 hover:bg-gray-200">
                         Monthly
                     </button>
+                    <a href="{{ request()->fullUrlWithQuery(['export' => 'order_trends']) }}"
+                       class="text-xs text-blue-600 hover:underline">Export CSV</a>
                 </div>
             </div>
             <canvas id="revenueOrdersChart" height="300"></canvas>
@@ -154,9 +164,13 @@
             <div class="px-6 py-4 border-b border-gray-200">
                 <div class="flex items-center justify-between">
                     <h3 class="text-lg font-semibold text-gray-900">Recent Orders</h3>
-                    <button class="px-4 py-2 text-sm font-medium text-gray-600 rounded-lg bg-gray-100 hover:bg-gray-200">
-                        View All Orders
-                    </button>
+                    <div class="flex items-center gap-3">
+                        <button class="px-4 py-2 text-sm font-medium text-gray-600 rounded-lg bg-gray-100 hover:bg-gray-200">
+                            View All Orders
+                        </button>
+                        <a href="{{ request()->fullUrlWithQuery(['export' => 'recent_orders']) }}"
+                           class="text-xs text-blue-600 hover:underline">Export CSV</a>
+                    </div>
                 </div>
             </div>
             <div class="overflow-x-auto">
@@ -216,7 +230,11 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Popular Products -->
             <div class="bg-white rounded-xl shadow-sm p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Popular Products</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Popular Products</h3>
+                    <a href="{{ request()->fullUrlWithQuery(['export' => 'popular_products']) }}"
+                       class="text-xs text-blue-600 hover:underline">Export CSV</a>
+                </div>
                 <div class="space-y-4">
                     @foreach($popularProducts as $product)
                     <div class="flex items-center">

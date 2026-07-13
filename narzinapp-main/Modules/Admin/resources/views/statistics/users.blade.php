@@ -116,7 +116,11 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Top Customers -->
             <div class="bg-white rounded-xl shadow-sm p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Top Customers</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Top Customers</h3>
+                    <a href="{{ request()->fullUrlWithQuery(['export' => 'top_customers']) }}"
+                       class="text-xs text-blue-600 hover:underline">Export CSV</a>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
@@ -160,7 +164,11 @@
 
             <!-- Purchase Categories -->
             <div class="bg-white rounded-xl shadow-sm p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Popular Categories</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Popular Categories</h3>
+                    <a href="{{ request()->fullUrlWithQuery(['export' => 'popular_categories']) }}"
+                       class="text-xs text-blue-600 hover:underline">Export CSV</a>
+                </div>
                 <canvas id="categoryChart" class="w-full" height="300"></canvas>
             </div>
         </div>
