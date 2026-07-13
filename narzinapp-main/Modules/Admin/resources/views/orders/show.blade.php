@@ -98,7 +98,15 @@
                                 <option value="delivered" {{ $order->order_status === 'delivered' ? 'selected' : '' }}>Delivered</option>
                                 <option value="cancelled" {{ $order->order_status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                             </select>
-                            <input type="text" 
+                            <select name="cancellation_reason" class="flex-1 min-w-[150px] px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                                <option value="">Cancellation reason (if cancelling)</option>
+                                <option value="out_of_stock" {{ $order->cancellation_reason === 'out_of_stock' ? 'selected' : '' }}>Out of stock</option>
+                                <option value="customer_request" {{ $order->cancellation_reason === 'customer_request' ? 'selected' : '' }}>Customer request</option>
+                                <option value="fraud_suspected" {{ $order->cancellation_reason === 'fraud_suspected' ? 'selected' : '' }}>Fraud suspected</option>
+                                <option value="pricing_error" {{ $order->cancellation_reason === 'pricing_error' ? 'selected' : '' }}>Pricing error</option>
+                                <option value="other" {{ $order->cancellation_reason === 'other' ? 'selected' : '' }}>Other</option>
+                            </select>
+                            <input type="text"
                                    name="notes" 
                                    placeholder="Add a note (optional)"
                                    class="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">

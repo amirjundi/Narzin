@@ -852,7 +852,8 @@ class CheckoutController extends Controller
                 } else {
                     $order->update([
                         'payment_status' => 'failed',
-                        'order_status' => 'canceled',
+                        'order_status' => 'cancelled',
+                        'cancellation_reason' => 'payment_failed',
                         'callback_data' => json_encode($data)
                     ]);
                     $this->refillOrderStock($order);
@@ -991,6 +992,7 @@ class CheckoutController extends Controller
         if (in_array($order->order_status, ['processing', 'pending', 'confirmed', 'pending_payment'])) {
             $stockRefilled = $this->refillOrderStock($order);
             $order->order_status = 'cancelled';
+            $order->cancellation_reason = 'customer_request';
 
             // AUDIT: Order cancelled
             $this->logAudit($order, 'order_cancelled', [

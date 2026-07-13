@@ -59,6 +59,7 @@ class OrderRefundService
             $order->update([
                 'payment_status' => 'refunded',
                 'order_status' => 'cancelled',
+                'cancellation_reason' => 'return_refund',
                 'notes' => ($order->notes ?? '') . ' | Refunded: ' . $reason,
             ]);
 
