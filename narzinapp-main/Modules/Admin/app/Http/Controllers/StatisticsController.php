@@ -766,7 +766,7 @@ class StatisticsController extends Controller
             $timestamp = now()->format('Y-m-d');
 
             if ($export === 'status_breakdown') {
-                $labels = ['completed' => 'Completed', 'failed' => 'Failed', 'expired' => 'Expired', 'processing' => 'Processing', 'not_paid' => 'Not paid'];
+                $labels = ['completed' => 'Completed', 'failed' => 'Failed', 'expired' => 'Expired', 'refunded' => 'Refunded', 'processing' => 'Processing', 'not_paid' => 'Not paid'];
                 $rows = [];
                 foreach ($labels as $key => $label) {
                     $rows[] = [$label, $orderSummary[$key]];

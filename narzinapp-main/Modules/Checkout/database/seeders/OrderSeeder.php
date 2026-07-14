@@ -20,7 +20,7 @@ class OrderSeeder extends Seeder
 
         $users = User::all();
         $orderStatuses = ['pending', 'processing', 'completed', 'cancelled'];
-        $paymentStatuses = ['pending', 'paid', 'failed'];
+        $paymentStatuses = ['completed', 'failed', 'expired', 'refunded', 'processing'];
         $itemStatuses = ['pending', 'completed', 'rejected'];
 
         foreach ($users as $user) {

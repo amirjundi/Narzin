@@ -30,6 +30,7 @@ class PaymentAnalyticsService
             'completed' => $completed,
             'failed' => $failed,
             'expired' => $expired,
+            'refunded' => (int) ($counts['refunded'] ?? 0),
             'processing' => (int) ($counts['processing'] ?? 0),
             'not_paid' => (int) ($counts['not_paid'] ?? 0),
             'success_rate' => $resolved > 0 ? round($completed / $resolved, 4) : 0.0,
