@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart' as geo;
 import 'package:narzin/core/constants.dart';
+import 'package:narzin/helpers/tracking.dart';
 import 'package:narzin/model_layer/coupons_model.dart';
 import 'package:narzin/model_layer/my_orders_model.dart';
 import 'package:narzin/model_layer/delivery_zones_model.dart';
@@ -137,7 +138,8 @@ class OrderCubit extends Cubit<OrderState> {
       "address_id": address_id,
       "delivery_method_id": selectedDeliveryMethodId,
       "coupon" : couponController.text,
-      "wallet": wallet ? 1 : 0  // Send as integer for API compatibility
+      "wallet": wallet ? 1 : 0,  // Send as integer for API compatibility
+      "session_id": TrackingService.sessionId,
     };
     print(json.encode(body));
 
