@@ -25,8 +25,6 @@ class PriceExchangeController extends Controller
             'price_rate' => 'required|numeric|min:1',
         ]);
 
-        $validated['created_by'] = auth('admin')->id() ?? auth()->id();
-
         PriceExchange::create($validated);
 
         return redirect()->route('price-exchange.index')
