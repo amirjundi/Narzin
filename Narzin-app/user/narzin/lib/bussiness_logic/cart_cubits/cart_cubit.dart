@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:narzin/core/constants.dart';
 import 'package:narzin/core/helpers.dart';
+import 'package:narzin/helpers/tracking.dart';
 import 'package:narzin/model_layer/add_to_cart_body_model.dart';
 import 'package:narzin/model_layer/add_to_cart_model.dart';
 import 'package:narzin/model_layer/my_cart_model.dart';
@@ -341,6 +342,17 @@ class CartCubit extends Cubit<CartState> {
           Helpers.showColoredToast(
               color: Colors.greenAccent,
               message: '${addToCartResponse?.message}');
+          final int trackedProductId =
+              int.tryParse(cartBody?.productId ?? '') ?? 0;
+          if (trackedProductId > 0) {
+            // Fire-and-forget: best-effort tracking, must not delay UI.
+            TrackingService.trackCartAdd(
+              productId: trackedProductId,
+              variantId: int.tryParse(cartBody?.productVariantId ?? ''),
+              quantity: int.tryParse(cartBody?.quantity ?? '') ?? 1,
+              unitPrice: null,
+            );
+          }
           return null;
         }
       }

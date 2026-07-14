@@ -24,6 +24,7 @@ import 'package:narzin/bussiness_logic/returns_cubits/returns_cubit.dart';
 import 'package:narzin/bussiness_logic/wallet_cubits/wallet_cubit.dart';
 import 'package:narzin/core/constants.dart';
 import 'package:narzin/generated/assets.dart';
+import 'package:narzin/helpers/tracking.dart';
 import 'package:narzin/presentation_layer/main_app_user/main_hub.dart';
 import 'package:narzin/presentation_layer/onboarding_screens/onboarding_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,6 +48,8 @@ class MyHttpOverrides extends HttpOverrides {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Fire-and-forget: best-effort session tracking, must not delay app start.
+  TrackingService.trackSession();
   // await Hive.initFlutter();
   HttpOverrides.global = MyHttpOverrides();
   SystemChrome.setPreferredOrientations([
