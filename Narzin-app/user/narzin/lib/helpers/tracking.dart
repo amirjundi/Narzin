@@ -55,4 +55,52 @@ class TrackingService {
       // tracking must never break the app
     }
   }
+
+  static Future<void> trackCartUpdate({
+    required int productId,
+    int? variantId,
+    required int quantity,
+    double? unitPrice,
+  }) async {
+    try {
+      await http.post(
+        Uri.parse('${Constants.apiBaseUrl}track/cart'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'session_id': sessionId,
+          'action': 'update',
+          'product_id': productId,
+          'variant_id': variantId,
+          'quantity': quantity,
+          'unit_price': unitPrice,
+        }),
+      );
+    } catch (_) {
+      // tracking must never break the app
+    }
+  }
+
+  static Future<void> trackCartRemove({
+    required int productId,
+    int? variantId,
+    required int quantity,
+    double? unitPrice,
+  }) async {
+    try {
+      await http.post(
+        Uri.parse('${Constants.apiBaseUrl}track/cart'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'session_id': sessionId,
+          'action': 'remove',
+          'product_id': productId,
+          'variant_id': variantId,
+          'quantity': quantity,
+          'unit_price': unitPrice,
+        }),
+      );
+    } catch (_) {
+      // tracking must never break the app
+    }
+  }
 }

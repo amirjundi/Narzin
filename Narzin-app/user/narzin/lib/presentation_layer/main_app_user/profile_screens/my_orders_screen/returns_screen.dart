@@ -10,15 +10,26 @@ import '../../../../model_layer/my_orders_model.dart';
 import '../../../../model_layer/returns_model.dart';
 
 /// Readable labels for the fixed set of return reasons the backend accepts.
-/// The map key is the exact enum string sent to the API; the value is the
+/// The map key is the exact enum string sent to the API (do NOT localize
+/// these — they're the API contract); the value is the localized
 /// human-readable label shown in the UI.
-const Map<String, String> kReturnReasonLabels = {
-  'damaged': 'Damaged',
-  'wrong_item': 'Wrong item',
-  'not_as_described': 'Not as described',
-  'no_longer_needed': 'No longer needed',
-  'other': 'Other',
-};
+Map<String, String> _returnReasonLabels(BuildContext context) => {
+      'damaged': S.of(context).return_reason_damaged,
+      'wrong_item': S.of(context).return_reason_wrong_item,
+      'not_as_described': S.of(context).return_reason_not_as_described,
+      'no_longer_needed': S.of(context).return_reason_no_longer_needed,
+      'other': S.of(context).return_reason_other,
+    };
+
+/// Readable labels for the fixed set of return statuses the backend sends.
+/// The map key is the exact enum string from the API; the value is the
+/// localized human-readable label shown in the UI.
+Map<String, String> _returnStatusLabels(BuildContext context) => {
+      'requested': S.of(context).return_status_requested,
+      'approved': S.of(context).return_status_approved,
+      'rejected': S.of(context).return_status_rejected,
+      'refunded': S.of(context).return_status_refunded,
+    };
 
 /// Payment statuses on an order that make it eligible to request a return for.
 const List<String> kReturnEligiblePaymentStatuses = ['completed', 'processing'];
@@ -57,7 +68,8 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
   }
 
   Future<void> _openRequestReturnSheet(MyOrder order) async {
-    String selectedReason = kReturnReasonLabels.keys.first;
+    final reasonLabels = _returnReasonLabels(context);
+    String selectedReason = reasonLabels.keys.first;
     final noteController = TextEditingController();
 
     await showModalBottomSheet<void>(
@@ -86,11 +98,11 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
                       style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 12),
-                    const Text(
-                      'Reason for return',
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                    Text(
+                      S.of(sheetContext).reason_for_return,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
-                    ...kReturnReasonLabels.entries.map(
+                    ...reasonLabels.entries.map(
                       (entry) => RadioListTile<String>(
                         contentPadding: EdgeInsets.zero,
                         dense: true,
@@ -107,9 +119,9 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
                     TextField(
                       controller: noteController,
                       maxLines: 2,
-                      decoration: const InputDecoration(
-                        labelText: 'Note (optional)',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: S.of(sheetContext).note_optional,
+                        border: const OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -124,7 +136,7 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
                             note: noteController.text.trim().isEmpty ? null : noteController.text.trim(),
                           );
                         },
-                        child: const Text('Submit request'),
+                        child: Text(S.of(sheetContext).submit_request),
                       ),
                     ),
                   ],
@@ -147,7 +159,7 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
     if (orderId == null || orderId == 0) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Couldn't identify the order.")),
+        SnackBar(content: Text(S.of(context).couldnt_identify_order)),
       );
       return;
     }
@@ -160,7 +172,7 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
     if (!mounted) return;
     if (err == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Return requested successfully.')),
+        SnackBar(content: Text(S.of(context).return_requested_successfully)),
       );
       context.read<ReturnsCubit>().fetchReturns(token: token);
     } else {
@@ -181,11 +193,11 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
     }
 
     if (items.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 16),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
         child: Text(
-          'You have no return requests yet.',
-          style: TextStyle(color: Color(0xff4B5563)),
+          S.of(context).no_return_requests_yet,
+          style: const TextStyle(color: Color(0xff4B5563)),
         ),
       );
     }
@@ -197,9 +209,9 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
       itemBuilder: (context, index) {
         final item = items[index];
         final orderLabel = item.orderNumber ?? 'Order #${item.orderId}';
-        final reasonLabel = kReturnReasonLabels[item.reason] ?? item.reason ?? '-';
+        final reasonLabel = _returnReasonLabels(context)[item.reason] ?? item.reason ?? '-';
         final statusColor = _returnStatusColor(item.status);
-        final statusLabel = _capitalize(item.status ?? '-');
+        final statusLabel = _returnStatusLabels(context)[item.status] ?? _capitalize(item.status ?? '-');
 
         return Container(
           margin: const EdgeInsets.only(bottom: 10),
@@ -236,13 +248,13 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
               ),
               const SizedBox(height: 6),
               Text(
-                'Reason: $reasonLabel',
+                '${S.of(context).reason_label_prefix}: $reasonLabel',
                 style: TextStyle(color: Colors.grey[700], fontSize: 13),
               ),
               if (item.requestedAt != null) ...[
                 const SizedBox(height: 4),
                 Text(
-                  'Requested: ${item.requestedAt}',
+                  '${S.of(context).requested_label_prefix}: ${item.requestedAt}',
                   style: TextStyle(color: Colors.grey[600], fontSize: 12),
                 ),
               ],
@@ -260,11 +272,11 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
         .toList();
 
     if (eligibleOrders.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 16),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
         child: Text(
-          'No eligible orders to request a return for.',
-          style: TextStyle(color: Color(0xff4B5563)),
+          S.of(context).no_eligible_orders_for_return,
+          style: const TextStyle(color: Color(0xff4B5563)),
         ),
       );
     }
@@ -331,9 +343,9 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'My Returns',
-                  style: TextStyle(
+                Text(
+                  S.of(context).my_returns,
+                  style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w500,
                     color: Color(0xff4B5563),
@@ -342,9 +354,9 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
                 const SizedBox(height: 10),
                 _buildMyReturns(context, returnsModel, isLoading),
                 const SizedBox(height: 24),
-                const Text(
-                  'Request a Return',
-                  style: TextStyle(
+                Text(
+                  S.of(context).request_a_return,
+                  style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w500,
                     color: Color(0xff4B5563),
