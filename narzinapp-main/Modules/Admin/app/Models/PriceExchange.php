@@ -9,12 +9,10 @@ class PriceExchange extends Model
     protected $table = 'price_exechange';
     protected $fillable = [
         'price_rate',
-        'created_by'
     ];
 
     protected $casts = [
         'price_rate' => 'decimal:2',
-        'markup_percentage' => 'decimal:2',
     ];
 
     /**
