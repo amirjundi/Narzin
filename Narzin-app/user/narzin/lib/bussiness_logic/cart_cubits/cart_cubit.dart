@@ -9,6 +9,10 @@ import 'package:narzin/helpers/tracking.dart';
 import 'package:narzin/model_layer/add_to_cart_body_model.dart';
 import 'package:narzin/model_layer/add_to_cart_model.dart';
 import 'package:narzin/model_layer/my_cart_model.dart';
+// Aliased import: `single_product_model.dart` (below) also declares a `Data`
+// class, so the bare `Data` type is ambiguous — use `cart_model.Data` for the
+// cart-line type explicitly.
+import 'package:narzin/model_layer/my_cart_model.dart' as cart_model;
 import 'package:narzin/model_layer/single_product_model.dart';
 part 'cart_state.dart';
 
@@ -64,18 +68,25 @@ class CartCubit extends Cubit<CartState> {
   resetCartBody() {
     cartBody = null;
     selectedVariant = null;
+    selectedVariantUnitPrice = null;
     discountedItems.clear();
     quantity = 1;
     emit(CartInitial());
   }
 
-  formulateCartBody(String variantId, int id) {
+  // Not part of the `/cart` request body (the backend doesn't take a price),
+  // but kept alongside cartBody so the add-to-cart tracking event can report
+  // the real selected-variant unit price.
+  double? selectedVariantUnitPrice;
+
+  formulateCartBody(String variantId, int id, {String? variantPrice}) {
     if (variantId.isNotEmpty) {
       cartBody = AddToCartBodyModel(
         productId: id.toString(),
         productVariantId: variantId,
         quantity: quantity.toString(),
       );
+      selectedVariantUnitPrice = double.tryParse(variantPrice ?? '');
     }
     emit(CartInitial());
   }
@@ -350,7 +361,7 @@ class CartCubit extends Cubit<CartState> {
               productId: trackedProductId,
               variantId: int.tryParse(cartBody?.productVariantId ?? ''),
               quantity: int.tryParse(cartBody?.quantity ?? '') ?? 1,
-              unitPrice: null,
+              unitPrice: selectedVariantUnitPrice,
             );
           }
           return null;
@@ -377,6 +388,26 @@ class CartCubit extends Cubit<CartState> {
   setQuantity(int quant, String itemId) {
     cartQuantities[itemId] = quant;
     emit(CartInitial());
+  }
+
+  /// Finds the loaded cart line for [itemID] (by cart-line id, not product id).
+  cart_model.Data? _findCartItem(int? itemID) {
+    final items = myCart?.data;
+    if (items == null || itemID == null) return null;
+    for (final item in items) {
+      if (item.id == itemID.toString()) return item;
+    }
+    return null;
+  }
+
+  /// The cart line's `price` field is a LINE TOTAL (unit x qty), not the unit
+  /// price — use the variant's own unit price instead, falling back to
+  /// `item.price` only when there's no variant relation to read from.
+  double? _unitPriceFor(cart_model.Data item) {
+    if (item.productVariant != null) {
+      return double.tryParse(item.productVariant?.price ?? '');
+    }
+    return double.tryParse(item.price ?? '');
   }
 
   Future updateCartItemQuantity(
@@ -406,6 +437,21 @@ class CartCubit extends Cubit<CartState> {
           // Successful login
           Helpers.showColoredToast(
               color: Colors.greenAccent, message: '${responseData['message']}');
+          final item = _findCartItem(itemID);
+          if (item != null) {
+            final trackedProductId = int.tryParse(item.productId ?? '');
+            if (trackedProductId != null) {
+              // Fire-and-forget: best-effort tracking, must not delay UI.
+              TrackingService.trackCartUpdate(
+                productId: trackedProductId,
+                variantId: int.tryParse(item.productVariantId ?? ''),
+                quantity: cartQuantities[itemID.toString()] ??
+                    int.tryParse(item.quantity ?? '') ??
+                    1,
+                unitPrice: _unitPriceFor(item),
+              );
+            }
+          }
           return null;
         }
       }
@@ -452,6 +498,19 @@ class CartCubit extends Cubit<CartState> {
           // Successful login
           Helpers.showColoredToast(
               color: Colors.greenAccent, message: '${responseData['message']}');
+          final item = _findCartItem(itemID);
+          if (item != null) {
+            final trackedProductId = int.tryParse(item.productId ?? '');
+            if (trackedProductId != null) {
+              // Fire-and-forget: best-effort tracking, must not delay UI.
+              TrackingService.trackCartRemove(
+                productId: trackedProductId,
+                variantId: int.tryParse(item.productVariantId ?? ''),
+                quantity: int.tryParse(item.quantity ?? '') ?? 1,
+                unitPrice: _unitPriceFor(item),
+              );
+            }
+          }
           return null;
         }
       }

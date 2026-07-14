@@ -110,6 +110,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "continuous_motivation": MessageLookupByLibrary.simpleMessage(
       "تحفيز مستمر يضيف تحديًا ممتعًا: المواظبة على الذكر أصبحت أسهل وأكثر تشجيعًا بفضل نظام الشارات والتحديات. سواء كنت ترغب في إكمال تحدٍ أسبوعي أو ترغب في تحقيق سلسلة متواصلة من الأيام، يوفر لك التطبيق شعورًا بالإنجاز والتحفيز المستمر.",
     ),
+    "couldnt_identify_order": MessageLookupByLibrary.simpleMessage(
+      "تعذر التعرف على الطلب.",
+    ),
     "country": MessageLookupByLibrary.simpleMessage("الدولة"),
     "coupon": MessageLookupByLibrary.simpleMessage("إضافة كوبون"),
     "coupon_applied": MessageLookupByLibrary.simpleMessage(
@@ -265,6 +268,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "اختيار متعدد للأوان المتاحة مع إمكانية إضافة لون",
     ),
     "my_account": MessageLookupByLibrary.simpleMessage("حسابي"),
+    "my_returns": MessageLookupByLibrary.simpleMessage("مرتجعاتي"),
     "name_ar": MessageLookupByLibrary.simpleMessage("الاسم بالعربية"),
     "name_ar_placeholder": MessageLookupByLibrary.simpleMessage(
       "قم بأدخال اسم واضح للمنتج بالعربى",
@@ -285,6 +289,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "no_categories_available": MessageLookupByLibrary.simpleMessage(
       "لا يوجد فئات بعد...",
     ),
+    "no_eligible_orders_for_return": MessageLookupByLibrary.simpleMessage(
+      "لا توجد طلبات مؤهلة لطلب إرجاع.",
+    ),
     "no_extra_fees": MessageLookupByLibrary.simpleMessage(
       "لا توجد رسوم إضافية",
     ),
@@ -297,12 +304,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "no_results_message": MessageLookupByLibrary.simpleMessage(
       "عذرًا، لم يتم العثور على الكلمة الأساسية التي أدخلتها.\n يرجى التحقق مرة أخرى أو المحاولة باستخدام كلمة رئيسية أخرى.",
     ),
+    "no_return_requests_yet": MessageLookupByLibrary.simpleMessage(
+      "ليس لديك طلبات إرجاع حتى الآن.",
+    ),
     "no_saved_addresses": MessageLookupByLibrary.simpleMessage(
       "ليس لديك عناوين محفوظة...",
     ),
     "not_just_app": MessageLookupByLibrary.simpleMessage(
       "هذا التطبيق ليس مجرد وسيلة لقراءة الأذكار، بل هو رفيقك الروحي اليومي الذي يضع بين يديك كل ما تحتاجه للتواصل الروحي، التحدي، والتحفيز، بلمسة عصرية تليق بعالمك.",
     ),
+    "note_optional": MessageLookupByLibrary.simpleMessage("ملاحظة (اختياري)"),
     "notification": MessageLookupByLibrary.simpleMessage("إشعار"),
     "notifications": MessageLookupByLibrary.simpleMessage("الإشعارات"),
     "old_password": MessageLookupByLibrary.simpleMessage("كلمة المرور القديمة"),
@@ -371,6 +382,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "ready_wherever_you_are": MessageLookupByLibrary.simpleMessage(
       "طلباتك جاهزة، أينما كنت",
     ),
+    "reason_for_return": MessageLookupByLibrary.simpleMessage("سبب الإرجاع"),
+    "reason_label_prefix": MessageLookupByLibrary.simpleMessage("السبب"),
     "recent_searches": MessageLookupByLibrary.simpleMessage(
       "أحدث عمليات البحث",
     ),
@@ -387,14 +400,42 @@ class MessageLookup extends MessageLookupByLibrary {
       "أتذكر كلمة السر؟",
     ),
     "report_error": MessageLookupByLibrary.simpleMessage("ابلاغ عن خطاء"),
+    "request_a_return": MessageLookupByLibrary.simpleMessage("طلب إرجاع"),
     "request_successfully_sent": MessageLookupByLibrary.simpleMessage(
       "ارسال طلبك بنجاح",
+    ),
+    "requested_label_prefix": MessageLookupByLibrary.simpleMessage(
+      "تاريخ الطلب",
     ),
     "resend": MessageLookupByLibrary.simpleMessage("إعادة الإرسال"),
     "resend_code": MessageLookupByLibrary.simpleMessage("إعادة الارسال"),
     "reset": MessageLookupByLibrary.simpleMessage("إعادة تعيين"),
     "reset_password": MessageLookupByLibrary.simpleMessage(
       "إعادة تعيين كلمة المرور",
+    ),
+    "return_reason_damaged": MessageLookupByLibrary.simpleMessage("تالف"),
+    "return_reason_no_longer_needed": MessageLookupByLibrary.simpleMessage(
+      "لم أعد بحاجة إليه",
+    ),
+    "return_reason_not_as_described": MessageLookupByLibrary.simpleMessage(
+      "غير مطابق للوصف",
+    ),
+    "return_reason_other": MessageLookupByLibrary.simpleMessage("أخرى"),
+    "return_reason_wrong_item": MessageLookupByLibrary.simpleMessage(
+      "منتج خاطئ",
+    ),
+    "return_requested_successfully": MessageLookupByLibrary.simpleMessage(
+      "تم طلب الإرجاع بنجاح.",
+    ),
+    "return_status_approved": MessageLookupByLibrary.simpleMessage(
+      "تمت الموافقة",
+    ),
+    "return_status_refunded": MessageLookupByLibrary.simpleMessage(
+      "تم الاسترداد",
+    ),
+    "return_status_rejected": MessageLookupByLibrary.simpleMessage("مرفوض"),
+    "return_status_requested": MessageLookupByLibrary.simpleMessage(
+      "قيد الطلب",
     ),
     "returned": MessageLookupByLibrary.simpleMessage("مرتجع"),
     "returns": MessageLookupByLibrary.simpleMessage("المرتجع"),
@@ -474,6 +515,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "street": MessageLookupByLibrary.simpleMessage("الشارع"),
     "subcategories": MessageLookupByLibrary.simpleMessage("فئة فرعية"),
+    "submit_request": MessageLookupByLibrary.simpleMessage("إرسال الطلب"),
     "subtotal": MessageLookupByLibrary.simpleMessage("المجموع الفرعي"),
     "success": MessageLookupByLibrary.simpleMessage("تم بنجاح"),
     "suggested": MessageLookupByLibrary.simpleMessage("المقترح"),
@@ -485,7 +527,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "من خلال احد موصلين الطلبات الخاصه بنا",
     ),
     "title": MessageLookupByLibrary.simpleMessage("اسم العنوان"),
-    "title_hint": MessageLookupByLibrary.simpleMessage("مثال: المنزل، العمل، منزل الجدة"),
+    "title_hint": MessageLookupByLibrary.simpleMessage(
+      "مثال: المنزل، العمل، منزل الجدة",
+    ),
     "to_your_balance": MessageLookupByLibrary.simpleMessage("إلى رصيدك"),
     "top_search_keywords": MessageLookupByLibrary.simpleMessage(
       "أكثر الكلمات بحث",

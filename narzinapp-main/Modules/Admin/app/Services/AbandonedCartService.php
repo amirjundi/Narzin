@@ -48,6 +48,15 @@ class AbandonedCartService
             ->unique()
             ->all();
 
+        // Fetch all candidate sessions' cart events in one query instead of
+        // one query per session, then group in memory. Ordering and column
+        // selection match the previous per-session query exactly.
+        $eventsBySession = CartEvent::query()
+            ->whereIn('session_id', $candidates)
+            ->orderBy('occurred_at')
+            ->get(['session_id', 'product_id', 'variant_id', 'action', 'quantity', 'unit_price', 'user_id', 'occurred_at'])
+            ->groupBy('session_id');
+
         $rows = collect();
 
         foreach ($candidates as $sessionId) {
@@ -55,10 +64,7 @@ class AbandonedCartService
                 continue;
             }
 
-            $events = CartEvent::query()
-                ->where('session_id', $sessionId)
-                ->orderBy('occurred_at')
-                ->get(['product_id', 'variant_id', 'action', 'quantity', 'unit_price', 'user_id', 'occurred_at']);
+            $events = $eventsBySession->get($sessionId) ?? collect();
 
             $userId = $events->pluck('user_id')->filter()->first();
             if ($userId !== null && in_array($userId, $placedUsers, true)) {

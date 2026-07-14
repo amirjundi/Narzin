@@ -35,7 +35,7 @@
                    class="text-xs text-blue-600 hover:underline">Export CSV</a>
             </div>
             <div class="flex flex-wrap gap-6 text-sm">
-                @foreach (['completed'=>'Completed','failed'=>'Failed','expired'=>'Expired','processing'=>'Processing','not_paid'=>'Not paid'] as $k => $label)
+                @foreach (['completed'=>'Completed','failed'=>'Failed','expired'=>'Expired','refunded'=>'Refunded','processing'=>'Processing','not_paid'=>'Not paid'] as $k => $label)
                     <div><span class="text-gray-500">{{ $label }}:</span> <span class="font-semibold">{{ number_format($orderSummary[$k]) }}</span></div>
                 @endforeach
             </div>

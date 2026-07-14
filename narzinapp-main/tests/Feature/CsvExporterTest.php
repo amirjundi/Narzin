@@ -29,7 +29,7 @@ class CsvExporterTest extends TestCase
 
     public function test_neutralises_formula_injection(): void
     {
-        $res = CsvExporter::stream('x.csv', ['Val'], [['=1+1'], ['+cmd'], ['-2'], ['@ref'], ['safe']]);
+        $res = CsvExporter::stream('x.csv', ['Val'], [['=1+1'], ['+cmd'], ['-2'], ['@ref'], ["\tval"], ["\rval"], ['safe']]);
         $body = $this->body($res);
 
         // Dangerous leading chars get a leading apostrophe; safe values untouched.
@@ -37,6 +37,8 @@ class CsvExporterTest extends TestCase
         $this->assertStringContainsString("'+cmd", $body);
         $this->assertStringContainsString("'-2", $body);
         $this->assertStringContainsString("'@ref", $body);
+        $this->assertStringContainsString("'\tval", $body);
+        $this->assertStringContainsString("'\rval", $body);
         $this->assertMatchesRegularExpression('/(^|\n)safe(\r?\n|$)/', $body);
     }
 }

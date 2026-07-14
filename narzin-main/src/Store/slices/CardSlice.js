@@ -42,14 +42,42 @@ export const addToCart = createAsyncThunk(
   }
 );
 
+// Best-effort: recover product_id/variant_id/unit_price for a cart line from
+// Redux state, since the update/remove thunks only receive the cart-item id.
+// Cart line shape (see CartController@index / Card.jsx): item.id, item.product_id,
+// item.product_variant_id, item.product (relation), item.product_variant (relation,
+// with .price = raw unit price), item.price (converted/marked-up line total), item.quantity.
+function resolveCartTrackFields(item) {
+  const product_id = item?.product_id ?? item?.product?.id ?? null;
+  if (product_id == null) return null;
+  const variant_id = item?.product_variant_id ?? item?.product_variant?.id ?? null;
+  const rawUnitPrice = item?.product_variant?.price ?? item?.price ?? null;
+  const unit_price = rawUnitPrice != null ? parseFloat(rawUnitPrice) : null;
+  return { product_id, variant_id, unit_price };
+}
+
 // Update cart item quantity
 export const updateCartItem = createAsyncThunk(
   'cart/updateCartItem',
-  async ({ cartItemId, quantity }, { rejectWithValue }) => {
+  async ({ cartItemId, quantity }, { getState, rejectWithValue }) => {
     try {
       const response = await api.put(`/v1/cart/${cartItemId}`, {
         quantity
       });
+      // Best-effort analytics — must never break the cart.
+      try {
+        const item = (getState().cart.items || []).find((i) => i.id === cartItemId);
+        const fields = item ? resolveCartTrackFields(item) : null;
+        if (fields) {
+          trackCartEvent({
+            action: 'update',
+            product_id: fields.product_id,
+            variant_id: fields.variant_id,
+            quantity,
+            unit_price: fields.unit_price,
+          });
+        }
+      } catch { /* ignore */ }
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -60,9 +88,23 @@ export const updateCartItem = createAsyncThunk(
 // Remove item from cart
 export const removeCartItem = createAsyncThunk(
   'cart/removeCartItem',
-  async (cartItemId, { rejectWithValue }) => {
+  async (cartItemId, { getState, rejectWithValue }) => {
+    const item = (getState().cart.items || []).find((i) => i.id === cartItemId);
     try {
       await api.delete(`/v1/cart/${cartItemId}`);
+      // Best-effort analytics — must never break the cart.
+      try {
+        const fields = item ? resolveCartTrackFields(item) : null;
+        if (fields) {
+          trackCartEvent({
+            action: 'remove',
+            product_id: fields.product_id,
+            variant_id: fields.variant_id,
+            quantity: item.quantity ?? 1,
+            unit_price: fields.unit_price,
+          });
+        }
+      } catch { /* ignore */ }
       return cartItemId;
     } catch (error) {
       return rejectWithValue(error.response.data);

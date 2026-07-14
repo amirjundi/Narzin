@@ -387,7 +387,18 @@ class ProductDetailsScreen extends StatelessWidget {
                                                 return;
                                               }
                                               if (selectedColor != -1) {
-                                                cartContext.read<CartCubit>().formulateCartBody(variantId, int.tryParse(context.read<ProductsCubit>().singleProduct?.data?.id ?? "0") ?? 0);
+                                                final variants = context.read<ProductsCubit>().singleProduct?.data?.variants;
+                                                final selectedVariantPrice = variants
+                                                    ?.firstWhere(
+                                                      (element) => element.id.toString() == variantId,
+                                                      orElse: () => SingleProductVariants(),
+                                                    )
+                                                    .price;
+                                                cartContext.read<CartCubit>().formulateCartBody(
+                                                      variantId,
+                                                      int.tryParse(context.read<ProductsCubit>().singleProduct?.data?.id ?? "0") ?? 0,
+                                                      variantPrice: selectedVariantPrice,
+                                                    );
                                                 await cartContext.read<CartCubit>().addToCart(token: BlocProvider.of<LoginCubit>(context).loginModel?.data?.token ?? '');
                                                 await cartContext.read<CartCubit>().getMyCart(token: BlocProvider.of<LoginCubit>(context).loginModel?.data?.token ?? '');
                                               } else {

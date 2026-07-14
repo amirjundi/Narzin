@@ -202,6 +202,8 @@ class OrderController extends Controller
         ];
         if ($request->order_status === 'cancelled') {
             $updates['cancellation_reason'] = $request->cancellation_reason;
+        } else {
+            $updates['cancellation_reason'] = null;
         }
         $order->update($updates);
 

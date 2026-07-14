@@ -112,6 +112,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "continuous_motivation": MessageLookupByLibrary.simpleMessage(
       "Continuous motivation with a fun challenge: Maintaining your dhikr is easier and more encouraging with badges and challenge systems. Whether completing a weekly challenge or achieving a streak of consecutive days, the app offers a sense of accomplishment and ongoing motivation.",
     ),
+    "couldnt_identify_order": MessageLookupByLibrary.simpleMessage(
+      "Couldn\'t identify the order.",
+    ),
     "country": MessageLookupByLibrary.simpleMessage("Country"),
     "coupon": MessageLookupByLibrary.simpleMessage("Add Coupon"),
     "coupon_applied": MessageLookupByLibrary.simpleMessage(
@@ -275,6 +278,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Multi-select for available colors with the ability to add colors",
     ),
     "my_account": MessageLookupByLibrary.simpleMessage("My Account"),
+    "my_returns": MessageLookupByLibrary.simpleMessage("My Returns"),
     "name_ar": MessageLookupByLibrary.simpleMessage("Name in Arabic"),
     "name_ar_placeholder": MessageLookupByLibrary.simpleMessage(
       "Please enter a clear product name in Arabic",
@@ -295,6 +299,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "no_categories_available": MessageLookupByLibrary.simpleMessage(
       "No categories available yet...",
     ),
+    "no_eligible_orders_for_return": MessageLookupByLibrary.simpleMessage(
+      "No eligible orders to request a return for.",
+    ),
     "no_extra_fees": MessageLookupByLibrary.simpleMessage("No extra fees"),
     "no_products_available": MessageLookupByLibrary.simpleMessage(
       "No products available yet...",
@@ -305,12 +312,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "no_results_message": MessageLookupByLibrary.simpleMessage(
       "Sorry, the keyword you entered was not found.\n Please check again or try using a different keyword.",
     ),
+    "no_return_requests_yet": MessageLookupByLibrary.simpleMessage(
+      "You have no return requests yet.",
+    ),
     "no_saved_addresses": MessageLookupByLibrary.simpleMessage(
       "You have no saved Addresses...",
     ),
     "not_just_app": MessageLookupByLibrary.simpleMessage(
       "This app is not just a tool for reading dhikr; it\'s your daily spiritual companion that offers everything you need for spiritual connection, challenge, and motivation, with a modern touch that suits your world.",
     ),
+    "note_optional": MessageLookupByLibrary.simpleMessage("Note (optional)"),
     "notification": MessageLookupByLibrary.simpleMessage("Notification"),
     "notifications": MessageLookupByLibrary.simpleMessage("Notifications"),
     "old_password": MessageLookupByLibrary.simpleMessage("Old Password"),
@@ -391,6 +402,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "ready_wherever_you_are": MessageLookupByLibrary.simpleMessage(
       "Your orders are ready, wherever you are",
     ),
+    "reason_for_return": MessageLookupByLibrary.simpleMessage(
+      "Reason for return",
+    ),
+    "reason_label_prefix": MessageLookupByLibrary.simpleMessage("Reason"),
     "recent_searches": MessageLookupByLibrary.simpleMessage("Recent searches"),
     "reenter_password": MessageLookupByLibrary.simpleMessage(
       "Please re-enter your password",
@@ -407,13 +422,37 @@ class MessageLookup extends MessageLookupByLibrary {
       "Remember the password?",
     ),
     "report_error": MessageLookupByLibrary.simpleMessage("Report an error"),
+    "request_a_return": MessageLookupByLibrary.simpleMessage(
+      "Request a Return",
+    ),
     "request_successfully_sent": MessageLookupByLibrary.simpleMessage(
       "Your request has been successfully sent",
     ),
+    "requested_label_prefix": MessageLookupByLibrary.simpleMessage("Requested"),
     "resend": MessageLookupByLibrary.simpleMessage("Resend"),
     "resend_code": MessageLookupByLibrary.simpleMessage("Resend Code"),
     "reset": MessageLookupByLibrary.simpleMessage("Reset"),
     "reset_password": MessageLookupByLibrary.simpleMessage("Reset Password"),
+    "return_reason_damaged": MessageLookupByLibrary.simpleMessage("Damaged"),
+    "return_reason_no_longer_needed": MessageLookupByLibrary.simpleMessage(
+      "No longer needed",
+    ),
+    "return_reason_not_as_described": MessageLookupByLibrary.simpleMessage(
+      "Not as described",
+    ),
+    "return_reason_other": MessageLookupByLibrary.simpleMessage("Other"),
+    "return_reason_wrong_item": MessageLookupByLibrary.simpleMessage(
+      "Wrong item",
+    ),
+    "return_requested_successfully": MessageLookupByLibrary.simpleMessage(
+      "Return requested successfully.",
+    ),
+    "return_status_approved": MessageLookupByLibrary.simpleMessage("Approved"),
+    "return_status_refunded": MessageLookupByLibrary.simpleMessage("Refunded"),
+    "return_status_rejected": MessageLookupByLibrary.simpleMessage("Rejected"),
+    "return_status_requested": MessageLookupByLibrary.simpleMessage(
+      "Requested",
+    ),
     "returned": MessageLookupByLibrary.simpleMessage("Return"),
     "returns": MessageLookupByLibrary.simpleMessage("Returns"),
     "reviews": MessageLookupByLibrary.simpleMessage("Reviews"),
@@ -500,6 +539,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "street": MessageLookupByLibrary.simpleMessage("Street"),
     "subcategories": MessageLookupByLibrary.simpleMessage("Subcategories"),
+    "submit_request": MessageLookupByLibrary.simpleMessage("Submit request"),
     "subtotal": MessageLookupByLibrary.simpleMessage("Subtotal"),
     "success": MessageLookupByLibrary.simpleMessage("Success"),
     "suggested": MessageLookupByLibrary.simpleMessage("Suggested"),
@@ -511,7 +551,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "through one of our delivery partners",
     ),
     "title": MessageLookupByLibrary.simpleMessage("Address Name"),
-    "title_hint": MessageLookupByLibrary.simpleMessage("e.g. Home, Work, Grandma's House"),
+    "title_hint": MessageLookupByLibrary.simpleMessage(
+      "e.g. Home, Work, Grandma\'s House",
+    ),
     "to_your_balance": MessageLookupByLibrary.simpleMessage("to your balance"),
     "top_search_keywords": MessageLookupByLibrary.simpleMessage(
       "Top search keywords",

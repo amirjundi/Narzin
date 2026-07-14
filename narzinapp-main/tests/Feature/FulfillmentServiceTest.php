@@ -82,6 +82,8 @@ class FulfillmentServiceTest extends TestCase
         // placed_to_ship: A=10h, B=60h → count 2, breach 1/2 = 0.5
         $this->assertSame(2, $sla['stages']['placed_to_ship']['count']);
         $this->assertEqualsWithDelta(35.0, $sla['stages']['placed_to_ship']['avg_hours'], 0.01);
+        $this->assertEqualsWithDelta(10.0, $sla['stages']['placed_to_ship']['median_hours'], 0.01);
+        $this->assertEqualsWithDelta(60.0, $sla['stages']['placed_to_ship']['p90_hours'], 0.01);
         $this->assertSame(0.5, $sla['breach_rate']);
 
         // ship_to_deliver: only A shipped→delivered = 24h; B not delivered

@@ -18,7 +18,7 @@
     </form>
     <div class="mt-2 flex flex-wrap gap-2 text-xs">
         @foreach ($presets as $label => [$pFrom, $pTo])
-            <a href="{{ $base }}?from={{ $pFrom->format('Y-m-d') }}&to={{ $pTo->format('Y-m-d') }}"
+            <a href="{{ $base }}?from={{ $pFrom->format('Y-m-d') }}&amp;to={{ $pTo->format('Y-m-d') }}"
                class="px-2 py-1 rounded border text-gray-600 hover:bg-gray-100">{{ $label }}</a>
         @endforeach
     </div>

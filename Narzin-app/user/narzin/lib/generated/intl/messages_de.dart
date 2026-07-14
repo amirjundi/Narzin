@@ -126,6 +126,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "continuous_motivation": MessageLookupByLibrary.simpleMessage(
       "Kontinuierliche Motivation mit Spaßfaktor: Gebete sind jetzt dank Abzeichen und Herausforderungen einfacher und motivierender. Ob Sie eine wöchentliche Herausforderung abschließen oder eine Serie von Tagen erreichen möchten, die App bietet ein Gefühl der Leistung und ständigen Motivation.",
     ),
+    "couldnt_identify_order": MessageLookupByLibrary.simpleMessage(
+      "Die Bestellung konnte nicht identifiziert werden.",
+    ),
     "country": MessageLookupByLibrary.simpleMessage("Land"),
     "coupon": MessageLookupByLibrary.simpleMessage("Gutschein hinzufügen"),
     "coupon_applied": MessageLookupByLibrary.simpleMessage(
@@ -295,6 +298,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Mehrfachauswahl für verfügbare Farben mit der Möglichkeit, Farben hinzuzufügen",
     ),
     "my_account": MessageLookupByLibrary.simpleMessage("Mein Konto"),
+    "my_returns": MessageLookupByLibrary.simpleMessage("Meine Rücksendungen"),
     "name_ar": MessageLookupByLibrary.simpleMessage("Name auf Arabisch"),
     "name_ar_placeholder": MessageLookupByLibrary.simpleMessage(
       "Geben Sie einen klaren Produktnamen auf Arabisch ein",
@@ -315,6 +319,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "no_categories_available": MessageLookupByLibrary.simpleMessage(
       "Keine Kategorien verfügbar...",
     ),
+    "no_eligible_orders_for_return": MessageLookupByLibrary.simpleMessage(
+      "Keine berechtigten Bestellungen für eine Rücksendung.",
+    ),
     "no_extra_fees": MessageLookupByLibrary.simpleMessage(
       "Keine zusätzlichen Gebühren",
     ),
@@ -327,12 +334,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "no_results_message": MessageLookupByLibrary.simpleMessage(
       "Sorry, the keyword you entered was not found.\n Please check again or try using a different keyword.",
     ),
+    "no_return_requests_yet": MessageLookupByLibrary.simpleMessage(
+      "Du hast noch keine Rücksendeanfragen.",
+    ),
     "no_saved_addresses": MessageLookupByLibrary.simpleMessage(
       "Sie haben keine gespeicherten Adressen...",
     ),
     "not_just_app": MessageLookupByLibrary.simpleMessage(
       "Diese App ist nicht nur ein Werkzeug für Gebete, sondern Ihr täglicher spiritueller Begleiter, der Ihnen alles bietet, was Sie für Ihre spirituelle Verbindung, Herausforderungen und Motivation benötigen – modern und zeitgemäß.",
     ),
+    "note_optional": MessageLookupByLibrary.simpleMessage("Notiz (optional)"),
     "notification": MessageLookupByLibrary.simpleMessage("Benachrichtigung"),
     "notifications": MessageLookupByLibrary.simpleMessage("Benachrichtigungen"),
     "old_password": MessageLookupByLibrary.simpleMessage("Altes Passwort"),
@@ -417,6 +428,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "ready_wherever_you_are": MessageLookupByLibrary.simpleMessage(
       "Bereit, wo immer du bist",
     ),
+    "reason_for_return": MessageLookupByLibrary.simpleMessage(
+      "Grund der Rücksendung",
+    ),
+    "reason_label_prefix": MessageLookupByLibrary.simpleMessage("Grund"),
     "recent_searches": MessageLookupByLibrary.simpleMessage("Neueste Suchen"),
     "reenter_password": MessageLookupByLibrary.simpleMessage(
       "Bitte gib dein Passwort erneut ein",
@@ -433,14 +448,38 @@ class MessageLookup extends MessageLookupByLibrary {
       "Passwort erinnern?",
     ),
     "report_error": MessageLookupByLibrary.simpleMessage("Fehler melden"),
+    "request_a_return": MessageLookupByLibrary.simpleMessage(
+      "Rücksendung anfordern",
+    ),
     "request_successfully_sent": MessageLookupByLibrary.simpleMessage(
       "Ihre Anfrage wurde erfolgreich gesendet",
     ),
+    "requested_label_prefix": MessageLookupByLibrary.simpleMessage("Angefragt"),
     "resend": MessageLookupByLibrary.simpleMessage("Erneut senden"),
     "resend_code": MessageLookupByLibrary.simpleMessage("Code erneut senden"),
     "reset": MessageLookupByLibrary.simpleMessage("Zurücksetzen"),
     "reset_password": MessageLookupByLibrary.simpleMessage(
       "Passwort zurücksetzen",
+    ),
+    "return_reason_damaged": MessageLookupByLibrary.simpleMessage("Beschädigt"),
+    "return_reason_no_longer_needed": MessageLookupByLibrary.simpleMessage(
+      "Nicht mehr benötigt",
+    ),
+    "return_reason_not_as_described": MessageLookupByLibrary.simpleMessage(
+      "Nicht wie beschrieben",
+    ),
+    "return_reason_other": MessageLookupByLibrary.simpleMessage("Sonstiges"),
+    "return_reason_wrong_item": MessageLookupByLibrary.simpleMessage(
+      "Falscher Artikel",
+    ),
+    "return_requested_successfully": MessageLookupByLibrary.simpleMessage(
+      "Rücksendung erfolgreich angefordert.",
+    ),
+    "return_status_approved": MessageLookupByLibrary.simpleMessage("Genehmigt"),
+    "return_status_refunded": MessageLookupByLibrary.simpleMessage("Erstattet"),
+    "return_status_rejected": MessageLookupByLibrary.simpleMessage("Abgelehnt"),
+    "return_status_requested": MessageLookupByLibrary.simpleMessage(
+      "Angefragt",
     ),
     "returned": MessageLookupByLibrary.simpleMessage("Rückgabe"),
     "returns": MessageLookupByLibrary.simpleMessage("Rückgaben"),
@@ -530,6 +569,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "street": MessageLookupByLibrary.simpleMessage("Straße"),
     "subcategories": MessageLookupByLibrary.simpleMessage("Unterkategorien"),
+    "submit_request": MessageLookupByLibrary.simpleMessage("Anfrage senden"),
     "subtotal": MessageLookupByLibrary.simpleMessage("Zwischensumme"),
     "success": MessageLookupByLibrary.simpleMessage("Erfolg"),
     "suggested": MessageLookupByLibrary.simpleMessage("Vorgeschlagen"),
@@ -541,7 +581,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "durch einen unserer Lieferpartner",
     ),
     "title": MessageLookupByLibrary.simpleMessage("Adressname"),
-    "title_hint": MessageLookupByLibrary.simpleMessage("z.B. Zuhause, Arbeit, Oma's Haus"),
+    "title_hint": MessageLookupByLibrary.simpleMessage(
+      "z.B. Zuhause, Arbeit, Oma\'s Haus",
+    ),
     "to_your_balance": MessageLookupByLibrary.simpleMessage(
       "zu Ihrem Guthaben",
     ),

@@ -73,4 +73,17 @@ class AdminCancellationReasonTest extends TestCase
 
         $this->assertNull($order->fresh()->cancellation_reason);
     }
+
+    public function test_uncancelling_clears_the_stale_reason(): void
+    {
+        $order = $this->makeOrder(['order_status' => 'cancelled', 'cancellation_reason' => 'out_of_stock']);
+
+        $this->actingAsAdmin()
+            ->patch(route('orders.update.status', $order->id), [
+                'order_status' => 'shipped',
+            ])->assertRedirect();
+
+        $this->assertSame('shipped', $order->fresh()->order_status);
+        $this->assertNull($order->fresh()->cancellation_reason);
+    }
 }

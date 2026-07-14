@@ -28,10 +28,9 @@ class S {
   static const AppLocalizationDelegate delegate = AppLocalizationDelegate();
 
   static Future<S> load(Locale locale) {
-    final name =
-        (locale.countryCode?.isEmpty ?? false)
-            ? locale.languageCode
-            : locale.toString();
+    final name = (locale.countryCode?.isEmpty ?? false)
+        ? locale.languageCode
+        : locale.toString();
     final localeName = Intl.canonicalizedLocale(name);
     return initializeMessages(localeName).then((_) {
       Intl.defaultLocale = localeName;
@@ -2307,7 +2306,12 @@ class S {
 
   /// `e.g. Home, Work, Grandma's House`
   String get title_hint {
-    return Intl.message("e.g. Home, Work, Grandma's House", name: 'title_hint', desc: '', args: []);
+    return Intl.message(
+      'e.g. Home, Work, Grandma\'s House',
+      name: 'title_hint',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Out of Stock`
@@ -2343,6 +2347,201 @@ class S {
   /// `Size`
   String get sizeLabel {
     return Intl.message('Size', name: 'sizeLabel', desc: '', args: []);
+  }
+
+  /// `My Returns`
+  String get my_returns {
+    return Intl.message('My Returns', name: 'my_returns', desc: '', args: []);
+  }
+
+  /// `Request a Return`
+  String get request_a_return {
+    return Intl.message(
+      'Request a Return',
+      name: 'request_a_return',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You have no return requests yet.`
+  String get no_return_requests_yet {
+    return Intl.message(
+      'You have no return requests yet.',
+      name: 'no_return_requests_yet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No eligible orders to request a return for.`
+  String get no_eligible_orders_for_return {
+    return Intl.message(
+      'No eligible orders to request a return for.',
+      name: 'no_eligible_orders_for_return',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reason for return`
+  String get reason_for_return {
+    return Intl.message(
+      'Reason for return',
+      name: 'reason_for_return',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Damaged`
+  String get return_reason_damaged {
+    return Intl.message(
+      'Damaged',
+      name: 'return_reason_damaged',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Wrong item`
+  String get return_reason_wrong_item {
+    return Intl.message(
+      'Wrong item',
+      name: 'return_reason_wrong_item',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not as described`
+  String get return_reason_not_as_described {
+    return Intl.message(
+      'Not as described',
+      name: 'return_reason_not_as_described',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No longer needed`
+  String get return_reason_no_longer_needed {
+    return Intl.message(
+      'No longer needed',
+      name: 'return_reason_no_longer_needed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Other`
+  String get return_reason_other {
+    return Intl.message(
+      'Other',
+      name: 'return_reason_other',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Note (optional)`
+  String get note_optional {
+    return Intl.message(
+      'Note (optional)',
+      name: 'note_optional',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Submit request`
+  String get submit_request {
+    return Intl.message(
+      'Submit request',
+      name: 'submit_request',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Couldn't identify the order.`
+  String get couldnt_identify_order {
+    return Intl.message(
+      'Couldn\'t identify the order.',
+      name: 'couldnt_identify_order',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Return requested successfully.`
+  String get return_requested_successfully {
+    return Intl.message(
+      'Return requested successfully.',
+      name: 'return_requested_successfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reason`
+  String get reason_label_prefix {
+    return Intl.message(
+      'Reason',
+      name: 'reason_label_prefix',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Requested`
+  String get requested_label_prefix {
+    return Intl.message(
+      'Requested',
+      name: 'requested_label_prefix',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Requested`
+  String get return_status_requested {
+    return Intl.message(
+      'Requested',
+      name: 'return_status_requested',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Approved`
+  String get return_status_approved {
+    return Intl.message(
+      'Approved',
+      name: 'return_status_approved',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rejected`
+  String get return_status_rejected {
+    return Intl.message(
+      'Rejected',
+      name: 'return_status_rejected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Refunded`
+  String get return_status_refunded {
+    return Intl.message(
+      'Refunded',
+      name: 'return_status_refunded',
+      desc: '',
+      args: [],
+    );
   }
 }
 
